@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es-PE">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Comprar auto | AutoPago</title>
+  <meta name="description" content="Showroom AutoPago: autos disponibles. Escríbenos por WhatsApp para agendar visita." />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/assets/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="container header__inner">
+      <a class="brand" href="/" aria-label="Ir al inicio">
+        <div class="brand__mark">AP</div>
+        <div class="brand__text">
+          <div class="brand__name">AutoPago</div>
+          <div class="brand__tag">Showroom · Autos disponibles</div>
+        </div>
+      </a>
+
+      <nav class="nav" aria-label="Navegación principal">
+        <a href="/comprar.html">Comprar auto</a>
+        <a href="/#vender">Vender auto</a>
+        <a href="/autometro.html">Autómetro</a>
+        <a href="/como-trabajamos.html">Cómo trabajamos</a>
+        <a class="btn btn--ghost" href="/#vender">Cotizar</a>
+      </nav>
+
+      <button class="nav__toggle" id="navToggle" aria-label="Abrir menú">☰</button>
+    </div>
+
+    <div class="container nav__mobile" id="navMobile">
+      <a href="/comprar.html">Comprar auto</a>
+      <a href="/#vender">Vender auto</a>
+      <a href="/autometro.html">Autómetro</a>
+      <a href="/como-trabajamos.html">Cómo trabajamos</a>
+      <a href="/#vender" class="btn btn--primary btn--block">Cotizar</a>
+    </div>
+
+  </header>
+
+  <main class="section">
+    <div class="container">
+      <div class="section__head">
+        <h1 style="margin:0 0 6px">Autos para ti</h1>
+        <p class="muted">Haz clic en <strong>Me interesa</strong> y te abrimos WhatsApp con el modelo y el link.</p>
+      </div>
+      <div class="showroom" id="showroom"></div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__bottom">
+      <small>© <span id="yearNow"></span> AutoPago.</small>
+    </div>
+  </footer>
+
+  <script src="/comprar.js"></script>
+</body>
+</html>

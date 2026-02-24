@@ -1,7 +1,6 @@
 (() => {
   const WHATSAPP_NUMBER = "51988886970";
   const BRAND = "AutoPago";
-
   const $ = (sel) => document.querySelector(sel);
 
   const navToggle = $("#navToggle");
@@ -11,7 +10,8 @@
     navMobile.querySelectorAll("a").forEach(a => a.addEventListener("click", () => navMobile.classList.remove("is-open")));
   }
 
-  $("#yearNow").textContent = new Date().getFullYear();
+  const y = $("#yearNow");
+  if (y) y.textContent = new Date().getFullYear();
 
   const yearSelect = document.querySelector('select[name="year"]');
   if (yearSelect) {
@@ -30,7 +30,6 @@
   };
   const waUrl = (text) => `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
 
-  // Placeholder fallback (sin data real de comparables).
   const estimateMarketFallback = ({ year, km }) => {
     const y = Number(year);
     const k = Number(km);
@@ -50,7 +49,6 @@
   };
 
   const getMarketValue = (data) => {
-    // Proxy a "comparables": el precio publicado del usuario (si existe).
     if (data.publishedUsd && data.publishedUsd > 0) return data.publishedUsd;
     if (data.year && Number.isFinite(data.km)) return estimateMarketFallback({ year: data.year, km: data.km });
     return null;
@@ -63,8 +61,7 @@
     $("#rMarket").textContent = fmtUSD(market);
     $("#rOfferLow").textContent = fmtUSD(low);
     $("#rOfferHigh").textContent = fmtUSD(high);
-    $("#rFee3").textContent = fmtUSD(market * 0.03);
-    $("#rFee5").textContent = fmtUSD(market * 0.05);
+    $("#rFee4").textContent = fmtUSD(market * 0.04);
   };
 
   const quoteForm = $("#quoteForm");
@@ -74,7 +71,6 @@
       const market = getMarketValue(data);
       if (market && Number.isFinite(market)) renderResults(market);
     };
-
     quoteForm.addEventListener("input", update);
     quoteForm.addEventListener("change", update);
 
@@ -84,7 +80,6 @@
       const market = getMarketValue(data);
       const rng = market ? offerRange(market) : null;
 
-      // Guardar lead en backend (para /admin)
       try {
         await fetch("/.netlify/functions/createLead", {
           method: "POST",
@@ -101,7 +96,7 @@
       } catch (_) {}
 
       const msg =
-`Hola ${BRAND}, quiero mi pre-oferta y vender rápido.
+`Hola ${BRAND}, quiero vender mi auto.
 
 👤 Contacto
 • Nombre: ${data.fullName || "—"}
@@ -114,14 +109,14 @@
 • Versión: ${data.version || "—"}
 • Km: ${Number.isFinite(data.km) ? data.km.toLocaleString("en-US") : "—"} km
 
-📌 Referencia (si tengo)
+📌 Referencia
 • Precio publicado (USD): ${data.publishedUsd ? fmtUSD(data.publishedUsd) : "No indicado"}
 • Link anuncio: ${(data.listingUrl || "").trim() || "—"}
 
-🎯 Opción elegida
+🎯 Opción
 • ${data.service || "—"}
 
-📊 Pre-oferta (referencial)
+📊 Pre‑oferta (referencial)
 • Valor referencia: ${market ? fmtUSD(market) : "Pendiente"}
 • Rango ${BRAND}: ${market ? `${fmtUSD(rng.low)} a ${fmtUSD(rng.high)}` : "—"}
 
@@ -135,9 +130,8 @@ ${(data.notes || "").trim() || "—"}
 
     $("#btnNoCar").addEventListener("click", () => {
       const msg =
-`Hola ${BRAND}. Quiero vender mi auto rápido.
+`Hola ${BRAND}. Quiero vender mi auto súper rápido.
 
-¿Me ayudan con el siguiente paso?
 Puedo pasarles:
 • Año, marca, modelo, versión
 • Km
@@ -148,17 +142,16 @@ Puedo pasarles:
   }
 
   const openWhats = (context) => {
-    const msg =
-`Hola ${BRAND}. ${context}
+    const msg = `Hola ${BRAND}. ${context}
 
-Quiero:
-1) Compra inmediata (pre-oferta + validación + firma el mismo día), o
-2) Concesión 3% / Concesión 5%.`;
+Quiero vender mi auto. ¿Me ayudan con el siguiente paso?`;
     window.open(waUrl(msg), "_blank", "noopener,noreferrer");
   };
 
-  $("#btnWhatsHero")?.addEventListener("click", () => openWhats("Vengo desde autopago.pe."));
-  $("#btnWhatsServicios")?.addEventListener("click", () => openWhats("Quiero concesión y entender cuál plan me conviene."));
-  $("#btnWhatsFooter")?.addEventListener("click", () => openWhats("Quiero hablar con un asesor."));
-  $("#waFloat")?.addEventListener("click", () => openWhats("Hola, necesito vender mi auto rápido."));
+  $("#btnWhatsHero")?.addEventListener("click", () => openWhats("Vengo desde autopago.pe"));
+  $("#btnWhatsConcesion")?.addEventListener("click", () => {
+    const msg = `Hola ${BRAND}. Quiero vender por concesión (comisión 4%). ¿Qué requisitos y pasos siguen?`;
+    window.open(waUrl(msg), "_blank", "noopener,noreferrer");
+  });
+  $("#waFloat")?.addEventListener("click", () => openWhats("Hola, quiero vender mi auto"));
 })();
