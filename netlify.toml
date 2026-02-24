@@ -1,7 +1,3 @@
 [build]
   publish = "."
-
-[[headers]]
-  for = "/*"
-  [headers.values]
-    Cache-Control = "public, max-age=300"
+  functions = "netlify/functions"
