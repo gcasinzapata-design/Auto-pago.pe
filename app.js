@@ -49,8 +49,9 @@
   };
 
   const getMarketValue = (data) => {
-    if (data.publishedUsd && data.publishedUsd > 0) return data.publishedUsd;
-    if (data.year && Number.isFinite(data.km)) return estimateMarketFallback({ year: data.year, km: data.km });
+    if (data.year && Number.isFinite(data.km)) {
+      return estimateMarket({ year: data.year, km: data.km, brand: data.brand, model: data.model, transmission: data.transmission });
+    }
     return null;
   };
 
