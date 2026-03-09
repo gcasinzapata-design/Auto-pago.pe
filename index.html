@@ -10,9 +10,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { background: #0F172A; color: #F1F5F9; font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
-    #root { min-height: 100vh; }
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    html, body { background:#0F172A; color:#F1F5F9; font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; }
+    #root { min-height:100vh; }
   </style>
 </head>
 <body>
@@ -1340,20 +1340,21 @@ function CreditoModule() {
   const amountSNum = parseFloat(amountS) || 0;
   const amountUSD = amountSNum / tcVal2;
   const doCalc = () => {
-    if (!vResult || !term || !amountSNum || !(elig == null ? void 0 : elig.eligible)) return;
+    if (!vResult || !term || !(elig == null ? void 0 : elig.eligible) || !maxLoanUSD) return;
     const termN = parseInt(term);
     const lt = loanTerms[termN];
     const r = lt.monthlyRate;
-    const amtUSD = amountSNum / tcVal2;
+    const amtUSD = maxLoanUSD;
+    const amtS = maxLoanS;
     const comm = Math.round(amtUSD * lt.disbursementCommissionPct);
     const pmt = amtUSD * (r * Math.pow(1 + r, termN)) / (Math.pow(1 + r, termN) - 1);
     const total = pmt * termN;
     const tea = (Math.pow(1 + r, 12) - 1) * 100;
     const ltv = amtUSD / vResult.conservativeValue * 100;
     const sch = buildAmortization(amtUSD, r, termN);
-    setResult({ vr: vResult, termN, r, amtUSD, amtS: amountSNum, comm, commS: Math.round(comm * tcVal2), pmt: Math.round(pmt), pmtS: Math.round(pmt * tcVal2), total: Math.round(total), totalS: Math.round(total * tcVal2), tea, maxLoanUSD, maxLoanS, ltv, lt });
+    setResult({ vr: vResult, termN, r, amtUSD, amtS, comm, commS: Math.round(comm * tcVal2), pmt: Math.round(pmt), pmtS: Math.round(pmt * tcVal2), total: Math.round(total), totalS: Math.round(total * tcVal2), tea, maxLoanUSD, maxLoanS, ltv, lt });
     setSchedule(sch);
-    trackLead("credito_quote", __spreadProps(__spreadValues({}, vehicle), { amountUSD: amtUSD, amountSoles: amountSNum, term: termN, monthlyPaymentUSD: Math.round(pmt), maxLoanUSD, tcUsed: tcVal2 }));
+    trackLead("credito_quote", __spreadProps(__spreadValues({}, vehicle), { amountUSD: amtUSD, amountSoles: amtS, term: termN, monthlyPaymentUSD: Math.round(pmt), maxLoanUSD, tcUsed: tcVal2 }));
   };
   const canWA = isContactValid(contact) && checks.owner && checks.terms && !!result;
   const doWA = () => {
@@ -1395,25 +1396,13 @@ function CreditoModule() {
       /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, color: "#94A3B8" } }, "Comisi\xF3n: ", /* @__PURE__ */ React.createElement("span", { style: { color: "#F59E0B", fontWeight: 700 } }, (lt.disbursementCommissionPct * 100).toFixed(0), "% al desembolsar")),
       maxLoanS > 0 && /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: isOn ? "#C4B5FD" : "#64748B", marginTop: 6, fontWeight: 600 } }, "Cuota est.: $", Math.round(maxLoanS / tcVal2 * (lt.monthlyRate * Math.pow(1 + lt.monthlyRate, t)) / (Math.pow(1 + lt.monthlyRate, t) - 1)).toLocaleString(), "/mes")
     );
-  })), /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 8 } }, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "\xBFCu\xE1nto necesitas? (S/)"), /* @__PURE__ */ React.createElement("div", { style: { position: "relative" } }, /* @__PURE__ */ React.createElement("span", { style: { position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: 15, fontWeight: 700, color: "#93C5FD", pointerEvents: "none" } }, "S/"), /* @__PURE__ */ React.createElement(
-    "input",
-    {
-      className: `ap-input${amountSNum > maxLoanS && maxLoanS > 0 ? " err" : ""}`,
-      type: "number",
-      value: amountS,
-      onChange: (e) => setAmountS(e.target.value),
-      placeholder: `Hasta $${maxLoanUSD.toLocaleString()}`,
-      min: "500",
-      step: "500",
-      style: { paddingLeft: 36 }
-    }
-  )), amountSNum > 0 && /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", marginTop: 5, fontSize: 11 } }, /* @__PURE__ */ React.createElement("span", { style: { color: "#475569" } }, "S/ ", amountSNum.toLocaleString()), amountSNum > maxLoanS && maxLoanS > 0 ? /* @__PURE__ */ React.createElement("span", { style: { color: "#EF4444" } }, "\u26A0\uFE0F Supera el m\xE1ximo ($$", maxLoanUSD.toLocaleString(), ")") : amountSNum > 0 && /* @__PURE__ */ React.createElement("span", { style: { color: "#10B981" } }, "\u2713 Dentro del l\xEDmite"))), /* @__PURE__ */ React.createElement(
+  })), /* @__PURE__ */ React.createElement(
     "button",
     {
       className: "ap-btn ap-btn-primary",
       type: "button",
       onClick: doCalc,
-      disabled: !term || !amountSNum || amountSNum > maxLoanS || !(elig == null ? void 0 : elig.eligible),
+      disabled: !term || !(elig == null ? void 0 : elig.eligible),
       style: { width: "100%", padding: "14px", marginTop: 8 }
     },
     "\u{1F4CA} Calcular cuota y cronograma \u2192"
@@ -1699,7 +1688,7 @@ function AdminShell({ session, onLogout, tcSource }) {
     config: /* @__PURE__ */ React.createElement(AdminConfig, null),
     users: /* @__PURE__ */ React.createElement(AdminUsers, { session })
   };
-  const Sidebar = () => /* @__PURE__ */ React.createElement("div", { style: { width: 220, flexShrink: 0, height: "100vh", position: "sticky", top: 0, background: "rgba(3,8,22,.98)", borderRight: "1px solid rgba(255,255,255,.06)", padding: "0 10px 20px", display: "flex", flexDirection: "column", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("div", { style: { padding: "18px 8px 16px", borderBottom: "1px solid rgba(255,255,255,.06)", marginBottom: 8 } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 16, fontWeight: 800, color: "#fff" } }, "Auto", /* @__PURE__ */ React.createElement("span", { style: { color: "#60A5FA" } }, "Pago"), " ", /* @__PURE__ */ React.createElement("span", { style: { fontSize: 10, color: "#334155", fontWeight: 500 } }, "Admin")), /* @__PURE__ */ React.createElement("div", { style: { marginTop: 8, display: "flex", alignItems: "center", gap: 6, padding: "5px 8px", background: "rgba(255,255,255,.03)", borderRadius: 8, border: "1px solid rgba(255,255,255,.05)" } }, /* @__PURE__ */ React.createElement("span", { style: { width: 6, height: 6, borderRadius: "50%", background: tcSource === "live" ? "#10B981" : tcSource === "cache" ? "#F59E0B" : "#EF4444", flexShrink: 0 } }), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 10, color: "#475569", fontFamily: "'DM Mono',monospace" } }, "TC S/ ", tc == null ? void 0 : tc.toFixed(3), " ", /* @__PURE__ */ React.createElement("span", { style: { color: tcSource === "live" ? "#10B981" : "#64748B" } }, tcSource === "live" ? "\xB7 live" : tcSource === "cache" ? "\xB7 cache" : "\xB7 manual")))), NAV.map((n) => /* @__PURE__ */ React.createElement(
+  const renderSidebar = () => /* @__PURE__ */ React.createElement("div", { style: { width: 220, flexShrink: 0, height: "100vh", position: "sticky", top: 0, background: "rgba(3,8,22,.98)", borderRight: "1px solid rgba(255,255,255,.06)", padding: "0 10px 20px", display: "flex", flexDirection: "column", overflowY: "auto" } }, /* @__PURE__ */ React.createElement("div", { style: { padding: "18px 8px 16px", borderBottom: "1px solid rgba(255,255,255,.06)", marginBottom: 8 } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 16, fontWeight: 800, color: "#fff" } }, "Auto", /* @__PURE__ */ React.createElement("span", { style: { color: "#60A5FA" } }, "Pago"), " ", /* @__PURE__ */ React.createElement("span", { style: { fontSize: 10, color: "#334155", fontWeight: 500 } }, "Admin")), /* @__PURE__ */ React.createElement("div", { style: { marginTop: 8, display: "flex", alignItems: "center", gap: 6, padding: "5px 8px", background: "rgba(255,255,255,.03)", borderRadius: 8, border: "1px solid rgba(255,255,255,.05)" } }, /* @__PURE__ */ React.createElement("span", { style: { width: 6, height: 6, borderRadius: "50%", background: tcSource === "live" ? "#10B981" : tcSource === "cache" ? "#F59E0B" : "#EF4444", flexShrink: 0 } }), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 10, color: "#475569", fontFamily: "'DM Mono',monospace" } }, "TC S/ ", tc == null ? void 0 : tc.toFixed(3), " ", /* @__PURE__ */ React.createElement("span", { style: { color: tcSource === "live" ? "#10B981" : "#64748B" } }, tcSource === "live" ? "\xB7 live" : tcSource === "cache" ? "\xB7 cache" : "\xB7 manual")))), NAV.map((n) => /* @__PURE__ */ React.createElement(
     "div",
     {
       key: n.id,
@@ -1712,7 +1701,7 @@ function AdminShell({ session, onLogout, tcSource }) {
     /* @__PURE__ */ React.createElement("span", { style: { fontSize: 16 } }, n.icon),
     n.label
   )), /* @__PURE__ */ React.createElement("div", { style: { flex: 1 } }), /* @__PURE__ */ React.createElement("div", { style: { marginTop: 12, padding: "12px 10px", background: "rgba(255,255,255,.03)", borderRadius: 12, border: "1px solid rgba(255,255,255,.06)" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 8 } }, /* @__PURE__ */ React.createElement("div", { style: { width: 30, height: 30, borderRadius: "50%", background: `linear-gradient(135deg,${ROLE_BADGE[session.role]},${ROLE_BADGE[session.role]}80)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, flexShrink: 0 } }, session.email[0].toUpperCase()), /* @__PURE__ */ React.createElement("div", { style: { overflow: "hidden" } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#94A3B8", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, session.email), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 9, fontWeight: 700, color: ROLE_BADGE[session.role] } }, session.role.toUpperCase()))), /* @__PURE__ */ React.createElement("div", { className: "admin-item", onClick: onLogout, style: { color: "#FCA5A5", padding: "7px 10px", borderRadius: 8, fontSize: 12 } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F6AA}"), " Cerrar sesi\xF3n")));
-  return /* @__PURE__ */ React.createElement("div", { style: { display: "flex", minHeight: "100vh" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "none" }, className: "desktop-only" }, /* @__PURE__ */ React.createElement("div", { style: { display: "block" } }, /* @__PURE__ */ React.createElement(Sidebar, null))), /* @__PURE__ */ React.createElement("div", { className: "desktop-only", style: { display: "contents" } }, /* @__PURE__ */ React.createElement(Sidebar, null)), /* @__PURE__ */ React.createElement("div", { style: { display: "none" }, id: "admin-mobile-bar" }), /* @__PURE__ */ React.createElement("div", { style: { flex: 1, overflowY: "auto", background: "rgba(5,10,25,.6)" } }, /* @__PURE__ */ React.createElement("div", { className: "ap-burger", style: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", background: "rgba(3,8,22,.98)", borderBottom: "1px solid rgba(255,255,255,.06)", position: "sticky", top: 0, zIndex: 100 } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 14, fontWeight: 800, color: "#fff" } }, "Auto", /* @__PURE__ */ React.createElement("span", { style: { color: "#60A5FA" } }, "Pago"), " Admin"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8 } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 12, color: "#64748B", fontFamily: "'DM Mono',monospace" } }, "TC ", tc == null ? void 0 : tc.toFixed(2)), /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement("div", { style: { display: "flex", minHeight: "100vh" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "none" }, className: "desktop-only" }, /* @__PURE__ */ React.createElement("div", { style: { display: "block" } }, renderSidebar())), /* @__PURE__ */ React.createElement("div", { className: "desktop-only", style: { display: "contents" } }, renderSidebar()), /* @__PURE__ */ React.createElement("div", { style: { display: "none" }, id: "admin-mobile-bar" }), /* @__PURE__ */ React.createElement("div", { style: { flex: 1, overflowY: "auto", background: "rgba(5,10,25,.6)" } }, /* @__PURE__ */ React.createElement("div", { className: "ap-burger", style: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", background: "rgba(3,8,22,.98)", borderBottom: "1px solid rgba(255,255,255,.06)", position: "sticky", top: 0, zIndex: 100 } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 14, fontWeight: 800, color: "#fff" } }, "Auto", /* @__PURE__ */ React.createElement("span", { style: { color: "#60A5FA" } }, "Pago"), " Admin"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8 } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 12, color: "#64748B", fontFamily: "'DM Mono',monospace" } }, "TC ", tc == null ? void 0 : tc.toFixed(2)), /* @__PURE__ */ React.createElement(
     "button",
     {
       type: "button",
