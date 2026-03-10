@@ -34,6 +34,73 @@ var __spreadValues = (a, b) => {
   return a;
 };
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+class AppErrorBoundary extends React.Component {
+  constructor(p) {
+    super(p);
+    this.state = { err: null };
+  }
+  static getDerivedStateFromError(e) {
+    return { err: e };
+  }
+  render() {
+    if (this.state.err) {
+      return React.createElement("div", {
+        style: {
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: 24,
+          background: "#0F172A",
+          fontFamily: "Inter,sans-serif"
+        }
+      }, React.createElement(
+        "div",
+        { style: { maxWidth: 480, textAlign: "center" } },
+        React.createElement("div", { style: { fontSize: 40, marginBottom: 16 } }, "\u26A0\uFE0F"),
+        React.createElement(
+          "h2",
+          { style: { color: "#F1F5F9", fontSize: 18, fontWeight: 800, marginBottom: 8 } },
+          "Error en la aplicaci\xF3n"
+        ),
+        React.createElement(
+          "p",
+          { style: {
+            color: "#EF4444",
+            fontSize: 12,
+            fontFamily: "monospace",
+            background: "rgba(239,68,68,.1)",
+            padding: "12px 16px",
+            borderRadius: 10,
+            textAlign: "left",
+            wordBreak: "break-word",
+            marginBottom: 16,
+            border: "1px solid rgba(239,68,68,.25)"
+          } },
+          this.state.err.toString()
+        ),
+        React.createElement("button", {
+          onClick: () => {
+            this.setState({ err: null });
+            window.location.reload();
+          },
+          style: {
+            padding: "10px 24px",
+            borderRadius: 50,
+            background: "#2563EB",
+            border: "none",
+            color: "#fff",
+            cursor: "pointer",
+            fontSize: 13,
+            fontWeight: 700,
+            fontFamily: "inherit"
+          }
+        }, "Recargar app")
+      ));
+    }
+    return this.props.children;
+  }
+}
 const CURRENT_YEAR = (/* @__PURE__ */ new Date()).getFullYear();
 const WA_NUMBER = "51988886970";
 const AP_KEYS = {
@@ -48,8 +115,8 @@ const DEFAULT_CONFIG = {
     whatsappNumber: "51988886970",
     tcFallback: 3.77,
     tcLastUpdated: "",
-    termsUrl: "https://autopago.pe/terminos",
-    privacyUrl: "https://autopago.pe/privacidad"
+    termsUrl: "terminos.html",
+    privacyUrl: "privacidad.html"
   },
   modules: { comprar: true, credito: true, consigna: true, showroom: true },
   autometro: {
@@ -651,7 +718,8 @@ button,input,select,textarea { font-family:'DM Sans',sans-serif; }
 .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
 .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
 @media(max-width:900px) { .grid-4 { grid-template-columns:repeat(2,1fr); } .grid-3 { grid-template-columns:repeat(2,1fr); } }
-@media(max-width:580px) { .grid-2,.grid-3,.grid-4 { grid-template-columns:1fr; } .ap-card { padding:16px 14px; } .section-title { font-size:20px; } }
+@media(max-width:580px) { .grid-2,.grid-3,.grid-4 { grid-template-columns:1fr; } .ap-card { padding:16px 14px; } .section-title { font-size:20px; } .home-cards-grid { grid-template-columns:1fr !important; } }
+@media(min-width:581px) and (max-width:900px){ .home-cards-grid { grid-template-columns:repeat(2,1fr) !important; } }
 
 /* \u2500\u2500 ANIMATIONS \u2500\u2500 */
 @keyframes fadeUp   { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
@@ -900,6 +968,18 @@ function Navbar({ current, onNav, onAdmin }) {
     /* @__PURE__ */ React.createElement("span", { style: { color: "#60A5FA" } }, "Pago"),
     /* @__PURE__ */ React.createElement("sup", { style: { fontSize: 8, color: "#334155", fontWeight: 500, marginLeft: 2 } }, "PE")
   ), /* @__PURE__ */ React.createElement("div", { className: "desktop-only", style: { display: "flex", gap: 4, flex: 1, flexWrap: "wrap" } }, mods.map((m) => /* @__PURE__ */ React.createElement("span", { key: m.id, className: `ap-pill${current === m.id ? " active" : ""}`, onClick: () => onNav(m.id) }, m.icon, " ", m.label))), /* @__PURE__ */ React.createElement(
+    "a",
+    {
+      href: "nosotros.html",
+      target: "_blank",
+      rel: "noopener",
+      className: "desktop-only",
+      style: { fontSize: 12, color: "#475569", textDecoration: "none", fontWeight: 700, flexShrink: 0, whiteSpace: "nowrap", padding: "5px 2px" },
+      onMouseEnter: (e) => e.currentTarget.style.color = "#93C5FD",
+      onMouseLeave: (e) => e.currentTarget.style.color = "#475569"
+    },
+    "Nosotros"
+  ), /* @__PURE__ */ React.createElement(
     "div",
     {
       className: "desktop-only",
@@ -907,6 +987,25 @@ function Navbar({ current, onNav, onAdmin }) {
     },
     "TC S/ ",
     /* @__PURE__ */ React.createElement("span", { style: { color: "#60A5FA" } }, tcVal2.toFixed(2))
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      onClick: onAdmin,
+      style: {
+        background: "none",
+        border: "none",
+        color: "#1E293B",
+        cursor: "pointer",
+        fontSize: 10,
+        fontWeight: 700,
+        fontFamily: "inherit",
+        padding: "3px 2px",
+        letterSpacing: ".05em",
+        flexShrink: 0
+      }
+    },
+    "\xB7"
   ), /* @__PURE__ */ React.createElement(
     "button",
     {
@@ -941,7 +1040,44 @@ function Navbar({ current, onNav, onAdmin }) {
     m.icon,
     " ",
     m.label
-  )), /* @__PURE__ */ React.createElement("p", { style: { textAlign: "center", fontSize: 11, color: "#475569", paddingTop: 4 } }, "TC S/ ", tcVal2.toFixed(2), " por USD"))));
+  )), /* @__PURE__ */ React.createElement("div", { style: { height: 1, background: "rgba(255,255,255,.06)", margin: "4px 0" } }), /* @__PURE__ */ React.createElement(
+    "a",
+    {
+      href: "terminos.html",
+      target: "_blank",
+      rel: "noopener",
+      style: { display: "block", padding: "11px 14px", borderRadius: 12, fontSize: 13, fontWeight: 700, color: "#475569", background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.06)", textDecoration: "none" }
+    },
+    "\u{1F4CB} T\xE9rminos y Privacidad"
+  ), /* @__PURE__ */ React.createElement("p", { style: { textAlign: "center", fontSize: 11, color: "#475569", paddingTop: 4 } }, "TC S/ ", tcVal2.toFixed(2), " por USD"))));
+}
+function AppFooter() {
+  return /* @__PURE__ */ React.createElement("footer", { style: { background: "rgba(3,8,22,.9)", borderTop: "1px solid rgba(255,255,255,.06)", marginTop: 48 } }, /* @__PURE__ */ React.createElement("div", { style: { maxWidth: 1160, margin: "0 auto", padding: "40px 24px 28px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 32, marginBottom: 36, justifyContent: "space-between" } }, /* @__PURE__ */ React.createElement("div", { style: { minWidth: 200, maxWidth: 280 } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 20, fontWeight: 800, color: "#fff", marginBottom: 8 } }, "Auto", /* @__PURE__ */ React.createElement("span", { style: { color: "#60A5FA" } }, "Pago")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, color: "#475569", lineHeight: 1.7 } }, "Plataforma digital de servicios financieros vehiculares en Per\xFA. Compramos, financiamos y vendemos tu auto con total transparencia."), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8, marginTop: 14, flexWrap: "wrap" } }, [["\u{1F697}", "Compramos"], ["\u{1F4B3}", "Pr\xE9stamos"], ["\u{1F4CB}", "Consignamos"], ["\u{1F3EA}", "Showroom"]].map(([ic, l]) => /* @__PURE__ */ React.createElement("span", { key: l, style: { fontSize: 10, color: "#334155", background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.06)", borderRadius: 50, padding: "3px 10px", fontWeight: 700 } }, ic, " ", l)))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, fontWeight: 800, color: "#475569", letterSpacing: ".08em", marginBottom: 14 } }, "SERVICIOS"), [
+    ["\u{1F697} Compramos tu auto", "Tasaci\xF3n y pre-oferta online en minutos"],
+    ["\u{1F4B3} Pr\xE9stamos al instante", "Liquidez usando tu auto como garant\xEDa"],
+    ["\u{1F4CB} Vendemos tu auto", "Consignaci\xF3n con precio inteligente"],
+    ["\u{1F3EA} Showroom", "Autos premium disponibles para comprar"]
+  ].map(([t, s]) => /* @__PURE__ */ React.createElement("div", { key: t, style: { marginBottom: 10 } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, fontWeight: 700, color: "#94A3B8" } }, t), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#334155" } }, s)))), /* @__PURE__ */ React.createElement("div", { style: { minWidth: 200, maxWidth: 260 } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, fontWeight: 800, color: "#475569", letterSpacing: ".08em", marginBottom: 14 } }, "QUI\xC9NES SOMOS"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, color: "#475569", lineHeight: 1.7, marginBottom: 12 } }, "AutoPago es una empresa peruana especializada en soluciones financieras vehiculares. Nuestro equipo combina experiencia en el mercado automotriz y finanzas para ofrecer servicios r\xE1pidos, transparentes y justos."), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, color: "#475569", lineHeight: 1.7 } }, "Operamos en Lima con alcance nacional, brindando tasaciones online, pr\xE9stamos prendarios y gesti\xF3n de consignaci\xF3n con total transparencia.")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, fontWeight: 800, color: "#475569", letterSpacing: ".08em", marginBottom: 14 } }, "CONTACTO"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 8 } }, [
+    ["\u{1F4CD}", "Lima, Per\xFA"],
+    ["\u{1F4AC}", "WhatsApp: +51 988 886 970"],
+    ["\u{1F4E7}", "hola@autopago.pe"]
+  ].map(([ic, t]) => /* @__PURE__ */ React.createElement("div", { key: t, style: { display: "flex", gap: 8, alignItems: "flex-start" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 14, flexShrink: 0, marginTop: 1 } }, ic), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 12, color: "#64748B" } }, t)))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: 16, padding: "10px 14px", background: "rgba(37,99,235,.08)", border: "1px solid rgba(59,130,246,.15)", borderRadius: 10 } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 10, color: "#3B82F6", fontWeight: 700, marginBottom: 3 } }, "\u23F0 HORARIO"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#475569" } }, "Lun\u2013Vie 9am\u20137pm \xB7 S\xE1b 9am\u20132pm")))), /* @__PURE__ */ React.createElement("div", { style: { height: 1, background: "rgba(255,255,255,.05)", marginBottom: 20 } }), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12 } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#1E293B" } }, "\xA9 ", (/* @__PURE__ */ new Date()).getFullYear(), " AutoPago \xB7 Lima, Per\xFA"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 16, flexWrap: "wrap" } }, [
+    ["T\xE9rminos y Condiciones", "terminos.html"],
+    ["Pol\xEDtica de Privacidad", "privacidad.html"],
+    ["legal@autopago.pe", "mailto:legal@autopago.pe"]
+  ].map(([label, href]) => /* @__PURE__ */ React.createElement(
+    "a",
+    {
+      key: label,
+      href,
+      target: href.startsWith("mailto") ? void 0 : "_blank",
+      rel: "noopener",
+      style: { fontSize: 11, color: "#334155", textDecoration: "none", fontWeight: 600, transition: "color .15s" },
+      onMouseEnter: (e) => e.currentTarget.style.color = "#93C5FD",
+      onMouseLeave: (e) => e.currentTarget.style.color = "#334155"
+    },
+    label
+  ))), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 10, color: "#1E293B", maxWidth: 340, lineHeight: 1.5, textAlign: "right" } }, "Montos y tasas son referenciales. Sujeto a evaluaci\xF3n crediticia e inspecci\xF3n vehicular."))));
 }
 function Home({ onNav }) {
   const { cfg } = React.useContext(AppCtx);
@@ -955,12 +1091,12 @@ function Home({ onNav }) {
     var _a;
     return ((_a = cfg.modules) == null ? void 0 : _a[c.id]) !== false;
   });
-  return /* @__PURE__ */ React.createElement("div", { style: { maxWidth: 1200, margin: "0 auto", padding: "40px 20px" } }, /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", marginBottom: 52 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(37,99,235,.10)", border: "1px solid rgba(59,130,246,.22)", borderRadius: 50, padding: "6px 16px", marginBottom: 18 } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, fontWeight: 700, color: "#93C5FD", letterSpacing: ".08em" } }, "\u{1F1F5}\u{1F1EA} PLATAFORMA AUTOMOTRIZ DIGITAL \xB7 LIMA, PER\xDA")), /* @__PURE__ */ React.createElement("h1", { style: { fontSize: "clamp(30px,5vw,52px)", fontWeight: 800, color: "#F1F5F9", letterSpacing: "-2px", lineHeight: 1.1, marginBottom: 14 } }, "Tu auto, nuestra", /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("span", { style: { background: "linear-gradient(135deg,#3B82F6,#60A5FA)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" } }, "especialidad")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 16, color: "#64748B", maxWidth: 500, margin: "0 auto", lineHeight: 1.7 } }, "Compramos, financiamos y vendemos tu veh\xEDculo con la mejor oferta del mercado peruano.")), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(220px,1fr))", gap: 16, maxWidth: 1160, margin: "0 auto" } }, cards.map((c) => /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement("div", { style: { maxWidth: 1200, margin: "0 auto", padding: "40px 20px" } }, /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", marginBottom: 52 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(37,99,235,.10)", border: "1px solid rgba(59,130,246,.22)", borderRadius: 50, padding: "6px 16px", marginBottom: 18 } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, fontWeight: 700, color: "#93C5FD", letterSpacing: ".08em" } }, "\u{1F1F5}\u{1F1EA} PLATAFORMA AUTOMOTRIZ DIGITAL \xB7 LIMA, PER\xDA")), /* @__PURE__ */ React.createElement("h1", { style: { fontSize: "clamp(30px,5vw,52px)", fontWeight: 800, color: "#F1F5F9", letterSpacing: "-2px", lineHeight: 1.1, marginBottom: 14 } }, "Tu auto, nuestra", /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("span", { style: { background: "linear-gradient(135deg,#3B82F6,#60A5FA)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" } }, "especialidad")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 16, color: "#64748B", maxWidth: 500, margin: "0 auto", lineHeight: 1.7 } }, "Compramos, financiamos y vendemos tu veh\xEDculo con la mejor oferta del mercado peruano.")), /* @__PURE__ */ React.createElement("div", { className: "home-cards-grid", style: { display: "grid", gridTemplateColumns: `repeat(${Math.min(cards.length, 4)},1fr)`, gap: 16, maxWidth: 1160, margin: "0 auto" } }, cards.map((c) => /* @__PURE__ */ React.createElement(
     "div",
     {
       key: c.id,
       onClick: () => onNav(c.id),
-      style: { cursor: "pointer", background: c.bg, border: `1px solid ${c.color}28`, borderRadius: 20, padding: "24px 22px 20px", transition: "transform .2s,box-shadow .2s" },
+      style: { cursor: "pointer", background: c.bg, border: `1px solid ${c.color}28`, borderRadius: 20, padding: "24px 22px 20px", transition: "transform .2s,box-shadow .2s", minWidth: 0 },
       onMouseEnter: (e) => {
         e.currentTarget.style.transform = "translateY(-3px)";
         e.currentTarget.style.boxShadow = `0 12px 40px ${c.color}22`;
@@ -1315,8 +1451,11 @@ function CreditoModule() {
   const [waSent, setWaSent] = React.useState(false);
   const tcVal2 = tc || ((_a = cfg.general) == null ? void 0 : _a.tcFallback) || 3.77;
   const waNum = ((_b = cfg.general) == null ? void 0 : _b.whatsappNumber) || WA_NUMBER;
-  const loanTerms = ((_c = cfg.credito) == null ? void 0 : _c.terms) || DEFAULT_CONFIG.credito.terms;
-  const enabled = Object.entries(loanTerms).filter(([, v]) => v.enabled).map(([k]) => parseInt(k)).sort((a, b) => a - b);
+  const rawTerms = ((_c = cfg.credito) == null ? void 0 : _c.terms) || DEFAULT_CONFIG.credito.terms;
+  const loanTerms = Object.fromEntries(
+    Object.entries(rawTerms).flatMap(([k, v]) => [[parseInt(k), v], [String(k), v]])
+  );
+  const enabled = Object.entries(loanTerms || {}).filter(([, v]) => v == null ? void 0 : v.enabled).map(([k]) => parseInt(k)).filter((n) => !isNaN(n)).sort((a, b) => a - b);
   const elig = React.useMemo(() => {
     if (!(vehicle == null ? void 0 : vehicle.brand) || !(vehicle == null ? void 0 : vehicle.model) || !(vehicle == null ? void 0 : vehicle.year)) return null;
     return checkEligibility(vehicle.brand, vehicle.model, vehicle.year, cfg);
@@ -1337,7 +1476,11 @@ function CreditoModule() {
   const doCalc = () => {
     if (!vResult || !term || !(elig == null ? void 0 : elig.eligible) || !maxLoanUSD) return;
     const termN = parseInt(term);
-    const lt = loanTerms[termN];
+    const lt = loanTerms[termN] || loanTerms[String(termN)];
+    if (!lt) {
+      console.error("loanTerms key not found:", termN, loanTerms);
+      return;
+    }
     const r = lt.monthlyRate;
     const amtUSD = maxLoanUSD;
     const amtS = maxLoanS;
@@ -1347,7 +1490,7 @@ function CreditoModule() {
     const tea = (Math.pow(1 + r, 12) - 1) * 100;
     const ltv = amtUSD / vResult.conservativeValue * 100;
     const sch = buildAmortization(amtUSD, r, termN);
-    setResult({ vr: vResult, termN, r, amtUSD, amtS, comm, commS: Math.round(comm * tcVal2), pmt: Math.round(pmt), pmtS: Math.round(pmt * tcVal2), total: Math.round(total), totalS: Math.round(total * tcVal2), tea, maxLoanUSD, maxLoanS, ltv, lt });
+    setResult({ vr: vResult, termN, r, amtUSD, amtS, comm, commS: Math.round(comm * tcVal2), pmt: Math.round(pmt), pmtS: Math.round(pmt * tcVal2), total: Math.round(total), totalS: Math.round(total * tcVal2), tea: tea || 0, maxLoanUSD, maxLoanS, ltv: ltv || 0 });
     setSchedule(sch);
     trackLead("credito_quote", __spreadProps(__spreadValues({}, vehicle), { amountUSD: amtUSD, amountSoles: amtS, term: termN, monthlyPaymentUSD: Math.round(pmt), maxLoanUSD, tcUsed: tcVal2 }));
   };
@@ -1370,7 +1513,7 @@ function CreditoModule() {
     window.open(`https://wa.me/${waNum}?text=${msg}`, "_blank");
   };
   return /* @__PURE__ */ React.createElement("div", { style: { maxWidth: 820, margin: "0 auto", padding: "32px 20px" } }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 24 } }, /* @__PURE__ */ React.createElement("h2", { className: "section-title" }, "\u{1F4B3} Pr\xE9stamos al instante"), /* @__PURE__ */ React.createElement("p", { className: "section-sub" }, "Usa tu auto como garant\xEDa \xB7 Calculamos tu monto m\xE1ximo al instante")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 0, marginBottom: 20, overflowX: "auto", padding: "10px 12px", background: "rgba(124,58,237,.04)", border: "1px solid rgba(139,92,246,.1)", borderRadius: 14 } }, [["\u{1F4CB}", "Solicitas"], ["\u{1F50D}", "Peritaje"], ["\u{1F4C4}", "Notar\xEDa"], ["\u{1F4B0}", "Cobras en 24h"]].map(([ic, t], i, arr) => /* @__PURE__ */ React.createElement(React.Fragment, { key: t }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", gap: 3, flexShrink: 0, minWidth: 56 } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 18 } }, ic), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 10, fontWeight: 700, color: "#C4B5FD", textAlign: "center", lineHeight: 1.2 } }, t)), i < arr.length - 1 && /* @__PURE__ */ React.createElement("span", { style: { color: "rgba(139,92,246,.3)", fontSize: 14, flexShrink: 0, margin: "0 4px", alignSelf: "center" } }, "\u203A")))), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(StepBadge, { n: 1, active: true }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 15, fontWeight: 700, color: "#93C5FD" } }, "Veh\xEDculo en garant\xEDa"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#475569", marginTop: 1 } }, "Calculamos el monto m\xE1ximo autom\xE1ticamente"))), /* @__PURE__ */ React.createElement(VehicleForm, { onChange: setVehicle }), elig && /* @__PURE__ */ React.createElement("div", { style: { marginTop: 14, padding: "10px 14px", borderRadius: 12, border: `1px solid ${elig.eligible ? "rgba(16,185,129,.3)" : "rgba(239,68,68,.3)"}`, background: elig.eligible ? "rgba(16,185,129,.06)" : "rgba(239,68,68,.06)" } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, color: elig.eligible ? "#6EE7B7" : "#FCA5A5", lineHeight: 1.5 } }, elig.eligible ? `\u2713 Veh\xEDculo apto \xB7 ${elig.isPrem ? "Origen premium" : "Origen est\xE1ndar"} \xB7 ${elig.age} a\xF1o${elig.age !== 1 ? "s" : ""} \xB7 LTV m\xE1x. ${(elig.maxLTV * 100).toFixed(0)}%` : `\u26A0\uFE0F ${elig.reason}`)), vResult && (elig == null ? void 0 : elig.eligible) && /* @__PURE__ */ React.createElement("div", { style: { marginTop: 16, background: "linear-gradient(135deg,rgba(124,58,237,.12),rgba(37,99,235,.06))", border: "1px solid rgba(124,58,237,.3)", borderRadius: 16, padding: "18px 20px", animation: "fadeUp .3s ease" } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, fontWeight: 700, color: "#94A3B8", letterSpacing: ".06em", marginBottom: 10 } }, "TU OFERTA DE PR\xC9STAMO"), /* @__PURE__ */ React.createElement("div", { className: "grid-2" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#64748B", marginBottom: 4 } }, "VALOR CONSERVADOR"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 20, fontWeight: 800, color: "#93C5FD", fontFamily: "'DM Mono',monospace" } }, "$", vResult.conservativeValue.toLocaleString()), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 10, color: "#475569" } }, "S/ ", Math.round(vResult.conservativeValue * tcVal2).toLocaleString())), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#64748B", marginBottom: 4 } }, "MONTO M\xC1XIMO PR\xC9STAMO"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 26, fontWeight: 800, color: "#A78BFA", fontFamily: "'DM Mono',monospace" } }, "$", maxLoanUSD.toLocaleString()), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 10, color: "#475569" } }, "S/ ", maxLoanS.toLocaleString(), " \xB7 LTV ", (elig.maxLTV * 100).toFixed(0), "%"))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: 10, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement(TcBadge, null), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 10, color: "#475569" } }, "\xB7 Estimaci\xF3n previa a peritaje")))), vResult && (elig == null ? void 0 : elig.eligible) && /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(StepBadge, { n: 2, active: true }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 15, fontWeight: 700, color: "#93C5FD" } }, "Elige tu plazo"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#475569", marginTop: 1 } }, "Selecciona el plazo y calcula tu cuota y cronograma"))), /* @__PURE__ */ React.createElement("div", { className: "grid-2", style: { marginBottom: 16 } }, enabled.map((t) => {
-    const lt = loanTerms[t];
+    const lt = loanTerms[t] || loanTerms[String(t)];
     const isOn = term === String(t);
     return /* @__PURE__ */ React.createElement(
       "div",
@@ -1389,7 +1532,7 @@ function CreditoModule() {
       /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 16, fontWeight: 800, color: isOn ? "#C4B5FD" : "#F1F5F9" } }, t, " meses"), isOn && /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, color: "#7C3AED", background: "rgba(124,58,237,.2)", padding: "2px 8px", borderRadius: 50, fontWeight: 700 } }, "Seleccionado")),
       /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, color: "#94A3B8" } }, "Tasa: ", /* @__PURE__ */ React.createElement("span", { style: { color: "#A78BFA", fontWeight: 700 } }, (lt.monthlyRate * 100).toFixed(1), "% mensual")),
       /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, color: "#94A3B8" } }, "Comisi\xF3n: ", /* @__PURE__ */ React.createElement("span", { style: { color: "#F59E0B", fontWeight: 700 } }, (lt.disbursementCommissionPct * 100).toFixed(0), "% al desembolsar")),
-      maxLoanS > 0 && /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: isOn ? "#C4B5FD" : "#64748B", marginTop: 6, fontWeight: 600 } }, "Cuota est.: $", Math.round(maxLoanS / tcVal2 * (lt.monthlyRate * Math.pow(1 + lt.monthlyRate, t)) / (Math.pow(1 + lt.monthlyRate, t) - 1)).toLocaleString(), "/mes")
+      maxLoanS > 0 && /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: isOn ? "#C4B5FD" : "#64748B", marginTop: 6, fontWeight: 600 } }, "Cuota est.: $", Math.round(maxLoanS / tcVal2 * (((lt == null ? void 0 : lt.monthlyRate) || 0.04) * Math.pow(1 + ((lt == null ? void 0 : lt.monthlyRate) || 0.04), t)) / (Math.pow(1 + ((lt == null ? void 0 : lt.monthlyRate) || 0.04), t) - 1)).toLocaleString(), "/mes")
     );
   })), /* @__PURE__ */ React.createElement(
     "button",
@@ -1406,9 +1549,9 @@ function CreditoModule() {
     { l: "Comisi\xF3n desembolso", v: `$${result.comm.toLocaleString()}`, sub: `S/ ${result.commS.toLocaleString()}`, c: "#F59E0B" },
     { l: "Total a devolver", v: `$${result.total.toLocaleString()}`, sub: `${result.termN} cuotas \xB7 S/ ${result.totalS.toLocaleString()}`, c: "#F1F5F9" }
   ].map((k) => /* @__PURE__ */ React.createElement("div", { key: k.l, style: { textAlign: "center", background: "rgba(255,255,255,.05)", borderRadius: 12, padding: "14px 8px" } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 9, color: "#64748B", fontWeight: 700, marginBottom: 4, letterSpacing: ".06em" } }, k.l.toUpperCase()), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 16, fontWeight: 800, color: k.c, fontFamily: "'DM Mono',monospace" } }, k.v), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 9, color: "#475569", marginTop: 3 } }, k.sub)))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 14, padding: "10px 12px", background: "rgba(255,255,255,.03)", borderRadius: 10 } }, [
-    [`${(result.r * 100).toFixed(1)}% mensual`, "Tasa pactada"],
-    [`TEA ~${result.tea.toFixed(1)}%`, "Tasa efectiva anual"],
-    [`LTV ${result.ltv.toFixed(1)}%`, "Sobre valor conservador"]
+    [`${((result.r || 0) * 100).toFixed(1)}% mensual`, "Tasa pactada"],
+    [`TEA ~${(result.tea || 0).toFixed(1)}%`, "Tasa efectiva anual"],
+    [`LTV ${(result.ltv || 0).toFixed(1)}%`, "Sobre valor conservador"]
   ].map(([v, l]) => /* @__PURE__ */ React.createElement("div", { key: l }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 13, color: "#93C5FD", fontWeight: 700 } }, v), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, color: "#475569", marginLeft: 4 } }, l))), /* @__PURE__ */ React.createElement(TcBadge, null)), /* @__PURE__ */ React.createElement("div", { style: { background: "rgba(255,255,255,.03)", borderRadius: 14, padding: "14px", marginBottom: 8 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, fontWeight: 700, color: "#93C5FD" } }, "Cronograma de pagos"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 10 } }, [["#3B82F6", "Capital"], ["#EF4444", "Inter\xE9s"], ["#FBBF24", "\u2500\u2500 Saldo"]].map(([c, l]) => /* @__PURE__ */ React.createElement("span", { key: l, style: { fontSize: 10, color: c } }, l)))), /* @__PURE__ */ React.createElement(AmortChart, { schedule })), /* @__PURE__ */ React.createElement(
     "button",
     {
@@ -2036,6 +2179,11 @@ function AdminConfig() {
       let cur = next;
       for (let i = 0; i < keys.length - 1; i++) cur = cur[keys[i]];
       cur[keys[keys.length - 1]] = val;
+      if (path.startsWith("modules.")) {
+        saveConfig(next);
+        setCfg(next);
+        window.dispatchEvent(new CustomEvent("apConfigUpdated", { detail: next }));
+      }
       return next;
     });
   };
@@ -2083,7 +2231,7 @@ function AdminConfig() {
       value: ((_a = cfg.general) == null ? void 0 : _a.tcFallback) || 3.77,
       onChange: (e) => set("general.tcFallback", parseFloat(e.target.value))
     }
-  ), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 10, color: "#475569", marginTop: 4 } }, "El TC se obtiene autom\xE1ticamente de open.er-api.com (se cachea 3h). Este valor es el fallback si la API no responde.")), /* @__PURE__ */ React.createElement(Inp, { path: "general.termsUrl", label: "URL T\xE9rminos & Condiciones" }), /* @__PURE__ */ React.createElement(Inp, { path: "general.privacyUrl", label: "URL Pol\xEDtica de Privacidad" })), tab === "modules" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h4", { style: { fontSize: 13, fontWeight: 700, color: "#93C5FD", marginBottom: 12 } }, "M\xF3dulos p\xFAblicos activos"), /* @__PURE__ */ React.createElement(Tog, { path: "modules.comprar", label: "\u{1F697} Compramos tu auto", sub: "M\xF3dulo de tasaci\xF3n y pre-oferta" }), /* @__PURE__ */ React.createElement(Tog, { path: "modules.credito", label: "\u{1F4B3} Pr\xE9stamos al instante", sub: "AutoCr\xE9dito con garant\xEDa vehicular" }), /* @__PURE__ */ React.createElement(Tog, { path: "modules.consigna", label: "\u{1F4CB} Vendemos tu auto", sub: "Consignaci\xF3n con slider de precio" }), /* @__PURE__ */ React.createElement(Tog, { path: "modules.showroom", label: "\u{1F3EA} Showroom", sub: "Inventario con filtros y modal" })), tab === "comprar" && /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gap: 14 } }, /* @__PURE__ */ React.createElement("h4", { style: { fontSize: 13, fontWeight: 700, color: "#93C5FD", marginBottom: 4 } }, "M\xF3dulo Compramos tu auto"), /* @__PURE__ */ React.createElement(Inp, { path: "comprar.copyOfferLabel", label: "Etiqueta de la oferta", placeholder: "Pre-oferta AutoPago" }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Haircut de mercado (%)"), /* @__PURE__ */ React.createElement(
+  ), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 10, color: "#475569", marginTop: 4 } }, "El TC se obtiene autom\xE1ticamente de open.er-api.com (se cachea 3h). Este valor es el fallback si la API no responde.")), /* @__PURE__ */ React.createElement(Inp, { path: "general.termsUrl", label: "URL T\xE9rminos & Condiciones" }), /* @__PURE__ */ React.createElement(Inp, { path: "general.privacyUrl", label: "URL Pol\xEDtica de Privacidad" })), tab === "modules" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h4", { style: { fontSize: 13, fontWeight: 700, color: "#93C5FD", marginBottom: 12 } }, "M\xF3dulos p\xFAblicos activos"), /* @__PURE__ */ React.createElement("div", { style: { background: "rgba(16,185,129,.06)", border: "1px solid rgba(16,185,129,.15)", borderRadius: 10, padding: "8px 14px", marginBottom: 14 } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6EE7B7", fontWeight: 700 } }, "\u26A1 Auto-guardado \u2014 Los cambios se aplican instant\xE1neamente al sitio p\xFAblico")), /* @__PURE__ */ React.createElement(Tog, { path: "modules.comprar", label: "\u{1F697} Compramos tu auto", sub: "M\xF3dulo de tasaci\xF3n y pre-oferta" }), /* @__PURE__ */ React.createElement(Tog, { path: "modules.credito", label: "\u{1F4B3} Pr\xE9stamos al instante", sub: "AutoCr\xE9dito con garant\xEDa vehicular" }), /* @__PURE__ */ React.createElement(Tog, { path: "modules.consigna", label: "\u{1F4CB} Vendemos tu auto", sub: "Consignaci\xF3n con slider de precio" }), /* @__PURE__ */ React.createElement(Tog, { path: "modules.showroom", label: "\u{1F3EA} Showroom", sub: "Inventario con filtros y modal" })), tab === "comprar" && /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gap: 14 } }, /* @__PURE__ */ React.createElement("h4", { style: { fontSize: 13, fontWeight: 700, color: "#93C5FD", marginBottom: 4 } }, "M\xF3dulo Compramos tu auto"), /* @__PURE__ */ React.createElement(Inp, { path: "comprar.copyOfferLabel", label: "Etiqueta de la oferta", placeholder: "Pre-oferta AutoPago" }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Haircut de mercado (%)"), /* @__PURE__ */ React.createElement(
     "input",
     {
       className: "ap-input",
@@ -2182,7 +2330,7 @@ function App() {
   const [tcSource, setTcSource] = React.useState("");
   const [cfg, setCfg] = React.useState(() => loadConfig());
   const [session, setSession] = React.useState(() => loadSession());
-  const [showAdmin, setShowAdmin] = React.useState(false);
+  const [showAdmin, setShowAdmin] = React.useState(() => window.location.hash === "#admin");
   React.useEffect(() => {
     if (document.getElementById("ap-global-css")) return;
     const el = document.createElement("style");
@@ -2235,6 +2383,14 @@ function App() {
     window.addEventListener("apConfigUpdated", fn);
     return () => window.removeEventListener("apConfigUpdated", fn);
   }, []);
+  React.useEffect(() => {
+    const fn = () => {
+      const isAdmin = window.location.hash === "#admin";
+      setShowAdmin(isAdmin);
+    };
+    window.addEventListener("hashchange", fn);
+    return () => window.removeEventListener("hashchange", fn);
+  }, []);
   const handleLogin = (s) => {
     setSession(s);
   };
@@ -2243,8 +2399,14 @@ function App() {
     setSession(null);
     setShowAdmin(false);
   };
-  const goAdmin = () => setShowAdmin(true);
-  const goPublic = () => setShowAdmin(false);
+  const goAdmin = () => {
+    window.location.hash = "admin";
+    setShowAdmin(true);
+  };
+  const goPublic = () => {
+    window.location.hash = "";
+    setShowAdmin(false);
+  };
   const effectiveTc = tc || ((_b = cfg.general) == null ? void 0 : _b.tcFallback) || 3.77;
   const ctx = { tc: effectiveTc, tcSource, cfg, setTc, setCfg };
   if (showAdmin) {
@@ -2261,16 +2423,27 @@ function App() {
       "\u2190 Volver al sitio"
     ), /* @__PURE__ */ React.createElement(AdminShell, { session, onLogout: handleLogout, tcSource })));
   }
-  const PAGE_MAP = {
-    home: /* @__PURE__ */ React.createElement(Home, { onNav: setPage }),
-    comprar: /* @__PURE__ */ React.createElement(ComprarModule, { onNav: setPage }),
-    credito: /* @__PURE__ */ React.createElement(CreditoModule, null),
-    consigna: /* @__PURE__ */ React.createElement(ConsignaModule, null),
-    showroom: /* @__PURE__ */ React.createElement(ShowroomModule, null)
-  };
   const currentPage = ((_c = cfg.modules) == null ? void 0 : _c[page]) === false ? "home" : page;
-  return /* @__PURE__ */ React.createElement(AppCtx.Provider, { value: ctx }, /* @__PURE__ */ React.createElement("div", { style: { minHeight: "100vh" } }, /* @__PURE__ */ React.createElement(Navbar, { current: currentPage, onNav: (p) => setPage(p), onAdmin: goAdmin }), /* @__PURE__ */ React.createElement("main", null, PAGE_MAP[currentPage] || PAGE_MAP.home)));
+  const renderPage = () => {
+    switch (currentPage) {
+      case "comprar":
+        return React.createElement(AppErrorBoundary, null, React.createElement(ComprarModule, { onNav: setPage }));
+      case "credito":
+        return React.createElement(AppErrorBoundary, null, React.createElement(CreditoModule));
+      case "consigna":
+        return React.createElement(AppErrorBoundary, null, React.createElement(ConsignaModule));
+      case "showroom":
+        return React.createElement(AppErrorBoundary, null, React.createElement(ShowroomModule));
+      default:
+        return React.createElement(AppErrorBoundary, null, React.createElement(Home, { onNav: setPage }));
+    }
+  };
+  return /* @__PURE__ */ React.createElement(AppCtx.Provider, { value: ctx }, /* @__PURE__ */ React.createElement("div", { style: { minHeight: "100vh", display: "flex", flexDirection: "column" } }, /* @__PURE__ */ React.createElement(Navbar, { current: currentPage, onNav: (p) => setPage(p), onAdmin: goAdmin }), /* @__PURE__ */ React.createElement("main", { style: { flex: 1 } }, renderPage()), /* @__PURE__ */ React.createElement(AppFooter, null)));
 }
+function AppWithBoundary() {
+  return React.createElement(AppErrorBoundary, null, React.createElement(App));
+}
+export default AppWithBoundary;
 
     const root=ReactDOM.createRoot(document.getElementById('root'));
     root.render(React.createElement(App));
