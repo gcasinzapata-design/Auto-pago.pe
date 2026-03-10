@@ -2740,7 +2740,12 @@ function AdminUsers({ session }) {
 }
 function App() {
   var _a, _b, _c;
-  const [page, setPage] = React.useState("home");
+  const _initPage = (() => {
+    const h = (window.location.hash || "").replace("#", "").trim();
+    const valid = ["comprar", "credito", "consigna", "showroom", "nosotros", "faq"];
+    return valid.includes(h) && h !== "admin" ? h : "home";
+  })();
+  const [page, setPage] = React.useState(_initPage);
   const [tc, setTc] = React.useState(null);
   const [tcSource, setTcSource] = React.useState("");
   const [cfg, setCfg] = React.useState(() => loadConfig());
@@ -2809,6 +2814,13 @@ function App() {
   const handleLogin = (s) => {
     setSession(s);
   };
+  const navigate = (p) => {
+    const h = !p || p === "home" ? "" : p;
+    if (window.location.hash.replace("#", "") !== h) {
+      window.location.hash = h;
+    }
+    setPage(p || "home");
+  };
   const handleLogout = () => {
     clearSession();
     setSession(null);
@@ -2843,7 +2855,7 @@ function App() {
     const withVideoHeader = (moduleId, Component, props) => /* @__PURE__ */ React.createElement(AppErrorBoundary, null, /* @__PURE__ */ React.createElement("div", { style: { background: "#F4F8F5", minHeight: "calc(100vh - 68px)" } }, /* @__PURE__ */ React.createElement(ModuleVideoHeader, { moduleId }), /* @__PURE__ */ React.createElement(Component, __spreadValues({}, props || {}))));
     switch (currentPage) {
       case "comprar":
-        return withVideoHeader("comprar", ComprarModule, { onNav: setPage });
+        return withVideoHeader("comprar", ComprarModule, { onNav: navigate });
       case "credito":
         return withVideoHeader("credito", CreditoModule);
       case "consigna":
@@ -2855,16 +2867,16 @@ function App() {
       case "faq":
         return React.createElement(AppErrorBoundary, null, React.createElement(FaqModule));
       default:
-        return React.createElement(AppErrorBoundary, null, React.createElement(Home, { onNav: setPage }));
+        return React.createElement(AppErrorBoundary, null, React.createElement(Home, { onNav: navigate }));
     }
   };
-  return /* @__PURE__ */ React.createElement(AppCtx.Provider, { value: ctx }, /* @__PURE__ */ React.createElement("div", { style: { minHeight: "100vh", display: "flex", flexDirection: "column" } }, /* @__PURE__ */ React.createElement(Navbar, { current: currentPage, onNav: (p) => setPage(p), onAdmin: goAdmin }), /* @__PURE__ */ React.createElement("main", { style: { flex: 1 } }, renderPage()), /* @__PURE__ */ React.createElement(AppFooter, { onNav: setPage })));
+  return /* @__PURE__ */ React.createElement(AppCtx.Provider, { value: ctx }, /* @__PURE__ */ React.createElement("div", { style: { minHeight: "100vh", display: "flex", flexDirection: "column" } }, /* @__PURE__ */ React.createElement(Navbar, { current: currentPage, onNav: navigate, onAdmin: goAdmin }), /* @__PURE__ */ React.createElement("main", { style: { flex: 1 } }, renderPage()), /* @__PURE__ */ React.createElement(AppFooter, { onNav: navigate })));
 }
 function AppWithBoundary() {
   return React.createElement(AppErrorBoundary, null, React.createElement(App));
 }
 
-        ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(AppWithBoundary));
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(AppWithBoundary));
       }catch(err){
         document.getElementById('ap-boot-error').style.display='flex';
         document.getElementById('ap-boot-msg').textContent=err.stack||err.message;
