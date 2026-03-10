@@ -2,8 +2,6 @@
   "buildCommand": null,
   "outputDirectory": ".",
   "framework": null,
-  "rewrites": [
-    { "source": "/terminos", "destination": "/terminos.html" },
-    { "source": "/privacidad", "destination": "/privacidad.html" }
-  ]
+  "cleanUrls": false,
+  "trailingSlash": false
 }
