@@ -4,18 +4,49 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0F172A" />
-  <meta name="description" content="AutoPago — Compra, vende y financia tu auto en Perú" />
   <title>AutoPago</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html,body{background:#0F172A;color:#F1F5F9;font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased}#root{min-height:100vh}</style>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{background:#0F172A;color:#F1F5F9;font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased}
+    #root{min-height:100vh}
+    #ap-error{display:none;min-height:100vh;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:24px;text-align:center}
+    #ap-error h2{color:#EF4444;font-size:20px}
+    #ap-error pre{background:#1E293B;color:#94A3B8;padding:16px;border-radius:8px;font-size:11px;max-width:600px;overflow:auto;text-align:left;white-space:pre-wrap}
+  </style>
 </head>
 <body>
   <div id="root"></div>
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <div id="ap-error">
+    <h2>⚠️ Error al cargar</h2>
+    <pre id="ap-error-msg"></pre>
+    <p style="color:#64748B;font-size:13px">Recarga la página o contacta soporte.</p>
+  </div>
   <script>
+    window.onerror = function(msg, src, line, col, err) {
+      document.getElementById('root').style.display='none';
+      document.getElementById('ap-error').style.display='flex';
+      document.getElementById('ap-error-msg').textContent = (err ? err.stack : msg) + '
+Line: ' + line;
+      return true;
+    };
+    window.addEventListener('unhandledrejection', function(e) {
+      document.getElementById('root').style.display='none';
+      document.getElementById('ap-error').style.display='flex';
+      document.getElementById('ap-error-msg').textContent = 'Promise error: ' + (e.reason?.stack || e.reason);
+    });
+  </script>
+  <!-- React via jsDelivr CDN (más estable) -->
+  <script crossorigin src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script>
+if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
+  document.getElementById('root').style.display='none';
+  document.getElementById('ap-error').style.display='flex';
+  document.getElementById('ap-error-msg').textContent = 'Error: React CDN no cargó. Verifica tu conexión a internet.';
+} else {
+  try {
 var __defProp = Object.defineProperty;
 var __defProps = Object.defineProperties;
 var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
@@ -2446,8 +2477,14 @@ function AppWithBoundary() {
 }
 export default AppWithBoundary;
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(React.createElement(App));
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(React.createElement(AppWithBoundary));
+  } catch(e) {
+    document.getElementById('root').style.display='none';
+    document.getElementById('ap-error').style.display='flex';
+    document.getElementById('ap-error-msg').textContent = e.stack || e.message;
+  }
+}
   </script>
 </body>
 </html>
