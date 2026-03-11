@@ -1413,6 +1413,13 @@ nav {
   .credito-terms-grid{grid-template-columns:1fr !important}
 }
 `;
+const AppCtx = React.createContext({
+  cfg: null,
+  setCfg: () => {
+  },
+  tc: null,
+  session: null
+});
 function ContactForm({ value: d = {}, onChange: set, compact = false }) {
   const dniOk = d.docType === "dni" ? /^\d{8}$/.test(d.docNum || "") : /^[A-Za-z0-9]{9,12}$/.test(d.docNum || "");
   const phoneOk = /^9\d{8}$/.test(d.phone || "");
