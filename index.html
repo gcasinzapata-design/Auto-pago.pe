@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0F172A" />
+  <meta name="ap-bin-id" content="" />
   <title>AutoPago</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -268,9 +269,9 @@ const DEFAULT_CONFIG = {
     outlierTrimPct: 0.1
   },
   comprar: {
-    marketHaircut: 0.1,
-    // descuento de negociación real sobre precio publicado
-    discountByGroup: { premium: 0.2, standard: 0.25, europeanExtra: 0.02 },
+    marketHaircut: 0,
+    // compatibilidad histórica; la pre-oferta pública se calcula directo sobre valor de mercado estimado
+    discountByGroup: { premium: 0.2, standard: 0.25, europeanExtra: 0 },
     copyOfferLabel: "Pre-oferta AutoPago"
   },
   credito: {
@@ -287,14 +288,14 @@ const DEFAULT_CONFIG = {
   },
   consigna: {
     commissionPct: 0.04,
-    rangeMinFactor: 0.7,
-    // -30% below market
-    rangeMaxFactor: 1.15,
-    // +15% above market
-    optimalFactor: 1,
-    // market = optimal
+    rangeMinFactor: 0.88,
+    // valor mínimo sugerido vs mercado
+    rangeMaxFactor: 1,
+    // valor máximo = valor de mercado estimado
+    optimalFactor: 0.96,
+    // valor recomendado
     baseDays: 25,
-    // days at optimal price
+    // days at recommended price
     speedExponent: 5
     // curve steepness
   },
@@ -403,6 +404,30 @@ function loadUsers() {
 }
 function saveUsers(u) {
   _saveJSON(AP_KEYS.users, u);
+}
+function buildRemoteState(cfgOverride, overrides) {
+  const o = overrides || {};
+  return __spreadProps(__spreadValues({}, cfgOverride || loadConfig()), {
+    inventory: Array.isArray(o.inventory) ? o.inventory : loadInventory(),
+    users: Array.isArray(o.users) ? o.users : loadUsers()
+  });
+}
+function applyRemoteState(remote) {
+  if (!remote || typeof remote !== "object") return null;
+  const next = JSON.parse(JSON.stringify(remote));
+  delete next._apVersion;
+  if (Array.isArray(next.inventory)) {
+    saveInventory(next.inventory);
+    delete next.inventory;
+    window.dispatchEvent(new CustomEvent("apInventoryUpdated"));
+  }
+  if (Array.isArray(next.users)) {
+    saveUsers(next.users);
+    delete next.users;
+    window.dispatchEvent(new CustomEvent("apUsersUpdated"));
+  }
+  saveConfig(next);
+  return loadConfig();
 }
 function loadSession() {
   try {
@@ -1040,10 +1065,9 @@ function mktCal(origin, age, cat = "") {
   }
   return m;
 }
+
 function consignaMarketVal(vr, year) {
-  const age = Math.max(0, CURRENT_YEAR - parseInt(year, 10));
-  const cal = mktCal(vr.origin, age, vr.category);
-  return Math.round(vr.value * cal / 500) * 500;
+  return Math.round((((vr == null ? void 0 : vr.marketValue) || (vr == null ? void 0 : vr.value) || 0)) / 500) * 500;
 }
 const PREMIUM_ORIGINS = /* @__PURE__ */ new Set(["european"]);
 const isPremium = (o) => PREMIUM_ORIGINS.has(o);
@@ -1071,8 +1095,9 @@ function trimMult(version) {
   if (v.includes("base") || v.includes("sense") || v.includes("trendline") || v.includes("dx") || v.includes(" ls") || v.includes(" l ") || v.includes("sdrive") || v.includes(" xl ") || v.includes(" s ")) return 0.97;
   return 1;
 }
+
 function valuate(brand, model, year, km, transmission, condition = "bueno", version = "") {
-  var _a, _b, _c, _d, _e;
+  var _a, _b, _c, _d, _e, _f, _g;
   const bd = VDB[brand];
   if (!bd) return null;
   const md = bd[model];
@@ -1083,7 +1108,7 @@ function valuate(brand, model, year, km, transmission, condition = "bueno", vers
   const effDep = Math.min(0.22, Math.max(0.04, rawDep * ((_b = DEP_SOFTEN[origin]) != null ? _b : 1)));
   const floor = getFloor(category, isPremium(origin), age);
   const curve = Math.pow(1 - effDep, age);
-  let val = base * Math.max(floor, curve);
+  let marketValue = base * Math.max(floor, curve);
   const kmInt = parseInt(km, 10) || 0;
   const expPerYear = category === "pickup" ? 2e4 : category === "suv" ? 17e3 : 15500;
   const expectedKm = Math.max(1, age) * expPerYear;
@@ -1094,17 +1119,40 @@ function valuate(brand, model, year, km, transmission, condition = "bueno", vers
   else if (kmRatio < 1.15) kmAdj = 0;
   else if (kmRatio < 1.5) kmAdj = -0.05;
   else kmAdj = -0.11;
-  val *= 1 + kmAdj;
-  if (transmission === "automatica") val *= 1.03;
-  val *= (_c = { excelente: 1.06, bueno: 1, regular: 0.9, malo: 0.78 }[condition]) != null ? _c : 1;
-  val *= trimMult(version);
+  marketValue *= 1 + kmAdj;
+  if (transmission === "automatica") marketValue *= 1.03;
+  marketValue *= (_c = { excelente: 1.06, bueno: 1, regular: 0.9, malo: 0.78 }[condition]) != null ? _c : 1;
+  marketValue *= trimMult(version);
   const ageCap = base * (age <= 1 ? 0.95 : age <= 3 ? 0.88 : age <= 5 ? 0.8 : 0.72);
-  val = Math.min(val, ageCap);
-  val = Math.max(val, base * floor * 0.94);
-  val = Math.round(val / 500) * 500;
-  const conservativePct = (_e = (_d = loadConfig().credito) == null ? void 0 : _d.conservativePct) != null ? _e : 0.1;
-  const conservativeValue = Math.round(val * (1 - conservativePct) / 500) * 500;
-  return { value: val, conservativeValue, origin, category, isPremium: isPremium(origin), basePrice: base, conf: "offline" };
+  marketValue = Math.min(marketValue, ageCap);
+  marketValue = Math.max(marketValue, base * floor * 0.94);
+  marketValue = Math.round(marketValue / 500) * 500;
+  const conf = loadConfig();
+  const consignaCfg = (conf == null ? void 0 : conf.consigna) || {};
+  const recommendedValue = Math.round(marketValue * (((_d = consignaCfg.optimalFactor) != null ? _d : 0.96)) / 500) * 500;
+  const minValue = Math.round(marketValue * (((_e = consignaCfg.rangeMinFactor) != null ? _e : 0.88)) / 500) * 500;
+  const conservativePct = (_g = (_f = conf.credito) == null ? void 0 : _f.conservativePct) != null ? _g : 0.1;
+  const conservativeValue = Math.round(marketValue * (1 - conservativePct) / 500) * 500;
+  return {
+    brand,
+    model,
+    year,
+    km: kmInt,
+    transmission,
+    condition,
+    version,
+    origin,
+    category,
+    isPremium: isPremium(origin),
+    basePrice: base,
+    value: marketValue,
+    marketValue,
+    recommendedValue,
+    minValue,
+    maxValue: marketValue,
+    conservativeValue,
+    conf: "offline_market_estimate_v2"
+  };
 }
 const DEALER_REF = {
   // Por marca: ratio promedio compra/venta
@@ -1168,20 +1216,24 @@ function dealerAdjustedOffer(commercialValue, brandKey, kmInt) {
   const finalRatio = brandRatio + bracket.adj;
   return Math.round(commercialValue * Math.min(0.97, Math.max(0.78, finalRatio)) / 500) * 500;
 }
+
 function calcOffer(vResult) {
-  var _a;
+  var _a, _b, _c, _d;
   const cfg = loadConfig();
-  const { premium, standard, europeanExtra } = cfg.comprar.discountByGroup;
-  const marketHaircut = (_a = cfg.comprar.marketHaircut) != null ? _a : 0.1;
-  const isEuro = vResult.origin === "european";
-  const discount = vResult.isPremium ? premium - (isEuro ? europeanExtra : 0) : standard;
-  const transactionValue = vResult.value * (1 - marketHaircut);
-  const offerBase = Math.round(transactionValue * (1 - discount) / 500) * 500;
-  const brandKey = (vResult.brand || "").toLowerCase();
-  const kmInt = parseInt(vResult.km || 0, 10);
-  const offerDealer = dealerAdjustedOffer(vResult.value, brandKey, kmInt);
-  const offer = Math.round((offerBase * 0.4 + offerDealer * 0.6) / 500) * 500;
-  return { offer, discount, transactionValue: Math.round(transactionValue) };
+  const origin = ((vResult == null ? void 0 : vResult.origin) || "").toLowerCase();
+  const highQuality = ["european", "american", "japanese", "english"].includes(origin);
+  const highDiscount = (_b = (_a = cfg.comprar) == null ? void 0 : _a.discountByGroup) == null ? void 0 : _b.premium;
+  const otherDiscount = (_d = (_c = cfg.comprar) == null ? void 0 : _c.discountByGroup) == null ? void 0 : _d.standard;
+  const discount = highQuality ? (typeof highDiscount === "number" ? highDiscount : 0.2) : (typeof otherDiscount === "number" ? otherDiscount : 0.25);
+  const marketValue = Math.round(((((vResult == null ? void 0 : vResult.marketValue) || (vResult == null ? void 0 : vResult.value) || 0))) / 500) * 500;
+  const offer = Math.round(marketValue * (1 - discount) / 500) * 500;
+  return {
+    offer,
+    discount,
+    transactionValue: marketValue,
+    marketValue,
+    ruleLabel: highQuality ? "20% debajo del valor de mercado" : "25% debajo del valor de mercado"
+  };
 }
 function buildAmortization(principal, monthlyRate, term) {
   const pmt = principal * (monthlyRate * Math.pow(1 + monthlyRate, term)) / (Math.pow(1 + monthlyRate, term) - 1);
@@ -1661,14 +1713,14 @@ function TcBadge() {
   } }, /* @__PURE__ */ React.createElement("span", { style: { width: 5, height: 5, borderRadius: "50%", background: color, flexShrink: 0 } }), "TC S/", tc ? tc.toFixed(2) : "\u2026", " \xB7 ", label);
 }
 function Money({ usd, size = 32 }) {
-  const { tc } = React.useContext(AppCtx);
+  const { tc, cfg } = React.useContext(AppCtx);
   const tcVal = tc || 3.77;
   return /* @__PURE__ */ React.createElement("span", { style: { display: "inline-flex", alignItems: "baseline", gap: 6, flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: size, fontWeight: 800, fontFamily: "'DM Mono',monospace", letterSpacing: "-1.5px", color: "#10B981", lineHeight: 1 } }, "$", usd.toLocaleString()), /* @__PURE__ */ React.createElement("span", { style: { fontSize: size * 0.4, color: "#6B8F7A", fontWeight: 600 } }, "\xB7 S/ ", Math.round(usd * tcVal).toLocaleString("es-PE")));
 }
 function ContactForm({ value: d = {}, onChange: set, compact = false }) {
   const dniOk = d.docType === "dni" ? /^\d{8}$/.test(d.docNum || "") : /^[A-Za-z0-9]{9,12}$/.test(d.docNum || "");
   const phoneOk = /^9\d{8}$/.test(d.phone || "");
-  return /* @__PURE__ */ React.createElement("div", { className: "module-form-grid" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Nombres"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", value: d.firstName || "", onChange: (e) => set("firstName", e.target.value), placeholder: "Juan" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Apellidos"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", value: d.lastName || "", onChange: (e) => set("lastName", e.target.value), placeholder: "Garc\xEDa" })), /* @__PURE__ */ React.createElement("div", { style: { gridColumn: "span 2" } }, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Correo electr\xF3nico"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", type: "email", value: d.email || "", onChange: (e) => set("email", e.target.value), placeholder: "juan@ejemplo.com" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Tipo de documento"), /* @__PURE__ */ React.createElement("select", { className: "ap-input", value: d.docType || "dni", onChange: (e) => set("docType", e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "dni" }, "DNI"), /* @__PURE__ */ React.createElement("option", { value: "ce" }, "Carn\xE9 de Extranjer\xEDa"))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "N\xB0 de documento"), /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement("div", { className: "module-form-grid" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Nombres"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", value: d.firstName || "", onChange: (e) => set("firstName", e.target.value), placeholder: "Juan" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Apellidos"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", value: d.lastName || "", onChange: (e) => set("lastName", e.target.value), placeholder: "Garc\xEDa" })), /* @__PURE__ */ React.createElement("div", { style: { gridColumn: "span 2" } }, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Correo electr\xF3nico (opcional)"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", type: "email", value: d.email || "", onChange: (e) => set("email", e.target.value), placeholder: "juan@ejemplo.com" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Tipo de documento"), /* @__PURE__ */ React.createElement("select", { className: "ap-input", value: d.docType || "dni", onChange: (e) => set("docType", e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "dni" }, "DNI"), /* @__PURE__ */ React.createElement("option", { value: "ce" }, "Carn\xE9 de Extranjer\xEDa"))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "N\xB0 de documento"), /* @__PURE__ */ React.createElement(
     "input",
     {
       className: `ap-input${d.docNum && !dniOk ? " err" : ""}`,
@@ -1717,6 +1769,7 @@ function LegalChecks({ values, onChange }) {
     "T\xE9rminos & Condiciones y Pol\xEDticas de Privacidad"
   ), " ", "de AutoPago.")));
 }
+
 function VehicleForm({ onChange, showNotes = false }) {
   var _a;
   const EMPTY = { brand: "", model: "", version: "", year: "", km: "", transmission: "", fuel: "", condition: "", notes: "" };
@@ -1726,6 +1779,7 @@ function VehicleForm({ onChange, showNotes = false }) {
   const models = d.brand ? Object.keys(VDB[d.brand] || {}).sort() : [];
   const versions = d.brand && d.model ? ((_a = TRIMS[d.brand]) == null ? void 0 : _a[d.model]) || ["Base", "Intermedia", "Full"] : [];
   const years = Array.from({ length: CURRENT_YEAR - 2004 }, (_, i) => CURRENT_YEAR - i);
+  const [yearInput, setYearInput] = React.useState("");
   const update = (k, v) => {
     const next = __spreadProps(__spreadValues({}, d), { [k]: v });
     if (k === "brand") {
@@ -1741,25 +1795,15 @@ function VehicleForm({ onChange, showNotes = false }) {
   React.useEffect(() => {
     onChange(EMPTY);
   }, []);
-  const [yearInput, setYearInput] = React.useState("");
-  const yearFiltered = yearInput.length >= 2 ? years.filter((y) => String(y).startsWith(yearInput)).map(String) : years.map(String);
   const handleYearInput = (e) => {
     const val = e.target.value.replace(/\D/g, "").slice(0, 4);
     setYearInput(val);
     if (val.length === 4) {
       const num = parseInt(val, 10);
-      if (num >= 2005 && num <= CURRENT_YEAR) {
-        update("year", val);
-      }
+      if (num >= 2005 && num <= CURRENT_YEAR) update("year", val);
+      else update("year", "");
     } else {
       update("year", "");
-    }
-  };
-  const handleYearSelect = (e) => {
-    const val = e.target.value;
-    if (val) {
-      setYearInput(val);
-      update("year", val);
     }
   };
   const Sel = ({ k, label, opts, disabled }) => /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, label), /* @__PURE__ */ React.createElement(
@@ -1775,30 +1819,22 @@ function VehicleForm({ onChange, showNotes = false }) {
       (o) => typeof o === "string" ? /* @__PURE__ */ React.createElement("option", { key: o, value: o }, o) : /* @__PURE__ */ React.createElement("option", { key: o.v, value: o.v }, o.l)
     )
   ));
-  return /* @__PURE__ */ React.createElement("div", { className: "grid-2" }, /* @__PURE__ */ React.createElement(Sel, { k: "brand", label: "Marca", opts: brands }), /* @__PURE__ */ React.createElement(Sel, { k: "model", label: "Modelo", opts: models, disabled: !d.brand }), /* @__PURE__ */ React.createElement(Sel, { k: "version", label: "Versi\xF3n", opts: versions, disabled: !d.model }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "A\xF1o"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 6 } }, /* @__PURE__ */ React.createElement(
-    "input",
-    {
+  return /* @__PURE__ */ React.createElement("div", { className: "grid-2" }, /* @__PURE__ */ React.createElement(Sel, { k: "brand", label: "Marca", opts: brands }), /* @__PURE__ */ React.createElement(Sel, { k: "model", label: "Modelo", opts: models, disabled: !d.brand }), /* @__PURE__ */ React.createElement(Sel, { k: "version", label: "Versi\xF3n", opts: versions, disabled: !d.model }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "A\xF1o"), /* @__PURE__ */ React.createElement(
+    React.Fragment,
+    null,
+    /* @__PURE__ */ React.createElement("input", {
       className: "ap-input",
-      style: { flex: "0 0 90px", minWidth: 0 },
       type: "text",
       inputMode: "numeric",
       value: yearInput,
       onChange: handleYearInput,
       placeholder: "Ej: 2020",
       maxLength: 4,
-      autoComplete: "off"
-    }
-  ), /* @__PURE__ */ React.createElement(
-    "select",
-    {
-      className: "ap-input",
-      style: { flex: 1, minWidth: 0 },
-      value: d.year,
-      onChange: handleYearSelect
-    },
-    /* @__PURE__ */ React.createElement("option", { value: "" }, "\u2014 o elige \u2014"),
-    yearFiltered.map((y) => /* @__PURE__ */ React.createElement("option", { key: y, value: y }, y))
-  ))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Kilometraje"), /* @__PURE__ */ React.createElement(
+      autoComplete: "off",
+      list: uid + "_years"
+    }),
+    /* @__PURE__ */ React.createElement("datalist", { id: uid + "_years" }, years.map((y) => /* @__PURE__ */ React.createElement("option", { key: y, value: String(y) })))
+  )), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Kilometraje"), /* @__PURE__ */ React.createElement(
     "input",
     {
       className: "ap-input",
@@ -2192,9 +2228,9 @@ function ComprarModule({ onNav }) {
     setTimeout(() => {
       const vr = valuate(vehicle.brand, vehicle.model, vehicle.year, vehicle.km, vehicle.transmission, vehicle.condition, vehicle.version);
       if (vr) {
-        const { offer } = calcOffer(vr);
-        setResult(__spreadProps(__spreadValues({}, vr), { offer }));
-        trackLead("comprar_quote", __spreadProps(__spreadValues({}, vehicle), { valuedAt: vr.value, offer, tcUsed: tcVal }));
+        const offerData = calcOffer(vr);
+        setResult(__spreadProps(__spreadValues({}, vr), { offer: offerData.offer }));
+        trackLead("comprar_quote", __spreadProps(__spreadValues({}, vehicle), { valuedAt: vr.value, offer: offerData.offer, tcUsed: tcVal }));
         setStep(2);
       }
       setLoading(false);
@@ -2289,34 +2325,34 @@ function ComprarModule({ onNav }) {
 function PriceSlider({ marketUSD, commPct, userAskSoles, tc, onPriceChange }) {
   const tcVal = tc || 3.77;
   const cfg = loadConfig().consigna;
-  const mktS = Math.round(marketUSD * tcVal / 1e3) * 1e3;
-  const minS = Math.round(mktS * (cfg.rangeMinFactor || 0.7) / 1e3) * 1e3;
-  const maxS = Math.round(mktS * (cfg.rangeMaxFactor || 1.15) / 1e3) * 1e3;
-  const optS = Math.round(mktS * (cfg.optimalFactor || 1) / 1e3) * 1e3;
+  const maxS = Math.round(marketUSD * tcVal / 1e3) * 1e3;
+  const minS = Math.round(maxS * (cfg.rangeMinFactor || 0.88) / 1e3) * 1e3;
+  const recS = Math.round(maxS * (cfg.optimalFactor || 0.96) / 1e3) * 1e3;
   const baseD = cfg.baseDays || 25;
   const exp = cfg.speedExponent || 5;
-  const [price, setPrice] = React.useState(optS);
+  const [price, setPrice] = React.useState(recS);
   React.useEffect(() => {
-    const clamped = userAskSoles ? Math.max(minS, Math.min(maxS, Math.round(userAskSoles / 1e3) * 1e3)) : optS;
-    setPrice(clamped);
-    onPriceChange(clamped);
-  }, [userAskSoles, optS]);
+    const initial = userAskSoles ? Math.max(minS, Math.min(maxS, Math.round(userAskSoles / 1e3) * 1e3)) : recS;
+    setPrice(initial);
+    onPriceChange(initial);
+  }, [userAskSoles, minS, recS, maxS]);
   const commission = Math.round(price * commPct / 500) * 500;
   const netOwner = price - commission;
-  const days = Math.max(3, Math.round(baseD * Math.pow(price / optS, exp)));
-  const daysColor = days <= 14 ? "#10B981" : days <= 35 ? "#F59E0B" : "#EF4444";
-  const daysLabel = days <= 14 ? "\u{1F7E2} Venta r\xE1pida" : days <= 35 ? "\u{1F7E1} Plazo normal" : "\u{1F534} Venta lenta";
-  const fillPct = ((price - minS) / (maxS - minS) * 100).toFixed(1);
-  const optPct = ((optS - minS) / (maxS - minS) * 100).toFixed(1);
+  const ratio = recS > 0 ? price / recS : 1;
+  const days = Math.max(3, Math.round(baseD * Math.pow(ratio, exp)));
+  const daysColor = days <= 18 ? "#10B981" : days <= 35 ? "#F59E0B" : "#EF4444";
+  const daysLabel = days <= 18 ? "\u{1F7E2} Venta rápida" : days <= 35 ? "\u{1F7E1} Plazo normal" : "\u{1F534} Venta lenta";
+  const fillPct = maxS > minS ? ((price - minS) / (maxS - minS) * 100).toFixed(1) : 100;
+  const recPct = maxS > minS ? ((recS - minS) / (maxS - minS) * 100).toFixed(1) : 50;
   const outOfRange = userAskSoles && (userAskSoles < minS || userAskSoles > maxS);
   const handleChange = (v) => {
     setPrice(v);
     onPriceChange(v);
   };
   return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "grid-3", style: { marginBottom: 20 } }, [
-    { l: "Precio m\xEDnimo", v: minS, c: "#F87171", bg: "rgba(239,68,68,.07)", bc: "rgba(239,68,68,.18)", d: `~${Math.round(baseD * Math.pow(minS / optS, exp))} d\xEDas` },
-    { l: "\u2B50 \xD3ptimo", v: optS, c: "#00845A", bg: "rgba(16,185,129,.09)", bc: "rgba(16,185,129,.3)", d: `~${baseD} d\xEDas` },
-    { l: "Precio m\xE1ximo", v: maxS, c: "#FCD34D", bg: "rgba(245,158,11,.07)", bc: "rgba(245,158,11,.18)", d: `~${Math.round(baseD * Math.pow(maxS / optS, exp))} d\xEDas` }
+    { l: "Valor mínimo", v: minS, c: "#F87171", bg: "rgba(239,68,68,.07)", bc: "rgba(239,68,68,.18)", d: `~${Math.round(baseD * Math.pow(minS / recS, exp))} días` },
+    { l: "Valor recomendado", v: recS, c: "#00845A", bg: "rgba(16,185,129,.09)", bc: "rgba(16,185,129,.3)", d: `~${baseD} días` },
+    { l: "Valor máximo", v: maxS, c: "#FCD34D", bg: "rgba(245,158,11,.07)", bc: "rgba(245,158,11,.18)", d: "Valor de mercado estimado" }
   ].map((k) => /* @__PURE__ */ React.createElement(
     "div",
     {
@@ -2330,7 +2366,7 @@ function PriceSlider({ marketUSD, commPct, userAskSoles, tc, onPriceChange }) {
     /* @__PURE__ */ React.createElement("p", { style: { fontSize: 14, fontWeight: 800, color: k.c, fontFamily: "'DM Mono',monospace" } }, "$", Math.round(k.v / tcVal).toLocaleString()),
     /* @__PURE__ */ React.createElement("p", { style: { fontSize: 9, color: "#6B8F7A" } }, "S/ ", k.v.toLocaleString()),
     /* @__PURE__ */ React.createElement("p", { style: { fontSize: 9, color: "#6B8F7A", marginTop: 2 } }, k.d)
-  ))), outOfRange && /* @__PURE__ */ React.createElement("div", { style: { background: "rgba(245,158,11,.1)", border: "1px solid rgba(245,158,11,.25)", borderRadius: 10, padding: "8px 12px", marginBottom: 12, fontSize: 11, color: "#FCD34D" } }, "Tu precio pedido (S/ ", userAskSoles == null ? void 0 : userAskSoles.toLocaleString(), ") est\xE1 fuera del rango viable. Usa el slider para ajustar."), /* @__PURE__ */ React.createElement("div", { style: { position: "relative", marginTop: 28, marginBottom: 6 } }, /* @__PURE__ */ React.createElement("div", { style: { position: "absolute", left: `calc(${optPct}% - 26px)`, top: -18, fontSize: 9, color: "#10B981", fontWeight: 700, whiteSpace: "nowrap" } }, "\u25BC \xD3PTIMO"), /* @__PURE__ */ React.createElement(
+  ))), outOfRange && /* @__PURE__ */ React.createElement("div", { style: { background: "rgba(245,158,11,.1)", border: "1px solid rgba(245,158,11,.25)", borderRadius: 10, padding: "8px 12px", marginBottom: 12, fontSize: 11, color: "#FCD34D" } }, "Tu precio pedido (S/ ", userAskSoles == null ? void 0 : userAskSoles.toLocaleString(), ") está fuera del rango viable. Usa el slider para ajustarlo."), /* @__PURE__ */ React.createElement("div", { style: { position: "relative", marginTop: 28, marginBottom: 6 } }, /* @__PURE__ */ React.createElement("div", { style: { position: "absolute", left: `calc(${recPct}% - 42px)`, top: -18, fontSize: 9, color: "#10B981", fontWeight: 700, whiteSpace: "nowrap" } }, "\u25BC RECOMENDADO"), /* @__PURE__ */ React.createElement(
     "input",
     {
       type: "range",
@@ -2342,10 +2378,10 @@ function PriceSlider({ marketUSD, commPct, userAskSoles, tc, onPriceChange }) {
       onChange: (e) => handleChange(parseInt(e.target.value)),
       style: { width: "100%", background: `linear-gradient(to right,#00C88A ${fillPct}%,rgba(255,255,255,.12) ${fillPct}%)` }
     }
-  )), /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", padding: "14px 0 12px" } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 10, color: "#6B8F7A", fontWeight: 700, marginBottom: 4, letterSpacing: ".06em" } }, "PRECIO DE CONSIGNA SELECCIONADO"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 34, fontWeight: 800, color: "#0B0B0B", fontFamily: "'DM Mono',monospace", letterSpacing: "-1px" } }, "$", Math.round(price / tcVal).toLocaleString()), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, color: "#6B8F7A", marginTop: 3 } }, "S/ ", price.toLocaleString())), /* @__PURE__ */ React.createElement("div", { className: "grid-3" }, [
-    { l: "Tiempo estimado", v: daysLabel, sub: `~${days} d\xEDas para vender`, c: daysColor, bc: `${daysColor}22`, bg: "rgba(255,255,255,.03)" },
-    { l: `Comisi\xF3n (${(commPct * 100).toFixed(0)}%)`, v: `\u2212$${Math.round(commission / tcVal).toLocaleString()}`, sub: `S/ ${commission.toLocaleString()}`, c: "#F59E0B", bc: "transparent", bg: "rgba(255,255,255,.03)" },
-    { l: "T\xFA cobras", v: `$${Math.round(netOwner / tcVal).toLocaleString()}`, sub: `S/ ${netOwner.toLocaleString()} neto`, c: "#10B981", bc: "rgba(16,185,129,.2)", bg: "rgba(16,185,129,.05)" }
+  )), /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", padding: "14px 0 12px" } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 10, color: "#6B8F7A", fontWeight: 700, marginBottom: 4, letterSpacing: ".06em" } }, "PRECIO SELECCIONADO"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 34, fontWeight: 800, color: "#0B0B0B", fontFamily: "'DM Mono',monospace", letterSpacing: "-1px" } }, "$", Math.round(price / tcVal).toLocaleString()), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, color: "#6B8F7A", marginTop: 3 } }, "S/ ", price.toLocaleString())), /* @__PURE__ */ React.createElement("div", { className: "grid-3" }, [
+    { l: "Tiempo estimado", v: daysLabel, sub: `~${days} días para vender`, c: daysColor, bc: `${daysColor}22`, bg: "rgba(255,255,255,.03)" },
+    { l: `Comisión (${(commPct * 100).toFixed(0)}%)`, v: `−$${Math.round(commission / tcVal).toLocaleString()}`, sub: `S/ ${commission.toLocaleString()}`, c: "#F59E0B", bc: "transparent", bg: "rgba(255,255,255,.03)" },
+    { l: "Tú cobras", v: `$${Math.round(netOwner / tcVal).toLocaleString()}`, sub: `S/ ${netOwner.toLocaleString()} neto`, c: "#10B981", bc: "rgba(16,185,129,.2)", bg: "rgba(16,185,129,.05)" }
   ].map((k) => /* @__PURE__ */ React.createElement("div", { key: k.l, style: { background: k.bg, border: `1px solid ${k.bc}`, borderRadius: 12, padding: "10px 8px", textAlign: "center" } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 9, color: "#6B8F7A", fontWeight: 700, marginBottom: 3, letterSpacing: ".05em" } }, k.l.toUpperCase()), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, fontWeight: 800, color: k.c, fontFamily: "'DM Mono',monospace" } }, k.v), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 9, color: "#6B8F7A", marginTop: 2 } }, k.sub)))));
 }
 function ConsignaModule() {
@@ -2367,10 +2403,8 @@ function ConsignaModule() {
     if (!isVehicleValid(vehicle)) return;
     const vr = valuate(vehicle.brand, vehicle.model, vehicle.year, vehicle.km, vehicle.transmission, vehicle.condition, vehicle.version);
     if (vr) {
-      const marketUSD = consignaMarketVal(vr, vehicle.year);
-      const vrCal = __spreadProps(__spreadValues({}, vr), { value: marketUSD, rawValue: vr.value });
-      setResult(vrCal);
-      trackLead("consigna_quote", __spreadProps(__spreadValues({}, vehicle), { estimatedValue: marketUSD, rawValue: vr.value, askSoles: parseInt(askSoles) || 0, tcUsed: tcVal }));
+      setResult(vr);
+      trackLead("consigna_quote", __spreadProps(__spreadValues({}, vehicle), { estimatedValue: vr.marketValue || vr.value, askSoles: parseInt(askSoles) || 0, tcUsed: tcVal }));
       setStep(2);
     }
   };
@@ -2400,7 +2434,7 @@ function ConsignaModule() {
     );
     window.open(`https://wa.me/${waNum}?text=${msg}`, "_blank");
   };
-  return /* @__PURE__ */ React.createElement("div", { style: { maxWidth: 820, margin: "0 auto", padding: "32px 20px" } }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 24 } }, /* @__PURE__ */ React.createElement("h2", { className: "section-title" }, "\u{1F4CB} Vendemos tu auto"), /* @__PURE__ */ React.createElement("p", { className: "section-sub" }, "T\xFA pones el precio \xB7 Nosotros vendemos \xB7 Cobras neto")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 0, marginBottom: 20, overflowX: "auto", padding: "10px 12px", background: "rgba(5,150,105,.04)", border: "1px solid rgba(16,185,129,.1)", borderRadius: 14 } }, [["1\uFE0F\u20E3", "Ingresas tu auto"], ["2\uFE0F\u20E3", "Lo publicamos"], ["3\uFE0F\u20E3", "Cobras neto"]].map(([ic, t], i, arr) => /* @__PURE__ */ React.createElement(React.Fragment, { key: t }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", gap: 3, flexShrink: 0, minWidth: 72 } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 18 } }, ic), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 10, fontWeight: 700, color: "#00845A", textAlign: "center", lineHeight: 1.2 } }, t)), i < arr.length - 1 && /* @__PURE__ */ React.createElement("span", { style: { color: "rgba(16,185,129,.3)", fontSize: 14, flexShrink: 0, margin: "0 8px", alignSelf: "center" } }, "\u203A")))), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(StepBadge, { n: 1, active: true }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 15, fontWeight: 700, color: "#00845A" } }, "Datos del veh\xEDculo"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6B8F7A", marginTop: 1 } }, "Para calcular el rango de precio \xF3ptimo"))), /* @__PURE__ */ React.createElement(VehicleForm, { onChange: setVehicle, showNotes: true }), /* @__PURE__ */ React.createElement("div", { style: { marginTop: 16 } }, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "\xBFCu\xE1nto pides? (S/) \u2014 opcional"), /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement("div", { style: { maxWidth: 820, margin: "0 auto", padding: "32px 20px" } }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 24 } }, /* @__PURE__ */ React.createElement("h2", { className: "section-title" }, "\u{1F4CB} Vendemos tu auto"), /* @__PURE__ */ React.createElement("p", { className: "section-sub" }, "Valor recomendado, mínimo y máximo \xB7 Nosotros vendemos \xB7 Cobras neto")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 0, marginBottom: 20, overflowX: "auto", padding: "10px 12px", background: "rgba(5,150,105,.04)", border: "1px solid rgba(16,185,129,.1)", borderRadius: 14 } }, [["1\uFE0F\u20E3", "Ingresas tu auto"], ["2\uFE0F\u20E3", "Lo publicamos"], ["3\uFE0F\u20E3", "Cobras neto"]].map(([ic, t], i, arr) => /* @__PURE__ */ React.createElement(React.Fragment, { key: t }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", gap: 3, flexShrink: 0, minWidth: 72 } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 18 } }, ic), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 10, fontWeight: 700, color: "#00845A", textAlign: "center", lineHeight: 1.2 } }, t)), i < arr.length - 1 && /* @__PURE__ */ React.createElement("span", { style: { color: "rgba(16,185,129,.3)", fontSize: 14, flexShrink: 0, margin: "0 8px", alignSelf: "center" } }, "\u203A")))), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(StepBadge, { n: 1, active: true }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 15, fontWeight: 700, color: "#00845A" } }, "Datos del veh\xEDculo"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6B8F7A", marginTop: 1 } }, "Para calcular el valor recomendado, mínimo y máximo estimado"))), /* @__PURE__ */ React.createElement(VehicleForm, { onChange: setVehicle, showNotes: true }), /* @__PURE__ */ React.createElement("div", { style: { marginTop: 16 } }, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "\xBFCu\xE1nto pides? (S/) \u2014 opcional"), /* @__PURE__ */ React.createElement(
     "input",
     {
       className: "ap-input",
@@ -2419,11 +2453,11 @@ function ConsignaModule() {
       disabled: !isVehicleValid(vehicle),
       style: { width: "100%", padding: "14px", marginTop: 16 }
     },
-    "\u{1F4CA} Ver rango de precios y d\xEDas estimados \u2192"
+    "\u{1F4CA} Ver valores sugeridos y d\xEDas estimados \u2192"
   ) : /* @__PURE__ */ React.createElement("div", { style: { marginTop: 12, padding: "9px 14px", background: "rgba(16,185,129,.08)", border: "1px solid rgba(16,185,129,.2)", borderRadius: 10, display: "flex", justifyContent: "space-between" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 12, color: "#00845A" } }, "\u2713 Tasaci\xF3n realizada"), /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-sm ap-btn-secondary", type: "button", onClick: () => {
     setStep(1);
     setResult(null);
-  } }, "Modificar"))), step >= 2 && result && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 16 } }, /* @__PURE__ */ React.createElement(StepBadge, { n: 2, active: true }), /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 15, fontWeight: 700, color: "#00845A" } }, "Elige tu precio de consigna")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 12 } }, /* @__PURE__ */ React.createElement(TcBadge, null), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 10, color: "#6B8F7A" } }, "\xB7 Estimaci\xF3n basada en comparables del mercado")), /* @__PURE__ */ React.createElement(PriceSlider, { marketUSD: result.value, commPct, userAskSoles: parseInt(askSoles) || 0, tc: tcVal, onPriceChange: setSelPrice })), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 14 } }, /* @__PURE__ */ React.createElement(StepBadge, { n: 3, active: true }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 15, fontWeight: 700, color: "#00845A" } }, "Fotos del veh\xEDculo"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6B8F7A", marginTop: 1 } }, "M\xE1s fotos = m\xE1s interesados. Hasta 8 im\xE1genes."))), /* @__PURE__ */ React.createElement("input", { type: "file", accept: "image/*", multiple: true, onChange: handlePhotos, style: { display: "none" }, id: "photo-up" }), /* @__PURE__ */ React.createElement(
+  } }, "Modificar"))), step >= 2 && result && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 16 } }, /* @__PURE__ */ React.createElement(StepBadge, { n: 2, active: true }), /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 15, fontWeight: 700, color: "#00845A" } }, "Elige tu precio de consigna")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 12 } }, /* @__PURE__ */ React.createElement(TcBadge, null), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 10, color: "#6B8F7A" } }, "\xB7 Estimaci\xF3n basada en valor de mercado estimado y liquidez")), /* @__PURE__ */ React.createElement(PriceSlider, { marketUSD: result.value, commPct, userAskSoles: parseInt(askSoles) || 0, tc: tcVal, onPriceChange: setSelPrice })), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 14 } }, /* @__PURE__ */ React.createElement(StepBadge, { n: 3, active: true }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 15, fontWeight: 700, color: "#00845A" } }, "Fotos del veh\xEDculo"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6B8F7A", marginTop: 1 } }, "M\xE1s fotos = m\xE1s interesados. Hasta 8 im\xE1genes."))), /* @__PURE__ */ React.createElement("input", { type: "file", accept: "image/*", multiple: true, onChange: handlePhotos, style: { display: "none" }, id: "photo-up" }), /* @__PURE__ */ React.createElement(
     "label",
     {
       htmlFor: "photo-up",
@@ -3305,6 +3339,8 @@ function AdminShowroom() {
     saveInventory(next);
     setInv(next);
     window.dispatchEvent(new CustomEvent("apInventoryUpdated"));
+    if (REMOTE_SYNC.binId()) REMOTE_SYNC.push(buildRemoteState(cfg, { inventory: next })).catch(() => {
+    });
     setEditing(null);
   };
   const del = (id) => {
@@ -3313,12 +3349,16 @@ function AdminShowroom() {
     saveInventory(next);
     setInv(next);
     window.dispatchEvent(new CustomEvent("apInventoryUpdated"));
+    if (REMOTE_SYNC.binId()) REMOTE_SYNC.push(buildRemoteState(cfg, { inventory: next })).catch(() => {
+    });
   };
   const toggleActive = (id) => {
     const next = inv.map((c) => c.id === id ? __spreadProps(__spreadValues({}, c), { active: !c.active }) : c);
     saveInventory(next);
     setInv(next);
     window.dispatchEvent(new CustomEvent("apInventoryUpdated"));
+    if (REMOTE_SYNC.binId()) REMOTE_SYNC.push(buildRemoteState(cfg, { inventory: next })).catch(() => {
+    });
   };
   const startEdit = (car) => {
     setForm(__spreadProps(__spreadValues({}, car), { photos: Array.isArray(car.photos) ? car.photos.join("\n") : car.photos || "" }));
@@ -3329,6 +3369,11 @@ function AdminShowroom() {
   const versions = form.brand && form.model ? ((_a = TRIMS[form.brand]) == null ? void 0 : _a[form.model]) || ["Base", "Intermedia", "Full"] : [];
   const fset = (k, v) => setForm((f) => __spreadValues(__spreadValues(__spreadProps(__spreadValues({}, f), { [k]: v }), k === "brand" ? { model: "", version: "" } : {}), k === "model" ? { version: "" } : {}));
   const tcVal = tc || 3.77;
+  React.useEffect(() => {
+    const fn = () => setInv(loadInventory());
+    window.addEventListener("apInventoryUpdated", fn);
+    return () => window.removeEventListener("apInventoryUpdated", fn);
+  }, []);
   if (editing !== null) {
     return /* @__PURE__ */ React.createElement("div", { style: { paddingTop: 24 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 12, marginBottom: 20 } }, /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-secondary ap-btn-sm", type: "button", onClick: () => setEditing(null) }, "\u2190 Volver"), /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 18, fontWeight: 800, color: "#0B0B0B" } }, editing === "new" ? "Nuevo veh\xEDculo" : "Editar veh\xEDculo")), /* @__PURE__ */ React.createElement("div", { className: "ap-card" }, /* @__PURE__ */ React.createElement("div", { className: "grid-2", style: { marginBottom: 16 } }, [
       ["brand", "Marca", /* @__PURE__ */ React.createElement("select", { className: "ap-input", value: form.brand, onChange: (e) => fset("brand", e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "" }, "\u2014"), brands.map((b) => /* @__PURE__ */ React.createElement("option", { key: b }, b)))],
@@ -3384,6 +3429,9 @@ function AdminConfig() {
   const [tab, setTab] = React.useState("general");
   const [syncing, setSyncing] = React.useState(false);
   const [syncMsg, setSyncMsg] = React.useState("");
+  React.useEffect(() => {
+    setCfgLocal(ctxCfg);
+  }, [ctxCfg]);
   const save = async (pushRemote = true) => {
     saveConfig(cfg);
     setCfg(cfg);
@@ -3393,7 +3441,7 @@ function AdminConfig() {
     if (pushRemote && REMOTE_SYNC.binId()) {
       setSyncing(true);
       setSyncMsg("");
-      const r = await REMOTE_SYNC.push(cfg);
+      const r = await REMOTE_SYNC.push(buildRemoteState(cfg));
       setSyncing(false);
       setSyncMsg(r.ok ? "\u2601\uFE0F Publicado globalmente" : "\u26A0\uFE0F " + r.msg);
       setTimeout(() => setSyncMsg(""), 4e3);
@@ -3410,7 +3458,7 @@ function AdminConfig() {
         saveConfig(next);
         setCfg(next);
         window.dispatchEvent(new CustomEvent("apConfigUpdated", { detail: next }));
-        REMOTE_SYNC.push(next).catch(() => {
+        REMOTE_SYNC.push(buildRemoteState(next)).catch(() => {
         });
       }
       return next;
@@ -3511,7 +3559,7 @@ function AdminConfig() {
         }
       ))));
     })), /* @__PURE__ */ React.createElement("div", { style: { marginTop: 24, background: "#FFFBF2", border: "1.5px solid #FDE68A", borderRadius: 14, padding: "16px 18px" } }, /* @__PURE__ */ React.createElement("h4", { style: { fontSize: 13, fontWeight: 700, color: "#92400E", marginBottom: 12 } }, "\u{1F4E2} Banner de anuncio"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr auto", gap: 10, alignItems: "end", marginBottom: 10 } }, /* @__PURE__ */ React.createElement(Inp, { path: "banner.text", label: "Texto del banner", placeholder: "\xA1Oferta especial! Tasaci\xF3n gratis esta semana." }), /* @__PURE__ */ React.createElement(Tog, { path: "banner.enabled", label: "Activo" })), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Color"), /* @__PURE__ */ React.createElement("select", { className: "ap-input", value: ((_a2 = cfg.banner) == null ? void 0 : _a2.color) || "green", onChange: (e) => set("banner.color", e.target.value) }, ["green", "yellow", "red", "blue"].map((c) => /* @__PURE__ */ React.createElement("option", { key: c, value: c }, c)))), /* @__PURE__ */ React.createElement(Inp, { path: "banner.link", label: "Enlace (opcional)", placeholder: "https://\u2026" }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Vence"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", type: "date", value: ((_b2 = cfg.banner) == null ? void 0 : _b2.expires) || "", onChange: (e) => set("banner.expires", e.target.value) })))));
-  })(), tab === "comprar" && /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gap: 14 } }, /* @__PURE__ */ React.createElement("h4", { style: { fontSize: 13, fontWeight: 700, color: "#00845A", marginBottom: 4 } }, "M\xF3dulo Compramos tu auto"), /* @__PURE__ */ React.createElement(Inp, { path: "comprar.copyOfferLabel", label: "Etiqueta de la oferta", placeholder: "Pre-oferta AutoPago" }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Haircut de mercado (%)"), /* @__PURE__ */ React.createElement(
+  })(), tab === "comprar" && /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gap: 14 } }, /* @__PURE__ */ React.createElement("h4", { style: { fontSize: 13, fontWeight: 700, color: "#00845A", marginBottom: 4 } }, "M\xF3dulo Compramos tu auto"), /* @__PURE__ */ React.createElement(Inp, { path: "comprar.copyOfferLabel", label: "Etiqueta de la oferta", placeholder: "Pre-oferta AutoPago" }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Ajuste negociaci\xF3n mercado (%) \u2014 opcional"), /* @__PURE__ */ React.createElement(
     "input",
     {
       className: "ap-input",
@@ -3522,7 +3570,7 @@ function AdminConfig() {
       value: (((_c = (_b = cfg.comprar) == null ? void 0 : _b.marketHaircut) != null ? _c : 0.1) * 100).toFixed(1),
       onChange: (e) => set("comprar.marketHaircut", parseFloat(e.target.value) / 100)
     }
-  ), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 10, color: "#6B8F7A", marginTop: 4, lineHeight: 1.6 } }, "Descuento que refleja la brecha entre precio publicado y precio real de transacci\xF3n. El descuento AutoPago se aplica ", /* @__PURE__ */ React.createElement("em", null, "sobre este valor ajustado"), ". Ej.: 10% \u2192 auto tasado en $20k se trata como $18k antes de aplicar el descuento.")), /* @__PURE__ */ React.createElement("div", { className: "grid-2" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Descuento AutoPago premium (%)"), /* @__PURE__ */ React.createElement(
+  ), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 10, color: "#6B8F7A", marginTop: 4, lineHeight: 1.6 } }, "La regla p\xFAblica de pre-oferta usa 20% debajo del mercado para europeo/americano/japon\xE9s/ingl\xE9s y 25% para chino/indio/u otras procedencias. Este campo sirve como ajuste adicional para simulaciones internas.")), /* @__PURE__ */ React.createElement("div", { className: "grid-2" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Descuento alta calidad (%)"), /* @__PURE__ */ React.createElement(
     "input",
     {
       className: "ap-input",
@@ -3531,7 +3579,7 @@ function AdminConfig() {
       value: (((_e = (_d = cfg.comprar) == null ? void 0 : _d.discountByGroup) == null ? void 0 : _e.premium) || 0) * 100,
       onChange: (e) => set("comprar.discountByGroup.premium", parseFloat(e.target.value) / 100)
     }
-  )), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Descuento AutoPago est\xE1ndar (%)"), /* @__PURE__ */ React.createElement(
+  )), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Descuento otras procedencias (%)"), /* @__PURE__ */ React.createElement(
     "input",
     {
       className: "ap-input",
@@ -3540,7 +3588,7 @@ function AdminConfig() {
       value: (((_g = (_f = cfg.comprar) == null ? void 0 : _f.discountByGroup) == null ? void 0 : _g.standard) || 0) * 100,
       onChange: (e) => set("comprar.discountByGroup.standard", parseFloat(e.target.value) / 100)
     }
-  ))), /* @__PURE__ */ React.createElement("div", { style: { padding: "14px", background: "rgba(0,200,130,.07)", border: "1px solid rgba(0,200,130,.18)", borderRadius: 12, fontSize: 12 } }, /* @__PURE__ */ React.createElement("p", { style: { color: "#00845A", fontWeight: 700, marginBottom: 10 } }, "Previsualizaci\xF3n \u2014 auto tasado en USD $20,000"), (() => {
+  ))), /* @__PURE__ */ React.createElement("div", { style: { padding: "14px", background: "rgba(0,200,130,.07)", border: "1px solid rgba(0,200,130,.18)", borderRadius: 12, fontSize: 12 } }, /* @__PURE__ */ React.createElement("p", { style: { color: "#00845A", fontWeight: 700, marginBottom: 10 } }, "Previsualizaci\xF3n \u2014 valor de mercado estimado USD $20,000"), (() => {
     var _a2, _b2;
     const mh = (_b2 = (_a2 = cfg.comprar) == null ? void 0 : _a2.marketHaircut) != null ? _b2 : 0.1;
     const txV = Math.round(2e4 * (1 - mh));
@@ -3565,7 +3613,7 @@ function AdminConfig() {
       },
       /* @__PURE__ */ React.createElement("div", { className: "toggle-thumb" })
     )), /* @__PURE__ */ React.createElement("div", { className: "grid-2" }, /* @__PURE__ */ React.createElement(Inp, { path: `credito.terms.${t}.monthlyRate`, label: "Tasa mensual (decimal)", type: "number" }), /* @__PURE__ */ React.createElement(Inp, { path: `credito.terms.${t}.disbursementCommissionPct`, label: "Comisi\xF3n desembolso (dec)", type: "number" })));
-  }), /* @__PURE__ */ React.createElement("div", { style: { padding: "14px", background: "rgba(0,0,0,.03)", border: "1px solid rgba(0,0,0,.07)", borderRadius: 14 } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, fontWeight: 700, color: "#0B0B0B", marginBottom: 12 } }, "Elegibilidad"), /* @__PURE__ */ React.createElement("div", { className: "grid-2" }, /* @__PURE__ */ React.createElement(Inp, { path: "credito.eligibility.premium.maxAge", label: "Edad m\xE1x. premium (a\xF1os)", type: "number" }), /* @__PURE__ */ React.createElement(Inp, { path: "credito.eligibility.premium.maxLTV", label: "LTV m\xE1x. premium (decimal)", type: "number" }), /* @__PURE__ */ React.createElement(Inp, { path: "credito.eligibility.other.maxAge", label: "Edad m\xE1x. est\xE1ndar (a\xF1os)", type: "number" }), /* @__PURE__ */ React.createElement(Inp, { path: "credito.eligibility.other.maxLTV", label: "LTV m\xE1x. est\xE1ndar (decimal)", type: "number" }))), /* @__PURE__ */ React.createElement(Inp, { path: "credito.conservativePct", label: "Haircut conservador (decimal)", type: "number" })), tab === "consigna" && /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gap: 14 } }, /* @__PURE__ */ React.createElement("h4", { style: { fontSize: 13, fontWeight: 700, color: "#00845A", marginBottom: 4 } }, "AutoConsigna"), /* @__PURE__ */ React.createElement("div", { className: "grid-2" }, /* @__PURE__ */ React.createElement(Inp, { path: "consigna.commissionPct", label: "Comisi\xF3n % (decimal)", type: "number" }), /* @__PURE__ */ React.createElement(Inp, { path: "consigna.rangeMinFactor", label: "Factor m\xEDnimo (ej. 0.70)", type: "number" }), /* @__PURE__ */ React.createElement(Inp, { path: "consigna.rangeMaxFactor", label: "Factor m\xE1ximo (ej. 1.15)", type: "number" }), /* @__PURE__ */ React.createElement(Inp, { path: "consigna.baseDays", label: "D\xEDas al precio \xF3ptimo", type: "number" }), /* @__PURE__ */ React.createElement(Inp, { path: "consigna.speedExponent", label: "Exponente curva d\xEDas", type: "number" }))), tab === "showroom" && /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gap: 14 } }, /* @__PURE__ */ React.createElement("h4", { style: { fontSize: 13, fontWeight: 700, color: "#00845A", marginBottom: 4 } }, "Encuentra tu Auto"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Plantilla WhatsApp de inter\xE9s"), /* @__PURE__ */ React.createElement(
+  }), /* @__PURE__ */ React.createElement("div", { style: { padding: "14px", background: "rgba(0,0,0,.03)", border: "1px solid rgba(0,0,0,.07)", borderRadius: 14 } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, fontWeight: 700, color: "#0B0B0B", marginBottom: 12 } }, "Elegibilidad"), /* @__PURE__ */ React.createElement("div", { className: "grid-2" }, /* @__PURE__ */ React.createElement(Inp, { path: "credito.eligibility.premium.maxAge", label: "Edad m\xE1x. premium (a\xF1os)", type: "number" }), /* @__PURE__ */ React.createElement(Inp, { path: "credito.eligibility.premium.maxLTV", label: "LTV m\xE1x. premium (decimal)", type: "number" }), /* @__PURE__ */ React.createElement(Inp, { path: "credito.eligibility.other.maxAge", label: "Edad m\xE1x. est\xE1ndar (a\xF1os)", type: "number" }), /* @__PURE__ */ React.createElement(Inp, { path: "credito.eligibility.other.maxLTV", label: "LTV m\xE1x. est\xE1ndar (decimal)", type: "number" }))), /* @__PURE__ */ React.createElement(Inp, { path: "credito.conservativePct", label: "Haircut conservador (decimal)", type: "number" })), tab === "consigna" && /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gap: 14 } }, /* @__PURE__ */ React.createElement("h4", { style: { fontSize: 13, fontWeight: 700, color: "#00845A", marginBottom: 4 } }, "AutoConsigna"), /* @__PURE__ */ React.createElement("div", { className: "grid-2" }, /* @__PURE__ */ React.createElement(Inp, { path: "consigna.commissionPct", label: "Comisi\xF3n % (decimal)", type: "number" }), /* @__PURE__ */ React.createElement(Inp, { path: "consigna.rangeMinFactor", label: "Factor valor m\xEDnimo (ej. 0.88)", type: "number" }), /* @__PURE__ */ React.createElement(Inp, { path: "consigna.rangeMaxFactor", label: "Factor valor m\xE1ximo (ej. 1.00)", type: "number" }), /* @__PURE__ */ React.createElement(Inp, { path: "consigna.baseDays", label: "D\xEDas al precio \xF3ptimo", type: "number" }), /* @__PURE__ */ React.createElement(Inp, { path: "consigna.speedExponent", label: "Exponente curva d\xEDas", type: "number" }))), tab === "showroom" && /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gap: 14 } }, /* @__PURE__ */ React.createElement("h4", { style: { fontSize: 13, fontWeight: 700, color: "#00845A", marginBottom: 4 } }, "Encuentra tu Auto"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Plantilla WhatsApp de inter\xE9s"), /* @__PURE__ */ React.createElement(
     "textarea",
     {
       className: "ap-input",
@@ -3628,7 +3676,7 @@ function AdminConfig() {
     setSyncing(true);
     setSyncMsg("");
     const key = localStorage.getItem(AP_KEYS.remoteKey) || "";
-    const r = await REMOTE_SYNC.createBin(cfg, key);
+    const r = await REMOTE_SYNC.createBin(buildRemoteState(cfg), key);
     setSyncing(false);
     if (r.ok) {
       setSyncMsg(`\u2705 Bin creado: ${r.binId}
@@ -3641,7 +3689,7 @@ ${r.htmlMeta}`);
   } }, syncing ? "\u23F3 Creando\u2026" : "\u{1F195} Crear Bin nuevo"), /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-secondary", onClick: async () => {
     setSyncing(true);
     setSyncMsg("");
-    const r = await REMOTE_SYNC.push(cfg);
+    const r = await REMOTE_SYNC.push(buildRemoteState(cfg));
     setSyncing(false);
     setSyncMsg(r.ok ? "\u2705 Publicado globalmente" : "\u274C " + r.msg);
   } }, syncing ? "\u23F3\u2026" : "\u{1F680} Publicar ahora"), /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-secondary", onClick: async () => {
@@ -3845,15 +3893,24 @@ function AdminAnalytics() {
   ].map((r) => /* @__PURE__ */ React.createElement("div", { key: r.label, style: { display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid #EEF3F1", fontSize: 13 } }, /* @__PURE__ */ React.createElement("span", { style: { color: "#5F7D73" } }, r.label), /* @__PURE__ */ React.createElement("span", { style: { fontWeight: 700, fontFamily: "DM Mono,monospace", color: "#0B3C2E" } }, r.val))), pLeads.length === 0 && /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", padding: "20px 0", color: "#5F7D73", fontSize: 13 } }, "Sin datos en el per\xEDodo seleccionado"))));
 }
 function AdminUsers({ session }) {
+  const { cfg } = React.useContext(AppCtx);
   const [users, setUsers] = React.useState(() => loadUsers());
   const [adding, setAdding] = React.useState(false);
   const [form, setForm] = React.useState({ email: "", password: "", role: "analyst" });
   const fset = (k, v) => setForm((f) => __spreadProps(__spreadValues({}, f), { [k]: v }));
+  React.useEffect(() => {
+    const fn = () => setUsers(loadUsers());
+    window.addEventListener("apUsersUpdated", fn);
+    return () => window.removeEventListener("apUsersUpdated", fn);
+  }, []);
   const addUser = () => {
     if (!form.email || !form.password) return;
     const next = [...users, __spreadProps(__spreadValues({ id: `u-${Date.now()}` }, form), { isActive: true })];
     saveUsers(next);
     setUsers(next);
+    window.dispatchEvent(new CustomEvent("apUsersUpdated"));
+    if (REMOTE_SYNC.binId()) REMOTE_SYNC.push(buildRemoteState(cfg, { users: next })).catch(() => {
+    });
     setForm({ email: "", password: "", role: "analyst" });
     setAdding(false);
   };
@@ -3861,12 +3918,18 @@ function AdminUsers({ session }) {
     const next = users.map((u) => u.id === id ? __spreadProps(__spreadValues({}, u), { isActive: !u.isActive }) : u);
     saveUsers(next);
     setUsers(next);
+    window.dispatchEvent(new CustomEvent("apUsersUpdated"));
+    if (REMOTE_SYNC.binId()) REMOTE_SYNC.push(buildRemoteState(cfg, { users: next })).catch(() => {
+    });
   };
   const del = (id) => {
     if (id === session.userId || !window.confirm("\xBFEliminar usuario?")) return;
     const next = users.filter((u) => u.id !== id);
     saveUsers(next);
     setUsers(next);
+    window.dispatchEvent(new CustomEvent("apUsersUpdated"));
+    if (REMOTE_SYNC.binId()) REMOTE_SYNC.push(buildRemoteState(cfg, { users: next })).catch(() => {
+    });
   };
   const ROLE_COLORS = { owner: "#F59E0B", admin: "#00A86B", analyst: "#10B981", viewer: "#6B8F7A" };
   return /* @__PURE__ */ React.createElement("div", { style: { paddingTop: 24 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18, flexWrap: "wrap", gap: 10 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 20, fontWeight: 800, color: "#0B0B0B" } }, "\u{1F465} Usuarios"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, color: "#6B8F7A", marginTop: 2 } }, users.length, " usuarios \xB7 ", users.filter((u) => u.isActive).length, " activos")), session.role === "owner" && /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-primary ap-btn-sm", type: "button", onClick: () => setAdding((v) => !v) }, adding ? "\u2715 Cancelar" : "\u2795 Agregar usuario")), adding && /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 20 } }, /* @__PURE__ */ React.createElement("div", { className: "grid-2", style: { marginBottom: 14 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Email"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", type: "email", value: form.email, onChange: (e) => fset("email", e.target.value), placeholder: "nuevo@autopago.pe" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Contrase\xF1a"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", type: "password", value: form.password, onChange: (e) => fset("password", e.target.value), placeholder: "min. 8 chars" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Rol"), /* @__PURE__ */ React.createElement("select", { className: "ap-input", value: form.role, onChange: (e) => fset("role", e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "owner" }, "Owner \u2014 acceso total"), /* @__PURE__ */ React.createElement("option", { value: "admin" }, "Admin \u2014 sin gesti\xF3n de usuarios"), /* @__PURE__ */ React.createElement("option", { value: "analyst" }, "Analista \u2014 solo lectura"), /* @__PURE__ */ React.createElement("option", { value: "viewer" }, "Viewer \u2014 solo dashboard")))), /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-success ap-btn-sm", type: "button", onClick: addUser, disabled: !form.email || !form.password }, "\u2705 Crear usuario")), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { padding: 0, overflow: "hidden", marginBottom: 20 } }, /* @__PURE__ */ React.createElement("div", { className: "ap-scroll" }, /* @__PURE__ */ React.createElement("table", { className: "ap-table" }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", null, "Usuario"), /* @__PURE__ */ React.createElement("th", null, "Rol"), /* @__PURE__ */ React.createElement("th", null, "Estado"), session.role === "owner" && /* @__PURE__ */ React.createElement("th", null, "Acciones"))), /* @__PURE__ */ React.createElement("tbody", null, users.map((u) => /* @__PURE__ */ React.createElement("tr", { key: u.id }, /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8 } }, /* @__PURE__ */ React.createElement("div", { style: { width: 28, height: 28, borderRadius: "50%", background: `${ROLE_COLORS[u.role]}20`, border: `1px solid ${ROLE_COLORS[u.role]}50`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: ROLE_COLORS[u.role], flexShrink: 0 } }, u.email[0].toUpperCase()), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, fontWeight: u.id === session.userId ? 700 : 400, color: "#0B0B0B" } }, u.email), u.id === session.userId && /* @__PURE__ */ React.createElement("span", { style: { fontSize: 9, color: "#6B8F7A" } }, "\u2190 t\xFA")))), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, fontWeight: 700, color: ROLE_COLORS[u.role], background: `${ROLE_COLORS[u.role]}18`, padding: "3px 10px", borderRadius: 50 } }, u.role.toUpperCase())), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, fontWeight: 700, color: u.isActive ? "#10B981" : "#EF4444" } }, u.isActive ? "\u25CF Activo" : "\u25CF Inactivo")), session.role === "owner" && /* @__PURE__ */ React.createElement("td", null, u.id !== session.userId && /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 6 } }, /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-sm ap-btn-secondary", type: "button", onClick: () => toggle(u.id), style: { fontSize: 11 } }, u.isActive ? "Desactivar" : "Activar"), /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-sm ap-btn-danger", type: "button", onClick: () => del(u.id) }, "\u{1F5D1}\uFE0F"))))))))), /* @__PURE__ */ React.createElement("div", { className: "ap-card" }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, fontWeight: 700, color: "#00845A", marginBottom: 12 } }, "Matriz de permisos"), /* @__PURE__ */ React.createElement("div", { className: "ap-scroll" }, /* @__PURE__ */ React.createElement("table", { className: "ap-table" }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", null, "Secci\xF3n"), /* @__PURE__ */ React.createElement("th", { style: { color: ROLE_COLORS.owner } }, "Owner"), /* @__PURE__ */ React.createElement("th", { style: { color: ROLE_COLORS.admin } }, "Admin"), /* @__PURE__ */ React.createElement("th", { style: { color: ROLE_COLORS.analyst } }, "Analista"), /* @__PURE__ */ React.createElement("th", { style: { color: ROLE_COLORS.viewer } }, "Viewer"))), /* @__PURE__ */ React.createElement("tbody", null, ["dashboard", "leads", "credits", "showroom", "config", "users"].map((s) => /* @__PURE__ */ React.createElement("tr", { key: s }, /* @__PURE__ */ React.createElement("td", { style: { fontWeight: 700, color: "#0B0B0B", textTransform: "capitalize" } }, s), ["owner", "admin", "analyst", "viewer"].map((r) => /* @__PURE__ */ React.createElement("td", { key: r, style: { textAlign: "center" } }, canAccess(r, s) ? /* @__PURE__ */ React.createElement("span", { style: { color: "#10B981", fontSize: 16 } }, "\u2713") : /* @__PURE__ */ React.createElement("span", { style: { color: "#9FB3A5", fontSize: 14 } }, "\u2014"))))))))));
@@ -3930,15 +3993,32 @@ function App() {
     return () => clearInterval(id);
   }, [(_a = cfg.general) == null ? void 0 : _a.tcFallback]);
   React.useEffect(() => {
-    REMOTE_SYNC.fetch().then((remote) => {
-      if (!remote) return;
-      const local = loadConfig();
-      const merged = Object.assign({}, local, remote);
-      delete merged._apVersion;
-      saveConfig(merged);
-      setCfg(merged);
-      window.dispatchEvent(new CustomEvent("apConfigUpdated", { detail: merged }));
-    });
+    let alive = true;
+    let lastVersion = null;
+    const applyRemote = async () => {
+      const remote = await REMOTE_SYNC.fetch();
+      if (!alive || !remote) return;
+      if (remote._apVersion && remote._apVersion === lastVersion) return;
+      lastVersion = remote._apVersion || lastVersion;
+      const normalized = applyRemoteState(remote);
+      if (!alive || !normalized) return;
+      setCfg(normalized);
+      window.dispatchEvent(new CustomEvent("apConfigUpdated", { detail: normalized }));
+    };
+    applyRemote();
+    const onFocus = () => applyRemote();
+    const onVisible = () => {
+      if (document.visibilityState === "visible") applyRemote();
+    };
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisible);
+    const id = setInterval(applyRemote, 15 * 1000);
+    return () => {
+      alive = false;
+      clearInterval(id);
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
   }, []);
   React.useEffect(() => {
     const fn = (e) => {
@@ -3946,6 +4026,21 @@ function App() {
     };
     window.addEventListener("apConfigUpdated", fn);
     return () => window.removeEventListener("apConfigUpdated", fn);
+  }, []);
+  React.useEffect(() => {
+    const validateSession = () => {
+      const current = loadSession();
+      if (!current) return;
+      const user = loadUsers().find((u) => u.id === current.userId && u.isActive);
+      if (!user) {
+        clearSession();
+        setSession(null);
+        if (window.location.hash === "#admin") window.location.hash = "";
+      }
+    };
+    validateSession();
+    window.addEventListener("apUsersUpdated", validateSession);
+    return () => window.removeEventListener("apUsersUpdated", validateSession);
   }, []);
   React.useEffect(() => {
     const fn = () => {
