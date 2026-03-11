@@ -285,25 +285,36 @@ function trackLead(type, payload) {
 const VDB = {
   Toyota: {
     Corolla: { p: 24e3, o: "japanese", c: "sedan" },
+    "Corolla Cross": { p: 3e4, o: "japanese", c: "suv" },
     Camry: { p: 34e3, o: "japanese", c: "sedan" },
     Yaris: { p: 19500, o: "japanese", c: "hatchback" },
+    Etios: { p: 14e3, o: "japanese", c: "sedan" },
     RAV4: { p: 38e3, o: "japanese", c: "suv" },
     "Land Cruiser": { p: 78e3, o: "japanese", c: "suv" },
-    Hilux: { p: 44e3, o: "japanese", c: "pickup" },
+    Hilux: { p: 34e3, o: "japanese", c: "pickup" },
+    "Hilux 4x4": { p: 38e3, o: "japanese", c: "pickup" },
     Fortuner: { p: 48e3, o: "japanese", c: "suv" },
     Prado: { p: 64e3, o: "japanese", c: "suv" },
     Rush: { p: 26e3, o: "japanese", c: "suv" },
-    "C-HR": { p: 3e4, o: "japanese", c: "suv" }
+    "C-HR": { p: 3e4, o: "japanese", c: "suv" },
+    Avanza: { p: 22e3, o: "japanese", c: "minivan" },
+    Innova: { p: 34e3, o: "japanese", c: "minivan" },
+    Sienna: { p: 46e3, o: "japanese", c: "minivan" },
+    "Land Cruiser 200": { p: 9e4, o: "japanese", c: "suv" }
   },
   Nissan: {
+    March: { p: 16e3, o: "japanese", c: "hatchback" },
     Sentra: { p: 21e3, o: "japanese", c: "sedan" },
+    Altima: { p: 28e3, o: "japanese", c: "sedan" },
     "X-Trail": { p: 36e3, o: "japanese", c: "suv" },
     Frontier: { p: 42e3, o: "japanese", c: "pickup" },
     Kicks: { p: 24e3, o: "japanese", c: "suv" },
     Versa: { p: 18e3, o: "japanese", c: "sedan" },
     Navara: { p: 44e3, o: "japanese", c: "pickup" },
     Pathfinder: { p: 52e3, o: "japanese", c: "suv" },
-    Murano: { p: 46e3, o: "japanese", c: "suv" }
+    Murano: { p: 46e3, o: "japanese", c: "suv" },
+    Armada: { p: 58e3, o: "japanese", c: "suv" },
+    Qashqai: { p: 3e4, o: "japanese", c: "suv" }
   },
   Honda: {
     Civic: { p: 25e3, o: "japanese", c: "sedan" },
@@ -311,8 +322,11 @@ const VDB = {
     "HR-V": { p: 27e3, o: "japanese", c: "suv" },
     "WR-V": { p: 22e3, o: "japanese", c: "suv" },
     Fit: { p: 17500, o: "japanese", c: "hatchback" },
+    Jazz: { p: 17500, o: "japanese", c: "hatchback" },
     Accord: { p: 35e3, o: "japanese", c: "sedan" },
-    Pilot: { p: 5e4, o: "japanese", c: "suv" }
+    Pilot: { p: 5e4, o: "japanese", c: "suv" },
+    City: { p: 19e3, o: "japanese", c: "sedan" },
+    Odyssey: { p: 44e3, o: "japanese", c: "minivan" }
   },
   Mazda: {
     "Mazda3": { p: 23e3, o: "japanese", c: "sedan" },
@@ -328,7 +342,8 @@ const VDB = {
     "Eclipse Cross": { p: 32e3, o: "japanese", c: "suv" },
     "L200 Triton": { p: 42e3, o: "japanese", c: "pickup" },
     ASX: { p: 26e3, o: "japanese", c: "suv" },
-    Montero: { p: 56e3, o: "japanese", c: "suv" }
+    Montero: { p: 42e3, o: "japanese", c: "suv" }
+    // Sport Sport 4x2/4x4 market avg
   },
   Subaru: {
     Forester: { p: 37e3, o: "japanese", c: "suv" },
@@ -364,14 +379,24 @@ const VDB = {
     Stinger: { p: 46e3, o: "korean", c: "sedan" }
   },
   BMW: {
+    "116i": { p: 34e3, o: "european", c: "hatchback" },
+    "118i": { p: 36e3, o: "european", c: "hatchback" },
     "218i": { p: 38e3, o: "european", c: "hatchback" },
+    "316i": { p: 46e3, o: "european", c: "sedan" },
     "318i": { p: 46e3, o: "european", c: "sedan" },
     "320i": { p: 52e3, o: "european", c: "sedan" },
+    "328i": { p: 62e3, o: "european", c: "sedan" },
     "330i": { p: 64e3, o: "european", c: "sedan" },
+    "420i": { p: 58e3, o: "european", c: "sedan" },
+    "430i": { p: 68e3, o: "european", c: "sedan" },
     "520i": { p: 68e3, o: "european", c: "sedan" },
+    "528i": { p: 74e3, o: "european", c: "sedan" },
     "X1": { p: 52e3, o: "european", c: "suv" },
+    "X2": { p: 54e3, o: "european", c: "suv" },
     "X3": { p: 66e3, o: "european", c: "suv" },
+    "X4": { p: 72e3, o: "european", c: "suv" },
     "X5": { p: 94e3, o: "european", c: "suv" },
+    "X6": { p: 98e3, o: "european", c: "suv" },
     "M3": { p: 105e3, o: "european", c: "sedan" }
   },
   "Mercedes-Benz": {
@@ -397,8 +422,11 @@ const VDB = {
     Jetta: { p: 26e3, o: "european", c: "sedan" },
     "T-Cross": { p: 3e4, o: "european", c: "suv" },
     Tiguan: { p: 42e3, o: "european", c: "suv" },
+    Taos: { p: 34e3, o: "european", c: "suv" },
     Passat: { p: 38e3, o: "european", c: "sedan" },
-    Amarok: { p: 57e3, o: "european", c: "pickup" }
+    Amarok: { p: 57e3, o: "european", c: "pickup" },
+    Crossfox: { p: 18e3, o: "european", c: "hatchback" },
+    "T-Roc": { p: 36e3, o: "european", c: "suv" }
   },
   Chevrolet: {
     Spark: { p: 14e3, o: "american", c: "hatchback" },
@@ -439,6 +467,139 @@ const VDB = {
     GS8: { p: 33e3, o: "chinese", c: "suv" },
     Empow: { p: 26e3, o: "chinese", c: "sedan" },
     GN8: { p: 4e4, o: "chinese", c: "minivan" }
+  },
+  Jeep: {
+    Renegade: { p: 26e3, o: "american", c: "suv" },
+    Compass: { p: 32e3, o: "american", c: "suv" },
+    Commander: { p: 42e3, o: "american", c: "suv" },
+    Wrangler: { p: 52e3, o: "american", c: "suv" },
+    "Grand Cherokee": { p: 58e3, o: "american", c: "suv" },
+    Gladiator: { p: 54e3, o: "american", c: "pickup" }
+  },
+  Renault: {
+    Logan: { p: 16500, o: "european", c: "sedan" },
+    Sandero: { p: 16500, o: "european", c: "hatchback" },
+    Duster: { p: 22e3, o: "european", c: "suv" },
+    Koleos: { p: 28e3, o: "european", c: "suv" },
+    Captur: { p: 24e3, o: "european", c: "suv" },
+    Fluence: { p: 2e4, o: "european", c: "sedan" },
+    Oroch: { p: 24e3, o: "european", c: "pickup" }
+  },
+  Isuzu: {
+    "D-Max": { p: 38e3, o: "japanese", c: "pickup" },
+    "MU-X": { p: 44e3, o: "japanese", c: "suv" },
+    "D-Max 4x4": { p: 46e3, o: "japanese", c: "pickup" }
+  },
+  Lexus: {
+    "IS 250": { p: 42e3, o: "japanese", c: "sedan" },
+    "ES 250": { p: 52e3, o: "japanese", c: "sedan" },
+    "NX 300": { p: 54e3, o: "japanese", c: "suv" },
+    "RX 350": { p: 68e3, o: "japanese", c: "suv" },
+    "GX 460": { p: 74e3, o: "japanese", c: "suv" },
+    "LX 570": { p: 11e4, o: "japanese", c: "suv" }
+  },
+  "Land Rover": {
+    Freelander: { p: 44e3, o: "european", c: "suv" },
+    Discovery: { p: 72e3, o: "european", c: "suv" },
+    Defender: { p: 68e3, o: "european", c: "suv" },
+    "Range Rover Evoque": { p: 58e3, o: "european", c: "suv" },
+    "Range Rover Sport": { p: 88e3, o: "european", c: "suv" },
+    "Range Rover": { p: 11e4, o: "european", c: "suv" }
+  },
+  Porsche: {
+    Macan: { p: 74e3, o: "european", c: "suv" },
+    Cayenne: { p: 98e3, o: "european", c: "suv" },
+    Panamera: { p: 104e3, o: "european", c: "sedan" },
+    "911": { p: 12e4, o: "european", c: "sedan" }
+  },
+  Volvo: {
+    "XC40": { p: 52e3, o: "european", c: "suv" },
+    "XC60": { p: 66e3, o: "european", c: "suv" },
+    "XC90": { p: 82e3, o: "european", c: "suv" },
+    "S60": { p: 52e3, o: "european", c: "sedan" },
+    "S90": { p: 68e3, o: "european", c: "sedan" }
+  },
+  Peugeot: {
+    "208": { p: 2e4, o: "european", c: "hatchback" },
+    "2008": { p: 24e3, o: "european", c: "suv" },
+    "3008": { p: 32e3, o: "european", c: "suv" },
+    "5008": { p: 4e4, o: "european", c: "suv" },
+    "408": { p: 28e3, o: "european", c: "sedan" }
+  },
+  Dodge: {
+    "RAM 1500": { p: 52e3, o: "american", c: "pickup" },
+    Durango: { p: 52e3, o: "american", c: "suv" },
+    Challenger: { p: 46e3, o: "american", c: "sedan" },
+    Journey: { p: 32e3, o: "american", c: "suv" }
+  },
+  BYD: {
+    "Atto 3": { p: 34e3, o: "chinese", c: "suv" },
+    Han: { p: 44e3, o: "chinese", c: "sedan" },
+    Tang: { p: 46e3, o: "chinese", c: "suv" },
+    Dolphin: { p: 28e3, o: "chinese", c: "hatchback" },
+    Seal: { p: 38e3, o: "chinese", c: "sedan" }
+  },
+  Fiat: {
+    Strada: { p: 22e3, o: "european", c: "pickup" },
+    Cronos: { p: 18500, o: "european", c: "sedan" },
+    Pulse: { p: 22e3, o: "european", c: "suv" },
+    Fastback: { p: 26e3, o: "european", c: "suv" }
+  },
+  Infiniti: {
+    "Q50": { p: 44e3, o: "japanese", c: "sedan" },
+    "QX50": { p: 52e3, o: "japanese", c: "suv" },
+    "QX60": { p: 62e3, o: "japanese", c: "suv" },
+    "FX35": { p: 46e3, o: "japanese", c: "suv" }
+  },
+  Jaguar: {
+    "XE": { p: 52e3, o: "european", c: "sedan" },
+    "XF": { p: 62e3, o: "european", c: "sedan" },
+    "F-Pace": { p: 72e3, o: "european", c: "suv" },
+    "E-Pace": { p: 58e3, o: "european", c: "suv" },
+    "F-Type": { p: 88e3, o: "european", c: "sedan" }
+  },
+  "Alfa Romeo": {
+    Giulia: { p: 52e3, o: "european", c: "sedan" },
+    Stelvio: { p: 58e3, o: "european", c: "suv" },
+    "Giulietta": { p: 36e3, o: "european", c: "hatchback" }
+  },
+  Geely: {
+    Emgrand: { p: 18e3, o: "chinese", c: "sedan" },
+    "Coolray": { p: 24e3, o: "chinese", c: "suv" },
+    Tugella: { p: 3e4, o: "chinese", c: "suv" },
+    "Okavango": { p: 32e3, o: "chinese", c: "suv" }
+  },
+  Changan: {
+    Alsvin: { p: 16500, o: "chinese", c: "sedan" },
+    CS35: { p: 2e4, o: "chinese", c: "suv" },
+    CS55: { p: 24e3, o: "chinese", c: "suv" },
+    CS75: { p: 28e3, o: "chinese", c: "suv" },
+    "Uni-V": { p: 24e3, o: "chinese", c: "sedan" },
+    "Uni-K": { p: 28e3, o: "chinese", c: "suv" }
+  },
+  Ssangyong: {
+    Actyon: { p: 22e3, o: "korean", c: "suv" },
+    Rexton: { p: 34e3, o: "korean", c: "suv" },
+    Tivoli: { p: 24e3, o: "korean", c: "suv" }
+  },
+  JAC: {
+    S2: { p: 16e3, o: "chinese", c: "suv" },
+    S4: { p: 2e4, o: "chinese", c: "suv" },
+    "J7": { p: 22e3, o: "chinese", c: "sedan" },
+    "JS4": { p: 22e3, o: "chinese", c: "suv" }
+  },
+  BAIC: {
+    X55: { p: 2e4, o: "chinese", c: "suv" },
+    X65: { p: 24e3, o: "chinese", c: "suv" },
+    D50: { p: 16e3, o: "chinese", c: "sedan" }
+  },
+  Maxus: {
+    G10: { p: 26e3, o: "chinese", c: "minivan" },
+    T60: { p: 28e3, o: "chinese", c: "pickup" },
+    T70: { p: 34e3, o: "chinese", c: "pickup" }
+  },
+  "Great Wall": {
+    Wingle: { p: 22e3, o: "chinese", c: "pickup" }
   }
 };
 const TRIMS = (() => {
@@ -491,10 +652,46 @@ const DEP = {
   chinese: { sedan: 0.14, suv: 0.13, pickup: 0.12, hatchback: 0.15, minivan: 0.13, van: 0.14 }
 };
 const DEP_SOFTEN = { european: 0.82, japanese: 1, korean: 1, american: 1, chinese: 1 };
+const MKTCAL_EUR = [
+  { maxAge: 1, m: 0.86 },
+  // nearly new premium
+  { maxAge: 3, m: 0.74 },
+  // 1-3 yr
+  { maxAge: 5, m: 0.64 },
+  // 4-5 yr
+  { maxAge: 8, m: 0.58 },
+  // 6-8 yr (sedan/hatch boosted inside mktCal)
+  { maxAge: 99, m: 0.52 }
+  // 9+ yr
+];
+const MKTCAL_JPN = [{ maxAge: 3, m: 0.93 }, { maxAge: 7, m: 0.875 }, { maxAge: 12, m: 0.8 }, { maxAge: 99, m: 0.73 }];
+const MKTCAL_KRN = [{ maxAge: 3, m: 0.9 }, { maxAge: 7, m: 0.85 }, { maxAge: 12, m: 0.77 }, { maxAge: 99, m: 0.7 }];
+const MKTCAL_AMR = [{ maxAge: 3, m: 0.88 }, { maxAge: 7, m: 0.83 }, { maxAge: 12, m: 0.75 }, { maxAge: 99, m: 0.67 }];
+const MKTCAL_CHN = [{ maxAge: 3, m: 0.85 }, { maxAge: 7, m: 0.78 }, { maxAge: 99, m: 0.68 }];
+function mktCal(origin, age, cat = "") {
+  let table;
+  if (origin === "european") table = MKTCAL_EUR;
+  else if (origin === "japanese") table = MKTCAL_JPN;
+  else if (origin === "korean") table = MKTCAL_KRN;
+  else if (origin === "american") table = MKTCAL_AMR;
+  else table = MKTCAL_CHN;
+  const row = table.find((r) => age <= r.maxAge) || table.at(-1);
+  let m = row.m;
+  if (origin === "european" && (cat === "sedan" || cat === "hatchback") && age >= 6) {
+    m = Math.min(m * 1.22, 0.88);
+  }
+  return m;
+}
+function consignaMarketVal(vr, year) {
+  const age = Math.max(0, CURRENT_YEAR - parseInt(year, 10));
+  const cal = mktCal(vr.origin, age, vr.category);
+  return Math.round(vr.value * cal / 500) * 500;
+}
 const PREMIUM_ORIGINS = /* @__PURE__ */ new Set(["european"]);
 const isPremium = (o) => PREMIUM_ORIGINS.has(o);
-function getFloor(category, prem) {
+function getFloor(category, prem, age = 0) {
   var _a;
+  const ageMult = age <= 6 ? 1 : age <= 12 ? 0.88 : 0.76;
   const f = {
     pickup: 0.42,
     suv: prem ? 0.36 : 0.33,
@@ -503,7 +700,7 @@ function getFloor(category, prem) {
     minivan: 0.28,
     van: 0.3
   };
-  return (_a = f[category]) != null ? _a : 0.26;
+  return ((_a = f[category]) != null ? _a : 0.26) * ageMult;
 }
 function trimMult(version) {
   const v = (version || "").toLowerCase();
@@ -526,7 +723,7 @@ function valuate(brand, model, year, km, transmission, condition = "bueno", vers
   const age = Math.max(0, CURRENT_YEAR - parseInt(year, 10));
   const rawDep = (_a = (DEP[origin] || DEP.chinese)[category]) != null ? _a : 0.12;
   const effDep = Math.min(0.22, Math.max(0.04, rawDep * ((_b = DEP_SOFTEN[origin]) != null ? _b : 1)));
-  const floor = getFloor(category, isPremium(origin));
+  const floor = getFloor(category, isPremium(origin), age);
   const curve = Math.pow(1 - effDep, age);
   let val = base * Math.max(floor, curve);
   const kmInt = parseInt(km, 10) || 0;
@@ -538,7 +735,7 @@ function valuate(brand, model, year, km, transmission, condition = "bueno", vers
   else if (kmRatio < 0.85) kmAdj = 0.02;
   else if (kmRatio < 1.15) kmAdj = 0;
   else if (kmRatio < 1.5) kmAdj = -0.05;
-  else kmAdj = -0.09;
+  else kmAdj = -0.11;
   val *= 1 + kmAdj;
   if (transmission === "automatica") val *= 1.03;
   val *= (_c = { excelente: 1.06, bueno: 1, regular: 0.9, malo: 0.78 }[condition]) != null ? _c : 1;
@@ -561,7 +758,16 @@ const DEALER_REF = {
     bmw: 0.885,
     vw: 0.913,
     jaguar: 0.812,
-    renault: 0.846
+    renault: 0.846,
+    jeep: 0.88,
+    ford: 0.895,
+    chevrolet: 0.88,
+    hyundai: 0.91,
+    kia: 0.905,
+    audi: 0.875,
+    "mercedes-benz": 0.872,
+    lexus: 0.925,
+    subaru: 0.918
   },
   // Por tramo de km: ratio ajuste adicional
   kmBracket: [
@@ -660,128 +866,133 @@ const DEFAULT_INVENTORY = [
   { id: "i8", brand: "Toyota", model: "Fortuner", version: "SRV", year: 2020, km: 7e4, transmission: "automatica", fuel: "diesel", condition: "bueno", color: "Blanco Perlado", price: 39e3, photos: ["https://images.unsplash.com/photo-1616455579100-2ceaa4eb6d37?w=600&q=80"], active: true, featured: false }
 ];
 const GLOBAL_CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;0,14..32,900;1,14..32,400&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Mono:wght@400;500&display=swap');
 
-/* \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
-   AUTOPAGO \xB7 FINTECH PREMIUM DESIGN
-   Palette: White \xB7 #00B47A \xB7 #0B3C2E
-\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 */
+/* \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+   AUTOPAGO \xB7 FINTECH DESIGN SYSTEM \xB7 Wise-inspired v7
+   Palette  White / #00B47A / #0B3C2E
+   Font     Plus Jakarta Sans (Wise-tier sans-serif) + DM Mono
+\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 */
 :root {
-  --p:      #00B47A;
-  --p-dk:   #008F60;
-  --p-lt:   #E8F8F2;
-  --dark:   #0B3C2E;
-  --muted:  #5F7D73;
-  --border: #EEF3F1;
-  --surf:   #F7FBF9;
-  --white:  #FFFFFF;
-  --pill:   9999px;
-  --r:      20px;
-  --sh-sm:  0 1px 4px rgba(0,0,0,.05);
-  --sh-md:  0 4px 24px rgba(0,0,0,.08);
-  --sh-lg:  0 16px 56px rgba(0,0,0,.10);
-  --sh-p:   0 8px 32px rgba(0,180,122,.24);
+  --p:        #00B47A;
+  --p-dk:     #008F60;
+  --p-lt:     #E8F8F2;
+  --p-xlt:    #F3FBF7;
+  --dark:     #0B3C2E;
+  --mid:      #1A5242;
+  --muted:    #5F7D73;
+  --border:   #EEF3F1;
+  --surf:     #F7FBF9;
+  --white:    #FFFFFF;
+  --pill:     9999px;
+  --r:        18px;
+  --r-lg:     28px;
+  --sh-sm:    0 1px 4px rgba(11,60,46,.06);
+  --sh-md:    0 6px 28px rgba(11,60,46,.09);
+  --sh-lg:    0 20px 64px rgba(11,60,46,.11);
+  --sh-p:     0 10px 36px rgba(0,180,122,.28);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:'Inter',sans-serif;background:#fff;min-height:100vh;color:var(--dark);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#fff;min-height:100vh;color:var(--dark);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 #root{position:relative}
-button,input,select,textarea{font-family:'Inter',sans-serif}
+button,input,select,textarea{font-family:'Plus Jakarta Sans',sans-serif}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:var(--surf)}
-::-webkit-scrollbar-thumb{background:rgba(0,180,122,.3);border-radius:3px}
+::-webkit-scrollbar-thumb{background:rgba(0,180,122,.28);border-radius:3px}
 
-/* ANIMATIONS */
-@keyframes fadeUp  {from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
-@keyframes blobA   {0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(28px,-22px) scale(1.05)}66%{transform:translate(-14px,26px) scale(.97)}}
-@keyframes blobB   {0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-24px,18px) scale(1.04)}}
-@keyframes blobC   {0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(14px,22px) scale(1.03)}}
-@keyframes shimmer {0%{background-position:-200% 0}100%{background-position:200% 0}}
-@keyframes pulse   {0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.15)}}
-@keyframes scroll  {0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-@keyframes float   {0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
-@keyframes spin    {from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-@keyframes gradX   {0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
-.fadeup{animation:fadeUp .4s ease both}
+/* \u2500\u2500 ANIMATIONS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+@keyframes fadeUp     {from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn     {from{opacity:0}to{opacity:1}}
+@keyframes blobA      {0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-20px) scale(1.06)}66%{transform:translate(-12px,28px) scale(.97)}}
+@keyframes blobB      {0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-26px,16px) scale(1.04)}}
+@keyframes blobC      {0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(16px,24px) scale(1.03)}}
+@keyframes pulse      {0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.18)}}
+@keyframes scroll     {0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes float      {0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes shimmer    {0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes spin       {from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes countUp    {from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+@keyframes cardSlide  {from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
+.fadeup   {animation:fadeUp  .45s cubic-bezier(.22,1,.36,1) both}
+.fadein   {animation:fadeIn  .35s ease both}
 
-/* BLOBS */
+/* \u2500\u2500 BLOBS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
 .hero-blob-wrap{position:absolute;inset:0;overflow:hidden;z-index:0;pointer-events:none}
-.hero-blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.28}
-.hb1{width:700px;height:700px;background:radial-gradient(circle,#00D68F,#00B47A 60%);top:-200px;right:-120px;animation:blobA 16s ease-in-out infinite}
-.hb2{width:500px;height:500px;background:radial-gradient(circle,#BBEDD8,#8BDCBA 60%);bottom:-120px;left:-80px;animation:blobB 20s ease-in-out infinite}
-.hb3{width:320px;height:320px;background:radial-gradient(circle,#E8F8F2,#C2EDD8 60%);top:38%;left:38%;animation:blobC 12s ease-in-out infinite}
+.hero-blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:.22}
+.hb1{width:760px;height:760px;background:radial-gradient(circle,#00E09A,#00B47A 60%);top:-220px;right:-130px;animation:blobA 18s ease-in-out infinite}
+.hb2{width:520px;height:520px;background:radial-gradient(circle,#C2EDD8,#8BDCBA 60%);bottom:-140px;left:-90px;animation:blobB 22s ease-in-out infinite}
+.hb3{width:340px;height:340px;background:radial-gradient(circle,#E8F8F2,#C2EDD8 60%);top:40%;left:35%;animation:blobC 13s ease-in-out infinite}
+.grid-pattern{position:absolute;inset:0;z-index:0;pointer-events:none;background-image:radial-gradient(rgba(0,180,122,.065) 1.5px,transparent 1.5px);background-size:38px 38px;opacity:.6}
 
-/* GRID PATTERN */
-.grid-pattern{position:absolute;inset:0;z-index:0;pointer-events:none;background-image:radial-gradient(rgba(0,180,122,.07) 1px,transparent 1px);background-size:36px 36px;opacity:.7}
+/* \u2500\u2500 NAVIGATION \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+nav{background:rgba(255,255,255,.96);backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:900;box-shadow:0 1px 12px rgba(11,60,46,.04)}
 
-/* NAV */
-nav{background:rgba(255,255,255,.97);backdrop-filter:blur(20px) saturate(160%);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;box-shadow:0 1px 10px rgba(0,0,0,.05)}
-
-/* PILLS */
-.ap-pill{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:var(--pill);font-size:13px;font-weight:600;cursor:pointer;border:1px solid transparent;color:var(--muted);background:transparent;transition:all .15s;white-space:nowrap}
+/* \u2500\u2500 PILLS / TABS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.ap-pill{display:inline-flex;align-items:center;gap:5px;padding:7px 15px;border-radius:var(--pill);font-size:13px;font-weight:600;cursor:pointer;border:1px solid transparent;color:var(--muted);background:transparent;transition:all .16s;white-space:nowrap}
 .ap-pill:hover{background:var(--p-lt);color:var(--p-dk)}
-.ap-pill.active{background:var(--p-lt);color:var(--p);border-color:rgba(0,180,122,.2);font-weight:700}
+.ap-pill.active{background:var(--p-lt);color:var(--p);border-color:rgba(0,180,122,.22);font-weight:700}
 
-/* CARDS */
+/* \u2500\u2500 CARDS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
 .ap-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);padding:24px;box-shadow:var(--sh-sm);transition:border-color .2s,box-shadow .2s}
 .ap-card:hover{box-shadow:var(--sh-md)}
 
-/* INPUTS */
-.ap-input{width:100%;background:#FAFCFB;border:1.5px solid var(--border);border-radius:14px;padding:11px 15px;color:var(--dark);font-size:14px;outline:none;transition:border-color .15s,box-shadow .15s;appearance:none;-webkit-appearance:none}
-.ap-input:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(0,180,122,.10);background:#fff}
+/* \u2500\u2500 INPUTS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.ap-input{width:100%;background:#FAFCFB;border:1.5px solid var(--border);border-radius:14px;padding:12px 16px;color:var(--dark);font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;outline:none;transition:border-color .15s,box-shadow .15s;appearance:none;-webkit-appearance:none}
+.ap-input:focus{border-color:var(--p);box-shadow:0 0 0 3.5px rgba(0,180,122,.10);background:#fff}
 .ap-input::placeholder{color:#A8C4B8}
 .ap-input.err{border-color:#EF4444;box-shadow:0 0 0 3px rgba(239,68,68,.08)}
 .ap-input option{background:#fff;color:var(--dark)}
 .ap-label{font-size:11px;font-weight:700;color:var(--p);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px;display:block}
 
-/* BUTTONS */
-.ap-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 26px;border-radius:var(--pill);border:none;font-size:14px;font-weight:700;cursor:pointer;transition:all .18s;letter-spacing:-.01em}
+/* \u2500\u2500 BUTTONS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.ap-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 28px;border-radius:var(--pill);border:none;font-size:14px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;transition:all .18s;letter-spacing:-.01em}
 .ap-btn-primary{background:var(--p);color:#fff;box-shadow:var(--sh-p)}
-.ap-btn-primary:hover{background:var(--p-dk);transform:translateY(-1px);box-shadow:0 12px 40px rgba(0,180,122,.35)}
+.ap-btn-primary:hover{background:var(--p-dk);transform:translateY(-2px);box-shadow:0 14px 44px rgba(0,180,122,.38)}
 .ap-btn-secondary{background:#fff;color:var(--dark);border:1.5px solid var(--border);box-shadow:var(--sh-sm)}
-.ap-btn-secondary:hover{border-color:var(--p);color:var(--p);background:#FAFCFB}
+.ap-btn-secondary:hover{border-color:var(--p);color:var(--p);background:var(--p-xlt)}
 .ap-btn-success{background:var(--p);color:#fff;box-shadow:var(--sh-p)}
-.ap-btn-success:hover{background:var(--p-dk);transform:translateY(-1px)}
+.ap-btn-success:hover{background:var(--p-dk);transform:translateY(-2px)}
 .ap-btn-danger{background:linear-gradient(135deg,#DC2626,#EF4444);color:#fff}
-.ap-btn-danger:hover{transform:translateY(-1px)}
+.ap-btn-danger:hover{transform:translateY(-2px)}
 .ap-btn-sm{padding:7px 18px;font-size:12px}
 .ap-btn:disabled{opacity:.35;cursor:not-allowed;transform:none !important;box-shadow:none !important}
 
-/* KPI */
+/* \u2500\u2500 KPI \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
 .kpi-card{background:#fff;border:1.5px solid var(--border);border-radius:16px;padding:20px 22px;display:flex;flex-direction:column;gap:4px;box-shadow:var(--sh-sm)}
 .kpi-label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
 .kpi-val{font-size:28px;font-weight:800;font-family:'DM Mono',monospace;letter-spacing:-1px;color:var(--dark)}
 .kpi-sub{font-size:12px;color:var(--muted)}
 
-/* TABLE */
+/* \u2500\u2500 TABLE \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
 .ap-table{width:100%;border-collapse:collapse}
 .ap-table th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;border-bottom:2px solid var(--border)}
 .ap-table td{padding:12px 14px;font-size:13px;border-bottom:1px solid var(--border);color:var(--dark)}
 .ap-table tr:hover td{background:var(--p-lt)}
 .ap-table tr:last-child td{border-bottom:none}
 
-/* CHECKBOXES */
+/* \u2500\u2500 CHECKBOXES \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
 .ap-check{display:flex;gap:10px;cursor:pointer;align-items:flex-start;padding:12px 14px;border-radius:14px;border:1.5px solid var(--border);background:#FAFCFB;transition:border-color .15s,background .15s}
 .ap-check:has(input:checked){border-color:var(--p);background:var(--p-lt)}
 .ap-check input[type=checkbox]{width:18px;height:18px;flex-shrink:0;margin-top:1px;accent-color:var(--p);cursor:pointer}
 
-/* PHONE */
+/* \u2500\u2500 PHONE \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
 .phone-wrap{display:flex}
-.phone-prefix{background:var(--p-lt);border:1.5px solid rgba(0,180,122,.22);border-right:none;border-radius:14px 0 0 14px;padding:11px 15px;font-size:14px;color:var(--p);font-weight:700;white-space:nowrap;flex-shrink:0;display:flex;align-items:center}
+.phone-prefix{background:var(--p-lt);border:1.5px solid rgba(0,180,122,.22);border-right:none;border-radius:14px 0 0 14px;padding:12px 16px;font-size:14px;color:var(--p);font-weight:700;white-space:nowrap;flex-shrink:0;display:flex;align-items:center}
 .phone-input{border-radius:0 14px 14px 0 !important}
 
-/* TOGGLE */
+/* \u2500\u2500 TOGGLE \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
 .toggle{width:44px;height:24px;border-radius:12px;background:#D0E5DA;position:relative;transition:background .2s;flex-shrink:0;border:1px solid #BDDACA;cursor:pointer}
 .toggle.on{background:var(--p);border-color:var(--p-dk)}
 .toggle-thumb{width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:left .2s;box-shadow:0 1px 4px rgba(0,0,0,.18)}
 .toggle.on .toggle-thumb{left:22px}
 
-/* SLIDER */
+/* \u2500\u2500 SLIDER \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
 .ap-slider{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:3px;outline:none;cursor:pointer;border:none;background:#D0E5DA}
 .ap-slider::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--p);cursor:pointer;box-shadow:0 0 0 3px rgba(0,180,122,.16),0 2px 8px rgba(0,0,0,.12)}
 .ap-slider::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--p);cursor:pointer;border:none}
 
-/* MISC */
+/* \u2500\u2500 MISC \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
 .ap-divider{height:1px;background:var(--border);margin:20px 0}
 .ap-scroll{overflow-x:auto}
 .section-title{font-size:24px;font-weight:800;color:var(--dark);letter-spacing:-.5px}
@@ -790,108 +1001,116 @@ nav{background:rgba(255,255,255,.97);backdrop-filter:blur(20px) saturate(160%);b
 .val-result{background:linear-gradient(135deg,rgba(0,180,122,.07),rgba(0,220,143,.03));border:1.5px solid rgba(0,180,122,.18);border-radius:20px;padding:24px;animation:fadeUp .35s ease}
 .featured-badge{background:linear-gradient(90deg,#00A86B,#00C88A,#00A86B);background-size:200%;animation:shimmer 2.2s infinite;color:#fff;font-size:10px;font-weight:800;padding:2px 9px;border-radius:50px}
 
-/* ADMIN */
+/* \u2500\u2500 ADMIN \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
 .admin-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid transparent;color:var(--muted);transition:all .15s}
 .admin-item:hover{background:var(--p-lt);color:var(--dark)}
 .admin-item.active{background:var(--p-lt);border-color:rgba(0,180,122,.22);color:var(--p);font-weight:700}
 
-/* BENEFITS SLIDER */
+/* \u2500\u2500 BENEFITS SLIDER \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
 .benefits-track-wrap{overflow:hidden;position:relative}
-.benefits-track-wrap::before,.benefits-track-wrap::after{content:'';position:absolute;top:0;bottom:0;width:100px;z-index:2;pointer-events:none}
+.benefits-track-wrap::before,.benefits-track-wrap::after{content:'';position:absolute;top:0;bottom:0;width:120px;z-index:2;pointer-events:none}
 .benefits-track-wrap::before{left:0;background:linear-gradient(to right,var(--surf),transparent)}
 .benefits-track-wrap::after{right:0;background:linear-gradient(to left,var(--surf),transparent)}
-.benefits-track{display:flex;gap:20px;width:max-content;animation:scroll 32s linear infinite}
+.benefits-track{display:flex;gap:20px;width:max-content;animation:scroll 34s linear infinite}
 .benefits-track:hover{animation-play-state:paused}
-.benefit-card{flex-shrink:0;width:290px;background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:26px 22px;box-shadow:var(--sh-sm);transition:box-shadow .2s,transform .2s,border-color .2s}
-.benefit-card:hover{box-shadow:var(--sh-md);transform:translateY(-3px);border-color:rgba(0,180,122,.25)}
+.benefit-card{flex-shrink:0;width:300px;background:#fff;border:1.5px solid var(--border);border-radius:22px;padding:28px 24px;box-shadow:var(--sh-sm);transition:box-shadow .2s,transform .2s,border-color .2s}
+.benefit-card:hover{box-shadow:var(--sh-md);transform:translateY(-4px);border-color:rgba(0,180,122,.28)}
 
-/* MODULE CARDS */
-.module-card{background:#fff;border:1.5px solid var(--border);border-radius:24px;padding:28px 24px;display:flex;flex-direction:column;box-shadow:var(--sh-sm);transition:all .2s;cursor:pointer;height:100%}
-.module-card:hover{box-shadow:var(--sh-md);transform:translateY(-4px)}
-.module-icon{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:18px;flex-shrink:0}
-.module-cta{margin-top:auto;padding-top:20px;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700}
+/* \u2500\u2500 MODULE CARDS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.module-card{background:#fff;border:1.5px solid var(--border);border-radius:26px;padding:32px 26px;display:flex;flex-direction:column;box-shadow:var(--sh-sm);transition:all .22s;cursor:pointer;height:100%}
+.module-card:hover{box-shadow:var(--sh-lg);transform:translateY(-6px);border-color:rgba(0,180,122,.3)}
+.module-icon{width:56px;height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:20px;flex-shrink:0}
+.module-cta{margin-top:auto;padding-top:22px;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700}
 
-/* GRIDS */
+/* \u2500\u2500 HOME HERO \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.home-hero-section{position:relative;overflow:hidden;background:#FFFFFF;min-height:600px;display:flex;align-items:center}
+.home-hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center}
+.home-steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+
+/* \u2500\u2500 TRUST BAR \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.trust-bar-item{display:flex;align-items:center;gap:8px;padding:4px 0}
+.trust-bar-item span{font-size:13px;font-weight:600;color:var(--dark)}
+
+/* \u2500\u2500 STAT BADGE \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.stat-badge{animation:countUp .5s cubic-bezier(.22,1,.36,1) both}
+
+/* \u2500\u2500 SECTION LABELS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.sec-label{display:inline-block;background:var(--p-lt);border-radius:var(--pill);padding:5px 16px;font-size:11px;font-weight:800;color:#00845A;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px}
+
+/* \u2500\u2500 GRIDS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
 .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
 .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 
-/* STATIC PAGES */
+/* \u2500\u2500 STATIC PAGES \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
 .static-page{max-width:900px;margin:0 auto;padding:60px 24px}
-.static-page h1{font-size:clamp(28px,4vw,44px);font-weight:900;color:var(--dark);letter-spacing:-1.5px;margin-bottom:16px}
+.static-page h1{font-size:clamp(28px,4vw,44px);font-weight:800;color:var(--dark);letter-spacing:-1.5px;margin-bottom:16px}
 .static-page .lead{font-size:18px;color:var(--muted);line-height:1.65;margin-bottom:48px;max-width:600px}
 .static-page h2{font-size:22px;font-weight:800;color:var(--dark);letter-spacing:-.4px;margin:36px 0 12px}
 .static-page p{font-size:15px;color:#3d5a50;line-height:1.75;margin-bottom:16px}
 .static-page .tag{display:inline-block;background:var(--p-lt);color:var(--p);font-size:11px;font-weight:700;padding:3px 12px;border-radius:50px;letter-spacing:.06em;margin-bottom:20px}
 
-/* \u2500\u2500 MODULE CARDS ADAPTIVE GRID \u2500\u2500 */
-.home-cards-grid{display:grid;gap:20px;grid-template-columns:repeat(4,1fr)}
-.home-cards-grid[data-count="1"]{grid-template-columns:1fr;max-width:500px;margin:0 auto}
-.home-cards-grid[data-count="2"]{grid-template-columns:repeat(2,1fr);max-width:820px;margin:0 auto}
+/* \u2500\u2500 MODULE CARDS ADAPTIVE GRID \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.home-cards-grid{display:grid;gap:22px;grid-template-columns:repeat(4,1fr)}
+.home-cards-grid[data-count="1"]{grid-template-columns:1fr;max-width:480px;margin:0 auto}
+.home-cards-grid[data-count="2"]{grid-template-columns:repeat(2,1fr);max-width:840px;margin:0 auto}
 .home-cards-grid[data-count="3"]{grid-template-columns:repeat(3,1fr)}
 
-/* \u2500\u2500 HERO \u2500\u2500 */
-.home-hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
-.home-steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.home-hero-section{position:relative;overflow:hidden;background:#FFFFFF;min-height:580px;display:flex;align-items:center}
+/* \u2500\u2500 FOOTER \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px}
 
-/* \u2500\u2500 RESPONSIVE \u2500\u2500 */
+/* \u2500\u2500 NOSOTROS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.nos-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+
+/* \u2500\u2500 MODULE PAGE FORM GRIDS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.module-form-grid{grid-template-columns:1fr !important}
+.credito-terms-grid{grid-template-columns:1fr !important}
+.amort-table-wrap{overflow-x:auto}
+
+/* \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+   RESPONSIVE
+\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 */
+@media(max-width:1100px){
+  .home-hero-grid{gap:40px}
+}
 @media(max-width:900px){
   .grid-4{grid-template-columns:repeat(2,1fr)}
   .grid-3{grid-template-columns:repeat(2,1fr)}
   .home-cards-grid{grid-template-columns:repeat(2,1fr) !important;max-width:100% !important}
-  .home-cards-grid[data-count="1"]{grid-template-columns:1fr !important;max-width:500px !important}
+  .home-cards-grid[data-count="1"]{grid-template-columns:1fr !important;max-width:480px !important}
 }
 @media(max-width:768px){
   .desktop-only{display:none !important}
   .ap-burger{display:inline-flex !important}
-  .home-hero-grid{grid-template-columns:1fr !important;gap:32px !important}
+  .home-hero-grid{grid-template-columns:1fr !important;gap:36px !important}
   .home-hero-right{display:none !important}
-  .home-hero-section{min-height:auto !important;padding:48px 0 !important}
+  .home-hero-section{min-height:auto !important;padding:52px 0 !important}
   .home-steps-grid{grid-template-columns:1fr !important}
-  .home-cta-inner{padding:36px 24px !important;border-radius:22px !important}
+  .home-cta-inner{padding:40px 24px !important;border-radius:24px !important}
   .home-cta-btns{flex-direction:column !important;align-items:stretch !important}
   .home-cta-btns .ap-btn{width:100%;justify-content:center}
-  .home-trust-bar{gap:16px !important;padding:14px 16px !important}
-  .home-trust-item{font-size:12px !important}
+  .home-trust-bar{gap:14px !important;flex-wrap:wrap}
   .home-hero-btns{flex-direction:column !important;align-items:stretch !important;gap:10px !important}
   .home-hero-btns .ap-btn{width:100%;justify-content:center}
-  .home-hero-stats{gap:18px !important}
-  .benefit-card{width:240px}
-  .static-page{padding:36px 18px}
+  .home-hero-stats{gap:20px !important}
+  .benefit-card{width:248px}
+  .footer-grid{grid-template-columns:1fr 1fr !important;gap:28px !important}
+  .nos-grid{grid-template-columns:1fr !important;gap:32px !important}
+  .static-page{padding:40px 18px}
 }
 @media(max-width:580px){
   .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
   .ap-card{padding:16px 14px}
   .section-title{font-size:20px}
   .home-cards-grid{grid-template-columns:1fr !important;max-width:100% !important}
-  .module-card{padding:22px 18px}
-}
-@media(min-width:769px){.ap-burger{display:none !important}}
-
-/* \u2500\u2500 FOOTER \u2500\u2500 */
-.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px}
-.footer-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-@media(max-width:768px){
-  .footer-grid{grid-template-columns:1fr 1fr !important;gap:28px !important}
-  .footer-bottom{flex-direction:column;text-align:center}
-}
-@media(max-width:480px){
+  .module-card{padding:24px 20px}
   .footer-grid{grid-template-columns:1fr !important}
-}
-
-/* \u2500\u2500 NOSOTROS \u2500\u2500 */
-.nos-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
-@media(max-width:700px){
-  .nos-grid{grid-template-columns:1fr !important;gap:32px !important}
   .nos-stats-grid{grid-template-columns:1fr 1fr !important}
 }
-
-/* \u2500\u2500 MODULE PAGE FORMS \u2500\u2500 */
+@media(min-width:769px){.ap-burger{display:none !important}}
 @media(max-width:600px){
   .module-form-grid{grid-template-columns:1fr !important}
   .credito-terms-grid{grid-template-columns:1fr !important}
-  .amort-table-wrap{overflow-x:auto}
 }
 `;
 const AppCtx = React.createContext({
@@ -1399,46 +1618,65 @@ function FaqModule() {
 function Home({ onNav }) {
   const { cfg } = React.useContext(AppCtx);
   const ALL = [
-    { id: "comprar", icon: "\u{1F697}", title: "Compramos tu auto", sub: "Pre-oferta en 2 minutos", desc: "Ingresa los datos y recibe una oferta real basada en el mercado peruano. Visita, inspecci\xF3n y oferta final en 24h.", color: "#00B47A", bg: "#E8F8F2" },
-    { id: "credito", icon: "\u{1F4B3}", title: "Pr\xE9stamos al instante", sub: "Tu auto como garant\xEDa", desc: "Usa tu veh\xEDculo para obtener liquidez. Calculamos tu monto m\xE1ximo al instante. Desembolso en 24 horas.", color: "#0EA5E9", bg: "#E0F2FE" },
-    { id: "consigna", icon: "\u{1F4CB}", title: "Vendemos tu auto", sub: "El mejor precio del mercado", desc: "T\xFA eliges el precio, nosotros publicamos y negociamos. Cobras el neto al cerrar la venta.", color: "#8B5CF6", bg: "#EDE9FE" },
-    { id: "showroom", icon: "\u{1F699}", title: "Encuentra tu Auto", sub: "Autos verificados \xB7 entrega inmediata", desc: "Explora nuestro inventario certificado. Financiamos en el momento o te ayudamos a vender el tuyo primero.", color: "#F59E0B", bg: "#FEF3C7" }
+    { id: "comprar", icon: "\u{1F697}", title: "Compramos tu auto", sub: "Pre-oferta en 2 min", desc: "Tasaci\xF3n online instant\xE1nea basada en data real del mercado peruano. Visita, inspecci\xF3n y oferta final en 24h.", color: "#00B47A", bg: "#E8F8F2" },
+    { id: "credito", icon: "\u{1F4B3}", title: "Pr\xE9stamos al instante", sub: "Tu auto como garant\xEDa", desc: "Obt\xE9n liquidez usando tu veh\xEDculo. Calculamos tu monto m\xE1ximo al instante. Desembolso en 24 horas h\xE1biles.", color: "#0EA5E9", bg: "#E0F2FE" },
+    { id: "consigna", icon: "\u{1F4CB}", title: "Vendemos tu auto", sub: "Precio justo de mercado", desc: "T\xFA fijas el precio, nosotros publicamos y negociamos. Sin comisi\xF3n hasta cerrar. Cobras el neto al finalizar.", color: "#8B5CF6", bg: "#EDE9FE" },
+    { id: "showroom", icon: "\u{1F699}", title: "Encuentra tu Auto", sub: "Inventario certificado", desc: "Autos verificados con historial completo. Financiamiento en el momento o ayuda para vender el tuyo primero.", color: "#F59E0B", bg: "#FEF3C7" }
   ];
   const visible = cfg.modules || { comprar: true, credito: true, consigna: true, showroom: true };
   const cards = ALL.filter((c) => visible[c.id] !== false);
   const BENEFITS = [
-    { icon: "\u26A1", title: "Pre-oferta en 2 minutos", desc: "Sin esperas. Ingresa los datos y recibe una oferta real al instante, sin intermediarios." },
-    { icon: "\u{1F512}", title: "100% seguro y transparente", desc: "Sin costos ocultos. Sabes exactamente cu\xE1nto vale tu auto antes de cualquier decisi\xF3n." },
-    { icon: "\u{1F4F1}", title: "Todo desde tu celular", desc: "Sin papeleo ni tr\xE1mites innecesarios. Proceso completamente digital, donde est\xE9s." },
-    { icon: "\u{1F3E6}", title: "Desembolso en 24 horas", desc: "Aprobaci\xF3n autom\xE1tica en minutos. El dinero en tu cuenta antes de que termine el d\xEDa." },
-    { icon: "\u{1F4CA}", title: "Condiciones claras", desc: "Tasas reales de mercado. Sin letra peque\xF1a, sin sorpresas. Solo transparencia total." },
-    { icon: "\u{1F1F5}\u{1F1EA}", title: "Especialistas en Per\xFA", desc: "Tasamos con data real de Lima y provincias. Conocemos el mercado como nadie." }
+    { icon: "\u26A1", title: "Respuesta en 2 minutos", desc: "Sin esperas. Ingresa los datos y recibe una oferta real al instante, sin intermediarios ni tr\xE1mites." },
+    { icon: "\u{1F512}", title: "100% seguro y transparente", desc: "Sin costos ocultos. Sabes exactamente cu\xE1nto vale tu auto antes de tomar cualquier decisi\xF3n." },
+    { icon: "\u{1F4F1}", title: "Todo desde tu celular", desc: "Proceso completamente digital. Sin papeleo, sin visitas innecesarias, donde est\xE9s en Per\xFA." },
+    { icon: "\u{1F3E6}", title: "Desembolso en 24 horas", desc: "Aprobaci\xF3n autom\xE1tica en minutos. El dinero en tu cuenta antes de que termine el d\xEDa h\xE1bil." },
+    { icon: "\u{1F4CA}", title: "Condiciones 100% claras", desc: "Tasas reales del mercado. Sin letra peque\xF1a, sin sorpresas. Solo transparencia absoluta." },
+    { icon: "\u{1F1F5}\u{1F1EA}", title: "Especialistas en Per\xFA", desc: "Tasamos con data real de Lima y provincias. Conocemos el mercado automotriz peruano como nadie." }
   ];
-  return /* @__PURE__ */ React.createElement("div", { style: { background: "#FFFFFF" } }, /* @__PURE__ */ React.createElement("section", { className: "home-hero-section" }, /* @__PURE__ */ React.createElement("div", { className: "hero-blob-wrap" }, /* @__PURE__ */ React.createElement("div", { className: "hero-blob hb1" }), /* @__PURE__ */ React.createElement("div", { className: "hero-blob hb2" }), /* @__PURE__ */ React.createElement("div", { className: "hero-blob hb3" })), /* @__PURE__ */ React.createElement("div", { className: "grid-pattern" }), /* @__PURE__ */ React.createElement("div", { style: { position: "relative", zIndex: 1, maxWidth: 1200, margin: "0 auto", padding: "clamp(40px,8vw,72px) clamp(18px,5vw,28px)", width: "100%" } }, /* @__PURE__ */ React.createElement("div", { className: "home-hero-grid" }, /* @__PURE__ */ React.createElement("div", { className: "fadeup" }, /* @__PURE__ */ React.createElement("div", { style: { display: "inline-flex", alignItems: "center", gap: 8, background: "#E8F8F2", border: "1.5px solid rgba(0,180,122,.22)", borderRadius: 50, padding: "5px 16px", marginBottom: 22 } }, /* @__PURE__ */ React.createElement("span", { style: { width: 6, height: 6, borderRadius: "50%", background: "#00B47A", display: "inline-block", animation: "pulse 2s infinite" } }), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 12, fontWeight: 700, color: "#00845A", letterSpacing: ".08em" } }, "\u{1F1F5}\u{1F1EA} Plataforma automotriz \xB7 Lima, Per\xFA")), /* @__PURE__ */ React.createElement("h1", { style: { fontSize: "clamp(36px,5.5vw,66px)", fontWeight: 900, color: "#0B3C2E", letterSpacing: "-2.5px", lineHeight: 1.04, marginBottom: 22 } }, "Tu auto,", /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("span", { style: { background: "linear-gradient(135deg,#00B47A 0%,#00D68F 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" } }, "nuestra especialidad.")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 18, color: "#5F7D73", lineHeight: 1.65, marginBottom: 36, maxWidth: 440, fontWeight: 400 } }, "Tasaciones reales en menos de 2 minutos. Desembolso en 24 horas. Proceso 100% transparente."), /* @__PURE__ */ React.createElement("div", { className: "home-hero-btns", style: { display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 36 } }, /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-primary", onClick: () => onNav("comprar"), style: { fontSize: 15, padding: "15px 34px" } }, "Cotiza tu auto \u2192"), /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-secondary", onClick: () => onNav("credito"), style: { fontSize: 15, padding: "15px 34px" } }, "Solicitar pr\xE9stamo")), /* @__PURE__ */ React.createElement("div", { className: "home-hero-stats", style: { display: "flex", gap: 28, flexWrap: "wrap" } }, [["1,000+", "Autos tasados"], ["24h", "Desembolso"], ["98%", "Satisfacci\xF3n"]].map(([v, l]) => /* @__PURE__ */ React.createElement("div", { key: l }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 22, fontWeight: 800, color: "#0B3C2E", letterSpacing: "-1px", fontFamily: "'DM Mono',monospace" } }, v), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 12, color: "#5F7D73", fontWeight: 500, marginTop: 2 } }, l))))), /* @__PURE__ */ React.createElement("div", { className: "home-hero-right", style: { display: "flex", justifyContent: "center" } }, /* @__PURE__ */ React.createElement("div", { style: { background: "#fff", borderRadius: 28, padding: 28, boxShadow: "0 28px 80px rgba(0,0,0,.12),0 4px 16px rgba(0,180,122,.08)", border: "1.5px solid #EEF3F1", maxWidth: 360, width: "100%", animation: "float 5s ease-in-out infinite" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 12, marginBottom: 20 } }, /* @__PURE__ */ React.createElement("div", { style: { width: 44, height: 44, borderRadius: 14, background: "#E8F8F2", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 } }, "\u{1F697}"), /* @__PURE__ */ React.createElement("div", { style: { flex: 1 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 13, fontWeight: 700, color: "#0B3C2E" } }, "Toyota RAV4 2021"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 12, color: "#5F7D73" } }, "Autom\xE1tico \xB7 45,000 km")), /* @__PURE__ */ React.createElement("div", { style: { background: "#E8F8F2", borderRadius: 50, padding: "3px 10px", fontSize: 10, fontWeight: 800, color: "#00845A" } }, "\u2713 Elegible")), /* @__PURE__ */ React.createElement("div", { style: { background: "#F7FBF9", borderRadius: 16, padding: "16px 18px", marginBottom: 14 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 10, fontWeight: 800, color: "#5F7D73", marginBottom: 4, letterSpacing: ".08em" } }, "PRE-OFERTA INSTANT\xC1NEA"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 34, fontWeight: 900, color: "#0B3C2E", letterSpacing: "-1.5px", fontFamily: "'DM Mono',monospace" } }, "$18,500"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 12, color: "#5F7D73", marginTop: 2 } }, "S/ 69,745 \xB7 TC 3.77")), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 } }, [["Valor comercial", "$21,000"], ["Cuota 12m", "$1,840/mes"]].map(([l, v]) => /* @__PURE__ */ React.createElement("div", { key: l, style: { background: "#fff", border: "1.5px solid #EEF3F1", borderRadius: 12, padding: "10px 12px" } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 10, color: "#5F7D73", fontWeight: 600, marginBottom: 2 } }, l), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 14, fontWeight: 800, color: "#0B3C2E" } }, v)))), /* @__PURE__ */ React.createElement("div", { style: { height: 6, borderRadius: 3, background: "#EEF3F1", marginBottom: 14, overflow: "hidden" } }, /* @__PURE__ */ React.createElement("div", { style: { height: "100%", width: "88%", background: "linear-gradient(90deg,#00B47A,#00D68F)", borderRadius: 3 } })), /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-primary", style: { width: "100%", padding: "13px" } }, "Ver oferta completa \u2192")))))), /* @__PURE__ */ React.createElement("section", { style: { background: "#E8F8F2", borderTop: "1px solid rgba(0,180,122,.14)", borderBottom: "1px solid rgba(0,180,122,.14)", padding: "17px 24px" } }, /* @__PURE__ */ React.createElement("div", { className: "home-trust-bar", style: { maxWidth: 1200, margin: "0 auto", display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 32 } }, [["\u2705", "M\xE1s de 1,000 autos tasados"], ["\u26A1", "Respuesta en minutos"], ["\u{1F512}", "Proceso 100% transparente"], ["\u{1F3C6}", "98% de clientes satisfechos"]].map(([icon, text]) => /* @__PURE__ */ React.createElement("div", { key: text, style: { display: "flex", alignItems: "center", gap: 8 } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 15 } }, icon), /* @__PURE__ */ React.createElement("span", { className: "home-trust-item", style: { fontSize: 13, fontWeight: 600, color: "#0B3C2E" } }, text))))), /* @__PURE__ */ React.createElement("section", { style: { maxWidth: 1200, margin: "0 auto", padding: "clamp(48px,8vw,80px) clamp(18px,5vw,28px)" } }, /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", marginBottom: "clamp(32px,5vw,52px)" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "inline-block", background: "#E8F8F2", borderRadius: 50, padding: "4px 16px", fontSize: 11, fontWeight: 800, color: "#00845A", letterSpacing: ".1em", marginBottom: 14 } }, "SERVICIOS"), /* @__PURE__ */ React.createElement("h2", { style: { fontSize: "clamp(26px,4vw,40px)", fontWeight: 900, color: "#0B3C2E", letterSpacing: "-1.5px", marginBottom: 10 } }, "\xBFQu\xE9 necesitas hoy?"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 16, color: "#5F7D73", maxWidth: 420, margin: "0 auto" } }, "Elige el servicio que mejor se adapte a tu situaci\xF3n")), /* @__PURE__ */ React.createElement("div", { className: "home-cards-grid", "data-count": cards.length }, cards.map((card) => /* @__PURE__ */ React.createElement("div", { key: card.id, className: "module-card", onClick: () => onNav(card.id), style: { borderColor: `${card.color}28` } }, /* @__PURE__ */ React.createElement("div", { className: "module-icon", style: { background: card.bg, color: card.color } }, card.icon), /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 17, fontWeight: 800, color: "#0B3C2E", letterSpacing: "-.3px", marginBottom: 8 } }, card.title), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, fontWeight: 700, color: card.color, marginBottom: 10 } }, card.sub), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, color: "#5F7D73", lineHeight: 1.65, flex: 1 } }, card.desc), /* @__PURE__ */ React.createElement("div", { className: "module-cta", style: { color: card.color } }, "Comenzar ", /* @__PURE__ */ React.createElement("span", { style: { fontSize: 15 } }, "\u2192")))))), /* @__PURE__ */ React.createElement("section", { style: { background: "#F7FBF9", borderTop: "1px solid #EEF3F1", borderBottom: "1px solid #EEF3F1", padding: "clamp(48px,8vw,80px) 0" } }, /* @__PURE__ */ React.createElement("div", { style: { maxWidth: 1200, margin: "0 auto", padding: "0 28px 40px", textAlign: "center" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "inline-block", background: "#E8F8F2", borderRadius: 50, padding: "4px 16px", fontSize: 11, fontWeight: 800, color: "#00845A", letterSpacing: ".1em", marginBottom: 14 } }, "\xBFPOR QU\xC9 AUTOPAGO?"), /* @__PURE__ */ React.createElement("h2", { style: { fontSize: "clamp(24px,3.5vw,38px)", fontWeight: 900, color: "#0B3C2E", letterSpacing: "-1.2px" } }, "La forma m\xE1s inteligente de gestionar tu auto")), /* @__PURE__ */ React.createElement("div", { className: "benefits-track-wrap" }, /* @__PURE__ */ React.createElement("div", { className: "benefits-track" }, [...BENEFITS, ...BENEFITS].map((b, i) => /* @__PURE__ */ React.createElement("div", { key: i, className: "benefit-card" }, /* @__PURE__ */ React.createElement("div", { style: { width: 48, height: 48, borderRadius: 14, background: "#E8F8F2", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, marginBottom: 16 } }, b.icon), /* @__PURE__ */ React.createElement("h4", { style: { fontSize: 16, fontWeight: 800, color: "#0B3C2E", letterSpacing: "-.3px", marginBottom: 8 } }, b.title), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, color: "#5F7D73", lineHeight: 1.65 } }, b.desc)))))), /* @__PURE__ */ React.createElement("section", { style: { maxWidth: 1200, margin: "0 auto", padding: "clamp(48px,8vw,80px) clamp(18px,5vw,28px)" } }, /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", marginBottom: "clamp(32px,5vw,52px)" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "inline-block", background: "#E8F8F2", borderRadius: 50, padding: "4px 16px", fontSize: 11, fontWeight: 800, color: "#00845A", letterSpacing: ".1em", marginBottom: 14 } }, "\xBFC\xD3MO FUNCIONA?"), /* @__PURE__ */ React.createElement("h2", { style: { fontSize: "clamp(24px,3.5vw,38px)", fontWeight: 900, color: "#0B3C2E", letterSpacing: "-1.2px" } }, "3 pasos. Sin complicaciones.")), /* @__PURE__ */ React.createElement("div", { className: "home-steps-grid" }, [
-    { n: "01", icon: "\u{1F4CB}", title: "Ingresa los datos", desc: "Marca, modelo, a\xF1o, km y condici\xF3n. Menos de 2 minutos." },
-    { n: "02", icon: "\u{1F4B0}", title: "Recibe tu oferta", desc: "Calculamos el valor real de mercado y te presentamos la mejor oferta del d\xEDa." },
-    { n: "03", icon: "\u{1F91D}", title: "Cierra el trato", desc: "Coordina la visita. Desembolso en 24h si todo est\xE1 en orden." }
-  ].map((step) => /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement("div", { style: { background: "#FFFFFF" } }, /* @__PURE__ */ React.createElement("section", { className: "home-hero-section" }, /* @__PURE__ */ React.createElement("div", { className: "hero-blob-wrap" }, /* @__PURE__ */ React.createElement("div", { className: "hero-blob hb1" }), /* @__PURE__ */ React.createElement("div", { className: "hero-blob hb2" }), /* @__PURE__ */ React.createElement("div", { className: "hero-blob hb3" })), /* @__PURE__ */ React.createElement("div", { className: "grid-pattern" }), /* @__PURE__ */ React.createElement("div", { style: { position: "relative", zIndex: 1, maxWidth: 1200, margin: "0 auto", padding: "clamp(52px,8vw,96px) clamp(20px,5vw,32px)", width: "100%" } }, /* @__PURE__ */ React.createElement("div", { className: "home-hero-grid" }, /* @__PURE__ */ React.createElement("div", { className: "fadeup" }, /* @__PURE__ */ React.createElement("div", { style: { display: "inline-flex", alignItems: "center", gap: 8, background: "#E8F8F2", border: "1.5px solid rgba(0,180,122,.22)", borderRadius: 50, padding: "5px 16px", marginBottom: 24 } }, /* @__PURE__ */ React.createElement("span", { style: { width: 7, height: 7, borderRadius: "50%", background: "#00B47A", display: "inline-block", animation: "pulse 2s infinite" } }), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 12, fontWeight: 700, color: "#00845A", letterSpacing: ".08em" } }, "\u{1F1F5}\u{1F1EA} Plataforma automotriz \xB7 Lima, Per\xFA")), /* @__PURE__ */ React.createElement("h1", { style: { fontSize: "clamp(40px,5.8vw,72px)", fontWeight: 900, color: "#0B3C2E", letterSpacing: "-3px", lineHeight: 1.02, marginBottom: 22 } }, "Tu auto,", /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("span", { style: { background: "linear-gradient(135deg,#00B47A 0%,#00D890 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" } }, "en buenas manos.")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "clamp(16px,1.9vw,19px)", color: "#5F7D73", lineHeight: 1.7, marginBottom: 38, maxWidth: 460, fontWeight: 400 } }, "Compramos, financiamos y vendemos tu veh\xEDculo.", /* @__PURE__ */ React.createElement("br", null), "Proceso 100% digital. Oferta en 2 minutos."), /* @__PURE__ */ React.createElement("div", { className: "home-hero-btns", style: { display: "flex", gap: 14, marginBottom: 44 } }, /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-primary", onClick: () => onNav("comprar"), style: { fontSize: 15, padding: "16px 36px" } }, "Cotiza tu auto \u2192"), /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-secondary", onClick: () => onNav("credito"), style: { fontSize: 15, padding: "16px 34px" } }, "Solicitar pr\xE9stamo")), /* @__PURE__ */ React.createElement("div", { className: "home-hero-stats", style: { display: "flex", gap: 36 } }, [["1,200+", "Autos tasados"], ["24h", "Desembolso"], ["4.9\u2605", "Calificaci\xF3n"]].map(([v, l]) => /* @__PURE__ */ React.createElement("div", { key: l, className: "stat-badge" }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: "clamp(18px,2.2vw,26px)", fontWeight: 900, color: "#0B3C2E", letterSpacing: "-1px", fontFamily: "'DM Mono',monospace" } }, v), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 12, color: "#5F7D73", fontWeight: 600, marginTop: 3 } }, l))))), /* @__PURE__ */ React.createElement("div", { className: "home-hero-right", style: { display: "flex", justifyContent: "center" } }, /* @__PURE__ */ React.createElement("div", { style: { background: "#fff", borderRadius: 32, padding: 28, boxShadow: "0 32px 96px rgba(0,0,0,.13),0 4px 18px rgba(0,180,122,.08)", border: "1.5px solid #EEF3F1", maxWidth: 360, width: "100%", animation: "float 5.5s ease-in-out infinite" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 12, marginBottom: 20 } }, /* @__PURE__ */ React.createElement("div", { style: { width: 46, height: 46, borderRadius: 15, background: "#E8F8F2", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 } }, "\u{1F697}"), /* @__PURE__ */ React.createElement("div", { style: { flex: 1 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 13, fontWeight: 700, color: "#0B3C2E" } }, "Toyota Corolla XEI 2022"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 12, color: "#5F7D73" } }, "Autom\xE1tico \xB7 38,000 km")), /* @__PURE__ */ React.createElement("div", { style: { background: "#E8F8F2", borderRadius: 50, padding: "3px 10px", fontSize: 10, fontWeight: 800, color: "#00845A" } }, "\u2713 Elegible")), /* @__PURE__ */ React.createElement("div", { style: { background: "linear-gradient(135deg,#F3FBF7,#E8F8F2)", borderRadius: 18, padding: "16px 18px", marginBottom: 14, border: "1px solid rgba(0,180,122,.12)" } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 10, fontWeight: 800, color: "#5F7D73", marginBottom: 4, letterSpacing: ".1em" } }, "OFERTA DEL D\xCDA"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 36, fontWeight: 900, color: "#0B3C2E", letterSpacing: "-2px", fontFamily: "'DM Mono',monospace" } }, "$16,500"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 12, color: "#5F7D73", marginTop: 2 } }, "S/ 62,205 \xB7 TC 3.77")), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 } }, [["Valor comercial", "$18,800"], ["Cuota 12m", "$1,640/mes"]].map(([l, v]) => /* @__PURE__ */ React.createElement("div", { key: l, style: { background: "#fff", border: "1.5px solid #EEF3F1", borderRadius: 13, padding: "10px 13px" } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 10, color: "#5F7D73", fontWeight: 600, marginBottom: 2 } }, l), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 14, fontWeight: 800, color: "#0B3C2E" } }, v)))), /* @__PURE__ */ React.createElement("div", { style: { height: 6, borderRadius: 3, background: "#EEF3F1", marginBottom: 14, overflow: "hidden" } }, /* @__PURE__ */ React.createElement("div", { style: { height: "100%", width: "87%", background: "linear-gradient(90deg,#00B47A,#00D890)", borderRadius: 3, transition: "width 2s ease" } })), /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-primary", style: { width: "100%", padding: "13px" } }, "Ver oferta completa \u2192")))))), /* @__PURE__ */ React.createElement("section", { style: { background: "#E8F8F2", borderTop: "1px solid rgba(0,180,122,.14)", borderBottom: "1px solid rgba(0,180,122,.14)", padding: "18px 24px" } }, /* @__PURE__ */ React.createElement("div", { className: "home-trust-bar", style: { maxWidth: 1200, margin: "0 auto", display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 36 } }, [
+    ["\u2705", "M\xE1s de 1,200 autos tasados"],
+    ["\u26A1", "Oferta en menos de 2 minutos"],
+    ["\u{1F512}", "Proceso 100% transparente"],
+    ["\u{1F3C6}", "4.9\u2605 de satisfacci\xF3n"],
+    ["\u{1F4CD}", "Lima \xB7 Per\xFA"]
+  ].map(([icon, text]) => /* @__PURE__ */ React.createElement("div", { key: text, className: "trust-bar-item" }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 15 } }, icon), /* @__PURE__ */ React.createElement("span", null, text))))), /* @__PURE__ */ React.createElement("section", { style: { maxWidth: 1200, margin: "0 auto", padding: "clamp(64px,8vw,110px) clamp(20px,5vw,32px)" } }, /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", marginBottom: "clamp(40px,5vw,64px)" } }, /* @__PURE__ */ React.createElement("div", { className: "sec-label" }, "SERVICIOS"), /* @__PURE__ */ React.createElement("h2", { style: { fontSize: "clamp(28px,4vw,46px)", fontWeight: 900, color: "#0B3C2E", letterSpacing: "-2px", lineHeight: 1.08, marginBottom: 12 } }, "\xBFQu\xE9 necesitas hoy?"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 17, color: "#5F7D73", maxWidth: 440, margin: "0 auto", lineHeight: 1.65 } }, "Elige el servicio que mejor se adapte a tu situaci\xF3n")), /* @__PURE__ */ React.createElement("div", { className: "home-cards-grid", "data-count": cards.length }, cards.map((card, i) => /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      key: card.id,
+      className: "module-card",
+      onClick: () => onNav(card.id),
+      style: { borderColor: `${card.color}22`, animationDelay: `${i * 0.08}s` }
+    },
+    /* @__PURE__ */ React.createElement("div", { className: "module-icon", style: { background: card.bg, color: card.color } }, card.icon),
+    /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, fontWeight: 800, color: card.color, letterSpacing: ".08em", textTransform: "uppercase", marginBottom: 8 } }, card.sub),
+    /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 19, fontWeight: 800, color: "#0B3C2E", letterSpacing: "-.4px", marginBottom: 10 } }, card.title),
+    /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13.5, color: "#5F7D73", lineHeight: 1.7, flex: 1 } }, card.desc),
+    /* @__PURE__ */ React.createElement("div", { className: "module-cta", style: { color: card.color } }, "Comenzar ", /* @__PURE__ */ React.createElement("span", { style: { fontSize: 16 } }, "\u2192"))
+  )))), /* @__PURE__ */ React.createElement("section", { style: { background: "#F7FBF9", borderTop: "1px solid #EEF3F1", borderBottom: "1px solid #EEF3F1", padding: "clamp(56px,6vw,88px) 0" } }, /* @__PURE__ */ React.createElement("div", { style: { maxWidth: 1200, margin: "0 auto", padding: "0 32px clamp(32px,4vw,48px)", textAlign: "center" } }, /* @__PURE__ */ React.createElement("div", { className: "sec-label" }, "\xBFPOR QU\xC9 AUTOPAGO?"), /* @__PURE__ */ React.createElement("h2", { style: { fontSize: "clamp(26px,3.5vw,42px)", fontWeight: 900, color: "#0B3C2E", letterSpacing: "-1.5px" } }, "La forma m\xE1s inteligente", /* @__PURE__ */ React.createElement("br", null), "de gestionar tu auto")), /* @__PURE__ */ React.createElement("div", { className: "benefits-track-wrap" }, /* @__PURE__ */ React.createElement("div", { className: "benefits-track" }, [...BENEFITS, ...BENEFITS].map((b, i) => /* @__PURE__ */ React.createElement("div", { key: i, className: "benefit-card" }, /* @__PURE__ */ React.createElement("div", { style: { width: 52, height: 52, borderRadius: 16, background: "#E8F8F2", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, marginBottom: 18 } }, b.icon), /* @__PURE__ */ React.createElement("h4", { style: { fontSize: 16, fontWeight: 800, color: "#0B3C2E", letterSpacing: "-.3px", marginBottom: 10 } }, b.title), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13.5, color: "#5F7D73", lineHeight: 1.7 } }, b.desc)))))), /* @__PURE__ */ React.createElement("section", { style: { maxWidth: 1200, margin: "0 auto", padding: "clamp(64px,8vw,110px) clamp(20px,5vw,32px)" } }, /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", marginBottom: "clamp(40px,5vw,60px)" } }, /* @__PURE__ */ React.createElement("div", { className: "sec-label" }, "\xBFC\xD3MO FUNCIONA?"), /* @__PURE__ */ React.createElement("h2", { style: { fontSize: "clamp(26px,3.5vw,42px)", fontWeight: 900, color: "#0B3C2E", letterSpacing: "-1.5px" } }, "3 pasos. Sin complicaciones.")), /* @__PURE__ */ React.createElement("div", { className: "home-steps-grid" }, [
+    { n: "01", icon: "\u{1F4CB}", title: "Ingresa los datos", desc: "Marca, modelo, a\xF1o, km y condici\xF3n. Menos de 2 minutos desde tu celular." },
+    { n: "02", icon: "\u{1F4A1}", title: "Recibe tu oferta", desc: "Valuaci\xF3n autom\xE1tica con data real del mercado peruano. Sin intermediarios." },
+    { n: "03", icon: "\u{1F91D}", title: "Cierra el trato", desc: "Coordina la visita. Revisi\xF3n presencial y desembolso en menos de 24h." }
+  ].map((step, i) => /* @__PURE__ */ React.createElement(
     "div",
     {
       key: step.n,
-      style: { background: "#fff", border: "1.5px solid #EEF3F1", borderRadius: 24, padding: "32px 26px", textAlign: "center", boxShadow: "0 2px 12px rgba(0,0,0,.05)", transition: "all .2s" },
+      style: { background: "#fff", border: "1.5px solid #EEF3F1", borderRadius: 28, padding: "36px 28px", textAlign: "center", boxShadow: "0 2px 14px rgba(0,0,0,.04)", transition: "all .22s", cursor: "default" },
       onMouseEnter: (e) => {
-        e.currentTarget.style.transform = "translateY(-4px)";
-        e.currentTarget.style.boxShadow = "0 12px 36px rgba(0,0,0,.09)";
-        e.currentTarget.style.borderColor = "rgba(0,180,122,.25)";
+        e.currentTarget.style.transform = "translateY(-5px)";
+        e.currentTarget.style.boxShadow = "0 14px 44px rgba(0,0,0,.09)";
+        e.currentTarget.style.borderColor = "rgba(0,180,122,.28)";
       },
       onMouseLeave: (e) => {
         e.currentTarget.style.transform = "";
-        e.currentTarget.style.boxShadow = "0 2px 12px rgba(0,0,0,.05)";
+        e.currentTarget.style.boxShadow = "0 2px 14px rgba(0,0,0,.04)";
         e.currentTarget.style.borderColor = "#EEF3F1";
       }
     },
-    /* @__PURE__ */ React.createElement("div", { style: { width: 56, height: 56, borderRadius: 18, background: "#E8F8F2", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, margin: "0 auto 20px" } }, step.icon),
-    /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, fontWeight: 800, color: "#00B47A", letterSpacing: ".12em", marginBottom: 8 } }, step.n),
-    /* @__PURE__ */ React.createElement("h4", { style: { fontSize: 18, fontWeight: 800, color: "#0B3C2E", letterSpacing: "-.3px", marginBottom: 10 } }, step.title),
-    /* @__PURE__ */ React.createElement("p", { style: { fontSize: 14, color: "#5F7D73", lineHeight: 1.65 } }, step.desc)
-  )))), /* @__PURE__ */ React.createElement("section", { style: { maxWidth: 1152, margin: "0 auto clamp(48px,8vw,80px)", padding: "0 clamp(18px,5vw,28px)" } }, /* @__PURE__ */ React.createElement("div", { className: "home-cta-inner", style: { background: "#0B3C2E", borderRadius: 32, padding: "60px 52px", textAlign: "center", position: "relative", overflow: "hidden" } }, /* @__PURE__ */ React.createElement("div", { style: { position: "absolute", inset: 0, backgroundImage: "radial-gradient(circle at 15% 50%,rgba(0,180,122,.32) 0%,transparent 55%),radial-gradient(circle at 85% 50%,rgba(0,220,143,.20) 0%,transparent 55%)", pointerEvents: "none" } }), /* @__PURE__ */ React.createElement("div", { style: { position: "relative", zIndex: 1 } }, /* @__PURE__ */ React.createElement("h2", { style: { fontSize: "clamp(26px,4vw,44px)", fontWeight: 900, color: "#fff", letterSpacing: "-1.5px", marginBottom: 14 } }, "\xBFListo para empezar?"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 17, color: "rgba(255,255,255,.65)", marginBottom: 36, maxWidth: 440, margin: "0 auto 36px" } }, "Miles de peruanos ya conf\xEDan en AutoPago para gestionar sus veh\xEDculos."), /* @__PURE__ */ React.createElement("div", { className: "home-cta-btns", style: { display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement("button", { className: "ap-btn", onClick: () => onNav("comprar"), style: { background: "#00B47A", color: "#fff", fontSize: 16, padding: "16px 38px", boxShadow: "0 8px 32px rgba(0,180,122,.4)" } }, "Cotiza tu auto \u2192"), /* @__PURE__ */ React.createElement("button", { className: "ap-btn", onClick: () => onNav("nosotros"), style: { background: "rgba(255,255,255,.12)", color: "#fff", fontSize: 16, padding: "16px 38px", border: "1.5px solid rgba(255,255,255,.3)" } }, "Conoce AutoPago"))))));
+    /* @__PURE__ */ React.createElement("div", { style: { width: 62, height: 62, borderRadius: 20, background: "#E8F8F2", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, margin: "0 auto 22px" } }, step.icon),
+    /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, fontWeight: 800, color: "#00B47A", letterSpacing: ".14em", marginBottom: 10 } }, step.n),
+    /* @__PURE__ */ React.createElement("h4", { style: { fontSize: 19, fontWeight: 800, color: "#0B3C2E", letterSpacing: "-.4px", marginBottom: 12 } }, step.title),
+    /* @__PURE__ */ React.createElement("p", { style: { fontSize: 14.5, color: "#5F7D73", lineHeight: 1.7 } }, step.desc)
+  )))), /* @__PURE__ */ React.createElement("section", { style: { maxWidth: 1200, margin: `0 auto clamp(60px,8vw,100px)`, padding: `0 clamp(20px,5vw,32px)` } }, /* @__PURE__ */ React.createElement("div", { className: "home-cta-inner", style: { background: "#0B3C2E", borderRadius: 36, padding: "72px 60px", textAlign: "center", position: "relative", overflow: "hidden" } }, /* @__PURE__ */ React.createElement("div", { style: { position: "absolute", inset: 0, backgroundImage: "radial-gradient(circle at 12% 50%,rgba(0,180,122,.38) 0%,transparent 52%),radial-gradient(circle at 88% 50%,rgba(0,220,143,.22) 0%,transparent 52%)", pointerEvents: "none" } }), /* @__PURE__ */ React.createElement("div", { style: { position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(255,255,255,.04) 1px,transparent 1px)", backgroundSize: "32px 32px", pointerEvents: "none" } }), /* @__PURE__ */ React.createElement("div", { style: { position: "relative", zIndex: 1 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(0,180,122,.2)", border: "1px solid rgba(0,180,122,.4)", borderRadius: 50, padding: "5px 16px", marginBottom: 22 } }, /* @__PURE__ */ React.createElement("span", { style: { width: 6, height: 6, borderRadius: "50%", background: "#00D890", display: "inline-block", animation: "pulse 2s infinite" } }), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 12, fontWeight: 700, color: "#7FE8C2", letterSpacing: ".08em" } }, "Disponible ahora \xB7 Respuesta inmediata")), /* @__PURE__ */ React.createElement("h2", { style: { fontSize: "clamp(28px,4.5vw,52px)", fontWeight: 900, color: "#fff", letterSpacing: "-2px", lineHeight: 1.06, marginBottom: 16 } }, "\xBFListo para empezar?"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: "clamp(15px,1.8vw,18px)", color: "rgba(255,255,255,.65)", marginBottom: 42, maxWidth: 480, margin: "0 auto 42px", lineHeight: 1.65 } }, "M\xE1s de 1,200 peruanos ya conf\xEDan en AutoPago para gestionar sus veh\xEDculos de forma segura."), /* @__PURE__ */ React.createElement("div", { className: "home-cta-btns", style: { display: "flex", gap: 14, justifyContent: "center" } }, /* @__PURE__ */ React.createElement("button", { className: "ap-btn", onClick: () => onNav("comprar"), style: { background: "#00B47A", color: "#fff", fontSize: 16, padding: "17px 40px", boxShadow: "0 10px 40px rgba(0,180,122,.45)", fontWeight: 700 } }, "Cotiza tu auto \u2192"), /* @__PURE__ */ React.createElement("button", { className: "ap-btn", onClick: () => onNav("nosotros"), style: { background: "rgba(255,255,255,.1)", color: "#fff", fontSize: 16, padding: "17px 36px", border: "1.5px solid rgba(255,255,255,.25)" } }, "Conoce AutoPago"))))));
 }
 function ComprarModule({ onNav }) {
   var _a, _b, _c;
@@ -1634,8 +1872,10 @@ function ConsignaModule() {
     if (!isVehicleValid(vehicle)) return;
     const vr = valuate(vehicle.brand, vehicle.model, vehicle.year, vehicle.km, vehicle.transmission, vehicle.condition, vehicle.version);
     if (vr) {
-      setResult(vr);
-      trackLead("consigna_quote", __spreadProps(__spreadValues({}, vehicle), { estimatedValue: vr.value, askSoles: parseInt(askSoles) || 0, tcUsed: tcVal }));
+      const marketUSD = consignaMarketVal(vr, vehicle.year);
+      const vrCal = __spreadProps(__spreadValues({}, vr), { value: marketUSD, rawValue: vr.value });
+      setResult(vrCal);
+      trackLead("consigna_quote", __spreadProps(__spreadValues({}, vehicle), { estimatedValue: marketUSD, rawValue: vr.value, askSoles: parseInt(askSoles) || 0, tcUsed: tcVal }));
       setStep(2);
     }
   };
