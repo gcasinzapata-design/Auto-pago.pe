@@ -2,9 +2,72 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#0F172A" />
-  <title>AutoPago</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#00B47A" />
+
+  <!-- ══ SEO PRIMARIO ════════════════════════════════════════ -->
+  <title>AutoPago | Compramos, Financiamos y Vendemos Autos en Lima, Perú</title>
+  <meta name="description" content="AutoPago: tasación online de tu auto en 2 minutos, préstamos con garantía vehicular, consignación y showroom de autos usados en Lima, Perú. Pre-oferta instantánea sin salir de casa." />
+  <meta name="keywords" content="comprar auto usado Lima, vender auto Lima, préstamo vehicular Perú, consignación autos Lima, tasación auto online, autopago, financiamiento auto Perú" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="AutoPago" />
+  <link rel="canonical" href="https://www.autopago.pe/" />
+
+  <!-- ══ OPEN GRAPH (Facebook, WhatsApp, LinkedIn) ══════════ -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="AutoPago" />
+  <meta property="og:title" content="AutoPago | Compramos tu auto al instante · Lima, Perú" />
+  <meta property="og:description" content="Tasación online en 2 minutos. Compramos tu auto, te damos crédito o lo vendemos por ti. La plataforma fintech automotriz más rápida del Perú." />
+  <meta property="og:image" content="https://www.autopago.pe/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:url" content="https://www.autopago.pe/" />
+  <meta property="og:locale" content="es_PE" />
+
+  <!-- ══ TWITTER CARD ════════════════════════════════════════ -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@autopagope" />
+  <meta name="twitter:title" content="AutoPago · Compramos tu auto en Lima al instante" />
+  <meta name="twitter:description" content="Pre-oferta online en 2 minutos. Sin papeleos. Pago rápido. La forma más fácil de vender tu auto en Perú." />
+  <meta name="twitter:image" content="https://www.autopago.pe/og-image.jpg" />
+
+  <!-- ══ SCHEMA.ORG — LocalBusiness ════════════════════════ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FinancialService",
+    "name": "AutoPago",
+    "description": "Plataforma fintech automotriz peruana. Compramos, financiamos y vendemos autos con transparencia y tecnología.",
+    "url": "https://www.autopago.pe",
+    "logo": "https://www.autopago.pe/og-image.jpg",
+    "telephone": "+51988886970",
+    "areaServed": { "@type": "City", "name": "Lima", "addressCountry": "PE" },
+    "address": { "@type": "PostalAddress", "addressLocality": "Lima", "addressCountry": "PE" },
+    "sameAs": ["https://wa.me/51988886970"],
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+      "opens": "09:00",
+      "closes": "19:00"
+    },
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Servicios AutoPago",
+      "itemListElement": [
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Compramos tu auto", "description": "Tasación online y compra directa de vehículos usados" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Crédito vehicular", "description": "Préstamos con garantía vehicular en 24 horas" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Consignación", "description": "Vendemos tu auto por ti con precios de mercado" } }
+      ]
+    }
+  }
+  </script>
+
+  <!-- ══ PWA / ICONS ════════════════════════════════════════ -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="AutoPago" />
+  <meta name="application-name" content="AutoPago" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
@@ -191,7 +254,7 @@ const REMOTE_SYNC = {
     try {
       const headers = {};
       const key = this.apiKey();
-      if (key) headers["X-Access-Key"] = key;
+      if (key) headers["X-Master-Key"] = key;
       const r = await fetch("https://api.jsonbin.io/v3/b/" + bid + "/latest", {
         headers,
         signal: AbortSignal.timeout(4500)
@@ -216,7 +279,7 @@ const REMOTE_SYNC = {
       const payload = __spreadProps(__spreadValues({}, cfg), { _apVersion: Date.now() });
       const r = await fetch("https://api.jsonbin.io/v3/b/" + bid, {
         method: "PUT",
-        headers: { "Content-Type": "application/json", "X-Access-Key": key },
+        headers: { "Content-Type": "application/json", "X-Master-Key": key },
         body: JSON.stringify(payload),
         signal: AbortSignal.timeout(8e3)
       });
@@ -233,7 +296,7 @@ const REMOTE_SYNC = {
       const payload = __spreadProps(__spreadValues({}, cfg), { _apVersion: Date.now() });
       const r = await fetch("https://api.jsonbin.io/v3/b", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-Access-Key": key, "X-Bin-Name": "AutoPago-Config", "X-Bin-Private": "false" },
+        headers: { "Content-Type": "application/json", "X-Master-Key": key, "X-Bin-Name": "AutoPago-Config", "X-Bin-Private": "false" },
         body: JSON.stringify(payload),
         signal: AbortSignal.timeout(8e3)
       });
@@ -1622,7 +1685,14 @@ select.ap-input:disabled { opacity:.45; cursor:not-allowed; }
 .leads-row {display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:center;padding:12px 14px;border-radius:10px;border:1px solid var(--border);font-size:13px}
 .leads-row:hover{background:var(--surf)}
 
-/* \u2500\u2500 INVENTORY SHOWROOM \u2500\u2500 */
+/* \u2500\u2500 SHOWROOM \u2500\u2500 */
+.showroom-card {
+  transition:transform .2s,box-shadow .22s;
+}
+.showroom-card:hover {
+  transform:translateY(-4px);
+  box-shadow:0 12px 40px rgba(0,100,60,.14);
+}
 .inventory-grid {display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
 .inv-card {background:#fff;border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:box-shadow .2s,transform .2s}
 .inv-card:hover{box-shadow:var(--sh-md);transform:translateY(-3px)}
@@ -1648,13 +1718,71 @@ select.ap-input:disabled { opacity:.45; cursor:not-allowed; }
 
 /* \u2500\u2500 RESPONSIVE FIXES \u2500\u2500 */
 @media(min-width:769px){.ap-burger{display:none !important}}
+
+/* Sticky CTA mobile */
+@media(max-width:768px){
+  .sticky-cta-mobile{ display:flex !important; }
+}
+
+/* Mobile \u2264600px */
 @media(max-width:600px){
   .module-form-grid{grid-template-columns:1fr !important}
   .credito-terms-grid{grid-template-columns:1fr !important}
   .grid-3{grid-template-columns:1fr 1fr !important}
+  .ap-card{padding:18px 14px !important;border-radius:14px !important}
+  .grid-2{grid-template-columns:1fr !important}
+  /* VehicleForm year combo stacks on tiny screens */
+  .vf-year-row{flex-direction:column}
+  /* Module pages: reduce top padding */
+  .module-page-wrap{padding:20px 14px !important}
+  /* Result cards: full width numbers */
+  .result-money{font-size:36px !important}
+  /* Price slider reference grid */
+  .grid-3.price-ref{grid-template-columns:1fr !important}
+  /* Credito amort chart */
+  .amort-chart-wrap{overflow-x:auto}
+  /* Admin config tabs: scroll horizontally */
+  .admin-tabs{overflow-x:auto;flex-wrap:nowrap !important;padding-bottom:4px}
+  .admin-tab-btn{white-space:nowrap;flex-shrink:0}
+  /* Home hero: reduce font sizes */
+  .hero-headline{font-size:clamp(28px,8vw,42px) !important}
+  .hero-sub{font-size:15px !important}
+}
+
+/* Tablet 601-768px */  
+@media(min-width:601px) and (max-width:768px){
+  .grid-3{grid-template-columns:1fr 1fr !important}
+  .ap-card{padding:22px 20px !important}
+  .home-hero-grid{grid-template-columns:1fr !important}
+  .hero-headline{font-size:clamp(32px,6vw,48px) !important}
+}
+
+/* Tiny screens \u2264380px */
+@media(max-width:380px){
+  .grid-3{grid-template-columns:1fr !important}
+  .stat-badge{flex-direction:column;text-align:center}
+  .ap-btn{padding:11px 16px !important;font-size:13px !important}
 }
 
 `;
+function useCounter(target, duration = 900, decimals = 0) {
+  const [val, setVal] = React.useState(0);
+  const ref = React.useRef(null);
+  React.useEffect(() => {
+    if (!target) return;
+    const start = performance.now();
+    const tick = (now) => {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setVal(+(target * eased).toFixed(decimals));
+      if (progress < 1) ref.current = requestAnimationFrame(tick);
+    };
+    ref.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(ref.current);
+  }, [target, duration, decimals]);
+  return val;
+}
 const AppCtx = React.createContext({
   tc: 3.77,
   cfg: DEFAULT_CONFIG,
@@ -2203,7 +2331,25 @@ function Home({ onNav }) {
     { quote: "Vend\xED mi Hilux en 3 semanas. El precio que pusimos fue justo y el proceso fue muy claro.", name: "Carlos M.", city: "Lima Norte", stars: "\u2B50\u2B50\u2B50\u2B50\u2B50" },
     { quote: "Necesitaba liquidez r\xE1pida. Con AutoPago us\xE9 mi Corolla y tuve el dinero al d\xEDa siguiente.", name: "Ana R.", city: "Miraflores", stars: "\u2B50\u2B50\u2B50\u2B50\u2B50" },
     { quote: "Pens\xE9 que mi auto val\xEDa menos. La tasaci\xF3n me sorprendi\xF3. Recomendado totalmente.", name: "Jos\xE9 L.", city: "San Isidro", stars: "\u2B50\u2B50\u2B50\u2B50\u2B50" }
-  ].map((t, i) => /* @__PURE__ */ React.createElement("div", { key: i, className: "ap-card", style: { padding: "28px 24px" } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 16, marginBottom: 12 } }, t.stars), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 15, lineHeight: 1.75, color: "#374151", marginBottom: 16, fontStyle: "italic" } }, '"', t.quote, '"'), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 13, fontWeight: 700 } }, t.name), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 12, color: "var(--muted)" } }, t.city)))))), /* @__PURE__ */ React.createElement("section", { style: { padding: "clamp(64px,9vw,112px) clamp(20px,5vw,40px)" } }, /* @__PURE__ */ React.createElement("div", { style: { maxWidth: 1200, margin: "0 auto" } }, /* @__PURE__ */ React.createElement("div", { className: "home-cta-inner", style: { background: "var(--dark)", borderRadius: "var(--r-lg)", padding: "clamp(40px,6vw,72px) clamp(32px,6vw,80px)", textAlign: "center" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,.12)", borderRadius: "9999px", padding: "5px 16px", fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,.8)", marginBottom: 20, letterSpacing: ".08em", textTransform: "uppercase" } }, "Empieza gratis"), /* @__PURE__ */ React.createElement("h2", { style: { fontSize: "clamp(28px,4vw,44px)", fontWeight: 800, color: "#fff", letterSpacing: "-1.5px", marginBottom: 14 } }, "\xBFCu\xE1nto vale tu auto hoy?"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 16, color: "rgba(255,255,255,.65)", marginBottom: 36, lineHeight: 1.65 } }, "Tasaci\xF3n instant\xE1nea. Sin registrarte. Sin comprometerte."), /* @__PURE__ */ React.createElement("div", { className: "home-cta-btns", style: { display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement("button", { className: "ap-btn-cta", onClick: () => onNav("comprar") }, "Tasar mi auto gratis \u2192"), /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-secondary", style: { borderRadius: "var(--pill)", background: "rgba(255,255,255,.1)", color: "#fff", border: "1.5px solid rgba(255,255,255,.2)" }, onClick: () => onNav("consigna") }, "Quiero vender mi auto"))))));
+  ].map((t, i) => /* @__PURE__ */ React.createElement("div", { key: i, className: "ap-card", style: { padding: "28px 24px" } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 16, marginBottom: 12 } }, t.stars), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 15, lineHeight: 1.75, color: "#374151", marginBottom: 16, fontStyle: "italic" } }, '"', t.quote, '"'), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 13, fontWeight: 700 } }, t.name), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 12, color: "var(--muted)" } }, t.city)))))), /* @__PURE__ */ React.createElement("section", { style: { background: "var(--dark)", padding: "clamp(64px,9vw,96px) clamp(20px,5vw,40px)" } }, /* @__PURE__ */ React.createElement("div", { style: { maxWidth: 1200, margin: "0 auto" } }, /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", marginBottom: 48 } }, /* @__PURE__ */ React.createElement("span", { className: "sec-label", style: { color: "rgba(255,255,255,.4)" } }, "Lo que dicen nuestros clientes"), /* @__PURE__ */ React.createElement("h2", { style: { fontSize: "clamp(26px,3.5vw,40px)", fontWeight: 800, color: "#fff", letterSpacing: "-1px", marginTop: 8 } }, "Historias reales, resultados reales")), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(min(100%,300px),1fr))", gap: 20 } }, [
+    { name: "Marco T.", car: "RAV4 2019", op: "Compramos", amount: "$24,500", stars: 5, city: "San Isidro", text: "En 2 d\xEDas me pagaron. La tasaci\xF3n online fue exacta y el inspector lleg\xF3 puntual. Recomiendo AutoPago 100%." },
+    { name: "Carla M.", car: "Corolla 2018", op: "Consignaci\xF3n", amount: "$16,000", stars: 5, city: "Miraflores", text: "Vend\xED mi auto en 11 d\xEDas. Ellos se encargaron de todo: fotos, visitas, papeleo. Yo solo recib\xED el pago." },
+    { name: "Diego R.", car: "X-Trail 2020", op: "Cr\xE9dito", amount: "$18,000", stars: 5, city: "Surco", text: "Ped\xED un pr\xE9stamo con garant\xEDa vehicular y lo aprobaron en el mismo d\xEDa. Tasa mejor que los bancos." },
+    { name: "Ana L.", car: "Civic 2017", op: "Compramos", amount: "$13,500", stars: 5, city: "La Molina", text: "Me ofrecieron el precio justo sin regateos. Proceso transparente y r\xE1pido. Muy profesionales." },
+    { name: "Carlos V.", car: "Hilux 2021", op: "Showroom", amount: "$38,000", stars: 5, city: "Chorrillos", text: "Encontr\xE9 la Hilux que buscaba en el showroom. El precio era el mejor del mercado. Tr\xE1mite sin sorpresas." },
+    { name: "Rosa P.", car: "Tucson 2018", op: "Consignaci\xF3n", amount: "$21,000", stars: 5, city: "Jes\xFAs Mar\xEDa", text: "Intent\xE9 vender por mi cuenta 2 meses sin \xE9xito. Con AutoPago la vend\xED en 8 d\xEDas al precio que ped\xED." }
+  ].map((t, i) => /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      key: i,
+      style: { background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.09)", borderRadius: 20, padding: "24px 22px", transition: "border-color .2s" },
+      onMouseEnter: (e) => e.currentTarget.style.borderColor = "rgba(0,200,138,.3)",
+      onMouseLeave: (e) => e.currentTarget.style.borderColor = "rgba(255,255,255,.09)"
+    },
+    /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 2, marginBottom: 12 } }, Array(t.stars).fill(0).map((_, j) => /* @__PURE__ */ React.createElement("span", { key: j, style: { color: "#F59E0B", fontSize: 14 } }, "\u2605"))),
+    /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13.5, color: "rgba(255,255,255,.8)", lineHeight: 1.7, marginBottom: 16, fontStyle: "italic" } }, '"', t.text, '"'),
+    /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "flex-end" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, fontWeight: 800, color: "#E8F5EE" } }, t.name), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6B8F7A" } }, t.city)), /* @__PURE__ */ React.createElement("div", { style: { textAlign: "right" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, fontWeight: 700, color: "#00C88A", background: "rgba(0,200,138,.12)", border: "1px solid rgba(0,200,138,.2)", borderRadius: 8, padding: "3px 9px", display: "block", marginBottom: 4 } }, t.op), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, fontWeight: 800, color: "#10B981", fontFamily: "'DM Mono',monospace" } }, t.amount)))
+  ))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "center", alignItems: "center", gap: 16, marginTop: 40, flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8 } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 28, fontWeight: 900, color: "#F59E0B", fontFamily: "'DM Mono',monospace" } }, "4.9"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 2 } }, Array(5).fill(0).map((_, i) => /* @__PURE__ */ React.createElement("span", { key: i, style: { color: "#F59E0B", fontSize: 14 } }, "\u2605"))), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 10, color: "rgba(255,255,255,.4)", marginTop: 2 } }, "Promedio de rese\xF1as"))), /* @__PURE__ */ React.createElement("div", { style: { width: 1, height: 40, background: "rgba(255,255,255,.1)" } }), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, color: "rgba(255,255,255,.4)", textAlign: "center", maxWidth: 240, lineHeight: 1.5 } }, "M\xE1s de 1,200 veh\xEDculos gestionados en Lima. Servicio 100% presencial y transparente.")))), /* @__PURE__ */ React.createElement("section", { style: { padding: "clamp(64px,9vw,112px) clamp(20px,5vw,40px)" } }, /* @__PURE__ */ React.createElement("div", { style: { maxWidth: 1200, margin: "0 auto" } }, /* @__PURE__ */ React.createElement("div", { className: "home-cta-inner", style: { background: "var(--dark)", borderRadius: "var(--r-lg)", padding: "clamp(40px,6vw,72px) clamp(32px,6vw,80px)", textAlign: "center" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,.12)", borderRadius: "9999px", padding: "5px 16px", fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,.8)", marginBottom: 20, letterSpacing: ".08em", textTransform: "uppercase" } }, "Empieza gratis"), /* @__PURE__ */ React.createElement("h2", { style: { fontSize: "clamp(28px,4vw,44px)", fontWeight: 800, color: "#fff", letterSpacing: "-1.5px", marginBottom: 14 } }, "\xBFCu\xE1nto vale tu auto hoy?"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 16, color: "rgba(255,255,255,.65)", marginBottom: 36, lineHeight: 1.65 } }, "Tasaci\xF3n instant\xE1nea. Sin registrarte. Sin comprometerte."), /* @__PURE__ */ React.createElement("div", { className: "home-cta-btns", style: { display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement("button", { className: "ap-btn-cta", onClick: () => onNav("comprar") }, "Tasar mi auto gratis \u2192"), /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-secondary", style: { borderRadius: "var(--pill)", background: "rgba(255,255,255,.1)", color: "#fff", border: "1.5px solid rgba(255,255,255,.2)" }, onClick: () => onNav("consigna") }, "Quiero vender mi auto"))))));
 }
 function ComprarModule({ onNav }) {
   var _a, _b, _c;
@@ -2252,7 +2398,7 @@ function ComprarModule({ onNav }) {
     );
     window.open(`https://wa.me/${waNum}?text=${msg}`, "_blank");
   };
-  return /* @__PURE__ */ React.createElement("div", { style: { maxWidth: 800, margin: "0 auto", padding: "32px 20px" } }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 28 } }, /* @__PURE__ */ React.createElement("h2", { className: "section-title" }, "\u{1F697} Compramos tu auto"), /* @__PURE__ */ React.createElement("p", { className: "section-sub" }, "Pre-oferta online \xB7 Visita e inspecci\xF3n \xB7 Oferta final en 24h")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 0, marginBottom: 20, overflowX: "auto", padding: "10px 14px", background: "rgba(0,0,0,.03)", border: "1px solid rgba(0,0,0,.07)", borderRadius: 14 } }, [
+  return /* @__PURE__ */ React.createElement("div", { className: "module-page-wrap", style: { maxWidth: 800, margin: "0 auto", padding: "clamp(16px,4vw,32px) clamp(14px,4vw,20px)" } }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 28 } }, /* @__PURE__ */ React.createElement("h2", { className: "section-title" }, "\u{1F697} Compramos tu auto"), /* @__PURE__ */ React.createElement("p", { className: "section-sub" }, "Pre-oferta online \xB7 Visita e inspecci\xF3n \xB7 Oferta final en 24h")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 0, marginBottom: 20, overflowX: "auto", padding: "10px 14px", background: "rgba(0,0,0,.03)", border: "1px solid rgba(0,0,0,.07)", borderRadius: 14 } }, [
     { icon: "\u{1F4CA}", t: "Pre-oferta online", s: "2 min", active: step >= 1 },
     null,
     { icon: "\u{1F50D}", t: "Inspecci\xF3n", s: "A domicilio", active: step >= 2 },
@@ -2285,7 +2431,14 @@ function ComprarModule({ onNav }) {
     setStep(1);
     setResult(null);
     setWaSent(false);
-  } }, "Modificar"))), step === 2 && result && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { style: { background: "linear-gradient(135deg,rgba(16,185,129,.12),rgba(0,168,107,.06))", border: "1px solid rgba(16,185,129,.3)", borderRadius: 20, padding: "24px", marginBottom: 16, animation: "fadeUp .3s ease" } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, fontWeight: 700, color: "#6B8F7A", letterSpacing: ".08em", marginBottom: 10 } }, "TU ", offerLabel.toUpperCase()), /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 44, fontWeight: 800, color: "#10B981", fontFamily: "'DM Mono',monospace", letterSpacing: "-2px", lineHeight: 1 } }, "$", result.offer.toLocaleString()), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, color: "#6B8F7A", marginTop: 6, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" } }, "S/ ", Math.round(result.offer * tcVal).toLocaleString("es-PE"), " \xB7 ", /* @__PURE__ */ React.createElement(TcBadge, null))), /* @__PURE__ */ React.createElement("div", { style: { background: "rgba(245,158,11,.08)", border: "1px solid rgba(245,158,11,.2)", borderRadius: 12, padding: "10px 14px", display: "flex", gap: 10, alignItems: "flex-start" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 16, flexShrink: 0 } }, "\u26A1"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, fontWeight: 700, color: "#FCD34D", marginBottom: 2 } }, "Pre-oferta v\xE1lida por 48 horas"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6B8F7A", lineHeight: 1.5 } }, "Esta es una estimaci\xF3n preliminar basada en el mercado. Un inspector AutoPago visitar\xE1 tu veh\xEDculo para verificar su estado y emitir la ", /* @__PURE__ */ React.createElement("strong", { style: { color: "#0B0B0B" } }, "oferta final"), ", que puede ser igual o superior."))), /* @__PURE__ */ React.createElement("div", { className: "ap-divider", style: { margin: "16px 0" } }), /* @__PURE__ */ React.createElement("div", { className: "grid-2" }, [
+  } }, "Modificar"))), step === 2 && result && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { style: { background: "linear-gradient(135deg,rgba(16,185,129,.12),rgba(0,168,107,.06))", border: "1px solid rgba(16,185,129,.3)", borderRadius: 20, padding: "24px", marginBottom: 16, animation: "fadeUp .3s ease" } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, fontWeight: 700, color: "#6B8F7A", letterSpacing: ".08em", marginBottom: 10 } }, "TU ", offerLabel.toUpperCase()), /* @__PURE__ */ (() => {
+    const AnimatedOffer = () => {
+      const counted = useCounter(result.offer, 1e3);
+      const countedS = useCounter(Math.round(result.offer * tcVal), 1e3);
+      return /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 44, fontWeight: 800, color: "#10B981", fontFamily: "'DM Mono',monospace", letterSpacing: "-2px", lineHeight: 1, transition: "color .3s" } }, "$", Math.round(counted).toLocaleString()), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, color: "#6B8F7A", marginTop: 6, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" } }, "S/ ", Math.round(countedS).toLocaleString("es-PE"), " \xB7 ", /* @__PURE__ */ React.createElement(TcBadge, null)));
+    };
+    return /* @__PURE__ */ React.createElement(AnimatedOffer, null);
+  })(), /* @__PURE__ */ React.createElement("div", { style: { background: "rgba(245,158,11,.08)", border: "1px solid rgba(245,158,11,.2)", borderRadius: 12, padding: "10px 14px", display: "flex", gap: 10, alignItems: "flex-start" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 16, flexShrink: 0 } }, "\u26A1"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, fontWeight: 700, color: "#FCD34D", marginBottom: 2 } }, "Pre-oferta v\xE1lida por 48 horas"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6B8F7A", lineHeight: 1.5 } }, "Esta es una estimaci\xF3n preliminar basada en el mercado. Un inspector AutoPago visitar\xE1 tu veh\xEDculo para verificar su estado y emitir la ", /* @__PURE__ */ React.createElement("strong", { style: { color: "#0B0B0B" } }, "oferta final"), ", que puede ser igual o superior."))), /* @__PURE__ */ React.createElement("div", { className: "ap-divider", style: { margin: "16px 0" } }), /* @__PURE__ */ React.createElement("div", { className: "grid-2" }, [
     ["\u{1F4B0}", "Pago en 24 horas", "Transferencia directa a tu cuenta bancaria"],
     ["\u{1F512}", "Proceso seguro", "Notar\xEDa p\xFAblica + transferencia garantizada"],
     ["\u{1F4C9}", "Sin m\xE1s depreciaci\xF3n", "Tu auto pierde valor cada semana que pasa"],
@@ -2406,14 +2559,50 @@ function ConsignaModule() {
       setStep(2);
     }
   };
-  const handlePhotos = (e) => {
-    var _a2;
-    Array.from(e.target.files || []).slice(0, 8).forEach((f) => {
-      const r = new FileReader();
-      r.onload = (ev) => setPhotos((p) => [...p, ev.target.result].slice(0, 8));
-      r.readAsDataURL(f);
-    });
-    trackLead("consigna_upload_start", __spreadProps(__spreadValues({}, vehicle), { photoCount: ((_a2 = e.target.files) == null ? void 0 : _a2.length) || 0 }));
+  const CLOUDINARY_CLOUD = "autopago";
+  const CLOUDINARY_PRESET = "autopago_consigna";
+  const [uploading, setUploading] = React.useState(false);
+  const [uploadProgress, setUploadProgress] = React.useState(0);
+  const handlePhotos = async (e) => {
+    const files = Array.from(e.target.files || []).slice(0, 8 - photos.length);
+    if (!files.length) return;
+    trackLead("consigna_upload_start", __spreadProps(__spreadValues({}, vehicle), { photoCount: files.length }));
+    setUploading(true);
+    setUploadProgress(0);
+    const uploaded = [];
+    for (let i = 0; i < files.length; i++) {
+      const f = files[i];
+      try {
+        const fd = new FormData();
+        fd.append("file", f);
+        fd.append("upload_preset", CLOUDINARY_PRESET);
+        fd.append("folder", "consigna");
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, {
+          method: "POST",
+          body: fd,
+          signal: AbortSignal.timeout(2e4)
+        });
+        if (res.ok) {
+          const data = await res.json();
+          uploaded.push(data.secure_url);
+          setUploadProgress(Math.round((i + 1) / files.length * 100));
+          continue;
+        }
+      } catch (e2) {
+      }
+      await new Promise((resolve) => {
+        const r = new FileReader();
+        r.onload = (ev) => {
+          uploaded.push(ev.target.result);
+          resolve();
+        };
+        r.readAsDataURL(f);
+      });
+      setUploadProgress(Math.round((i + 1) / files.length * 100));
+    }
+    setPhotos((p) => [...p, ...uploaded].slice(0, 8));
+    setUploading(false);
+    setUploadProgress(0);
   };
   const canWA = isContactValid(contact) && checks.owner && checks.terms && !!result && selPrice > 0;
   const doWA = () => {
@@ -2432,7 +2621,7 @@ function ConsignaModule() {
     );
     window.open(`https://wa.me/${waNum}?text=${msg}`, "_blank");
   };
-  return /* @__PURE__ */ React.createElement("div", { style: { maxWidth: 820, margin: "0 auto", padding: "32px 20px" } }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 24 } }, /* @__PURE__ */ React.createElement("h2", { className: "section-title" }, "\u{1F4CB} Vendemos tu auto"), /* @__PURE__ */ React.createElement("p", { className: "section-sub" }, "T\xFA pones el precio \xB7 Nosotros vendemos \xB7 Cobras neto")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 0, marginBottom: 20, overflowX: "auto", padding: "10px 12px", background: "rgba(5,150,105,.04)", border: "1px solid rgba(16,185,129,.1)", borderRadius: 14 } }, [["1\uFE0F\u20E3", "Ingresas tu auto"], ["2\uFE0F\u20E3", "Lo publicamos"], ["3\uFE0F\u20E3", "Cobras neto"]].map(([ic, t], i, arr) => /* @__PURE__ */ React.createElement(React.Fragment, { key: t }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", gap: 3, flexShrink: 0, minWidth: 72 } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 18 } }, ic), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 10, fontWeight: 700, color: "#00845A", textAlign: "center", lineHeight: 1.2 } }, t)), i < arr.length - 1 && /* @__PURE__ */ React.createElement("span", { style: { color: "rgba(16,185,129,.3)", fontSize: 14, flexShrink: 0, margin: "0 8px", alignSelf: "center" } }, "\u203A")))), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(StepBadge, { n: 1, active: true }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 15, fontWeight: 700, color: "#00845A" } }, "Datos del veh\xEDculo"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6B8F7A", marginTop: 1 } }, "Para calcular el rango de precio \xF3ptimo"))), /* @__PURE__ */ React.createElement(VehicleForm, { onChange: setVehicle, showNotes: true }), /* @__PURE__ */ React.createElement("div", { style: { marginTop: 16 } }, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "\xBFCu\xE1nto pides? (S/) \u2014 opcional"), /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement("div", { className: "module-page-wrap", style: { maxWidth: 820, margin: "0 auto", padding: "clamp(16px,4vw,32px) clamp(14px,4vw,20px)" } }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 24 } }, /* @__PURE__ */ React.createElement("h2", { className: "section-title" }, "\u{1F4CB} Vendemos tu auto"), /* @__PURE__ */ React.createElement("p", { className: "section-sub" }, "T\xFA pones el precio \xB7 Nosotros vendemos \xB7 Cobras neto")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 0, marginBottom: 20, overflowX: "auto", padding: "10px 12px", background: "rgba(5,150,105,.04)", border: "1px solid rgba(16,185,129,.1)", borderRadius: 14 } }, [["1\uFE0F\u20E3", "Ingresas tu auto"], ["2\uFE0F\u20E3", "Lo publicamos"], ["3\uFE0F\u20E3", "Cobras neto"]].map(([ic, t], i, arr) => /* @__PURE__ */ React.createElement(React.Fragment, { key: t }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", alignItems: "center", gap: 3, flexShrink: 0, minWidth: 72 } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 18 } }, ic), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 10, fontWeight: 700, color: "#00845A", textAlign: "center", lineHeight: 1.2 } }, t)), i < arr.length - 1 && /* @__PURE__ */ React.createElement("span", { style: { color: "rgba(16,185,129,.3)", fontSize: 14, flexShrink: 0, margin: "0 8px", alignSelf: "center" } }, "\u203A")))), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(StepBadge, { n: 1, active: true }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 15, fontWeight: 700, color: "#00845A" } }, "Datos del veh\xEDculo"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6B8F7A", marginTop: 1 } }, "Para calcular el rango de precio \xF3ptimo"))), /* @__PURE__ */ React.createElement(VehicleForm, { onChange: setVehicle, showNotes: true }), /* @__PURE__ */ React.createElement("div", { style: { marginTop: 16 } }, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "\xBFCu\xE1nto pides? (S/) \u2014 opcional"), /* @__PURE__ */ React.createElement(
     "input",
     {
       className: "ap-input",
@@ -2455,7 +2644,7 @@ function ConsignaModule() {
   ) : /* @__PURE__ */ React.createElement("div", { style: { marginTop: 12, padding: "9px 14px", background: "rgba(16,185,129,.08)", border: "1px solid rgba(16,185,129,.2)", borderRadius: 10, display: "flex", justifyContent: "space-between" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 12, color: "#00845A" } }, "\u2713 Tasaci\xF3n realizada"), /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-sm ap-btn-secondary", type: "button", onClick: () => {
     setStep(1);
     setResult(null);
-  } }, "Modificar"))), step >= 2 && result && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 16 } }, /* @__PURE__ */ React.createElement(StepBadge, { n: 2, active: true }), /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 15, fontWeight: 700, color: "#00845A" } }, "Elige tu precio de consigna")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 12 } }, /* @__PURE__ */ React.createElement(TcBadge, null), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 10, color: "#6B8F7A" } }, "\xB7 Estimaci\xF3n basada en comparables del mercado")), /* @__PURE__ */ React.createElement(PriceSlider, { marketUSD: result.value, commPct, userAskSoles: parseInt(askSoles) || 0, tc: tcVal, onPriceChange: setSelPrice })), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 14 } }, /* @__PURE__ */ React.createElement(StepBadge, { n: 3, active: true }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 15, fontWeight: 700, color: "#00845A" } }, "Fotos del veh\xEDculo"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6B8F7A", marginTop: 1 } }, "M\xE1s fotos = m\xE1s interesados. Hasta 8 im\xE1genes."))), /* @__PURE__ */ React.createElement("input", { type: "file", accept: "image/*", multiple: true, onChange: handlePhotos, style: { display: "none" }, id: "photo-up" }), /* @__PURE__ */ React.createElement(
+  } }, "Modificar"))), step >= 2 && result && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 16 } }, /* @__PURE__ */ React.createElement(StepBadge, { n: 2, active: true }), /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 15, fontWeight: 700, color: "#00845A" } }, "Elige tu precio de consigna")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 12 } }, /* @__PURE__ */ React.createElement(TcBadge, null), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 10, color: "#6B8F7A" } }, "\xB7 Estimaci\xF3n basada en comparables del mercado")), /* @__PURE__ */ React.createElement(PriceSlider, { marketUSD: result.value, commPct, userAskSoles: parseInt(askSoles) || 0, tc: tcVal, onPriceChange: setSelPrice })), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 14 } }, /* @__PURE__ */ React.createElement(StepBadge, { n: 3, active: true }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 15, fontWeight: 700, color: "#00845A" } }, "Fotos del veh\xEDculo"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6B8F7A", marginTop: 1 } }, "M\xE1s fotos = m\xE1s interesados. Hasta 8 im\xE1genes."))), /* @__PURE__ */ React.createElement("input", { type: "file", accept: "image/*", multiple: true, onChange: handlePhotos, style: { display: "none" }, id: "photo-up", disabled: uploading }), uploading && /* @__PURE__ */ React.createElement("div", { style: { background: "rgba(0,168,107,.08)", border: "1.5px solid rgba(0,168,107,.2)", borderRadius: 12, padding: "10px 16px", marginBottom: 10 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", marginBottom: 6 } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 12, color: "#00845A", fontWeight: 700 } }, "\u2B06\uFE0F Subiendo fotos\u2026"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 12, color: "#6B8F7A" } }, uploadProgress, "%")), /* @__PURE__ */ React.createElement("div", { style: { background: "#EAF1EE", borderRadius: 4, height: 4 } }, /* @__PURE__ */ React.createElement("div", { style: { background: "#00B47A", borderRadius: 4, height: 4, width: `${uploadProgress}%`, transition: "width .3s" } }))), /* @__PURE__ */ React.createElement(
     "label",
     {
       htmlFor: "photo-up",
@@ -2679,7 +2868,7 @@ function CreditoModule() {
     fontSize: 10,
     fontWeight: 800
   } }, step > n ? "\u2713" : n), label)));
-  return /* @__PURE__ */ React.createElement("div", { style: { maxWidth: 800, margin: "0 auto", padding: "32px 20px" } }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 28 } }, /* @__PURE__ */ React.createElement("h2", { className: "section-title" }, "\u{1F4B3} Pr\xE9stamos al instante"), /* @__PURE__ */ React.createElement("p", { className: "section-sub" }, "Usa tu auto como garant\xEDa \xB7 Desembolso en 24h \xB7 Sin papeleo")), /* @__PURE__ */ React.createElement("div", { style: {
+  return /* @__PURE__ */ React.createElement("div", { className: "module-page-wrap", style: { maxWidth: 800, margin: "0 auto", padding: "clamp(16px,4vw,32px) clamp(14px,4vw,20px)" } }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 28 } }, /* @__PURE__ */ React.createElement("h2", { className: "section-title" }, "\u{1F4B3} Pr\xE9stamos al instante"), /* @__PURE__ */ React.createElement("p", { className: "section-sub" }, "Usa tu auto como garant\xEDa \xB7 Desembolso en 24h \xB7 Sin papeleo")), /* @__PURE__ */ React.createElement("div", { style: {
     display: "flex",
     alignItems: "center",
     gap: 0,
@@ -2818,18 +3007,24 @@ function CreditoModule() {
   ), !canWA && /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "var(--muted)", textAlign: "center", marginTop: 8 } }, !isContactValid(contact) ? "Completa tus datos \xB7 " : "", !checks.owner || !checks.terms ? "Acepta las declaraciones obligatorias" : "")));
 }
 function ShowroomModule() {
-  var _a, _b, _c, _d;
+  var _a, _b, _c, _d, _e;
   const { tc, cfg } = React.useContext(AppCtx);
   const [inv, setInv] = React.useState(() => loadInventory());
   const [filtersOpen, setFiltersOpen] = React.useState(false);
   const [brandF, setBrandF] = React.useState("Todas");
   const [modelF, setModelF] = React.useState("Todos");
   const [transF, setTransF] = React.useState("Todas");
+  const [fuelF, setFuelF] = React.useState("Todos");
+  const [condF, setCondF] = React.useState("Todas");
   const [yearFrom, setYearFrom] = React.useState("");
   const [yearTo, setYearTo] = React.useState("");
-  const [maxPrice, setMaxPrice] = React.useState("");
+  const [priceMax, setPriceMax] = React.useState("");
+  const [kmMax, setKmMax] = React.useState("");
   const [search, setSearch] = React.useState("");
+  const [sortBy, setSortBy] = React.useState("featured");
+  const [viewMode, setViewMode] = React.useState("grid");
   const [selected, setSelected] = React.useState(null);
+  const [photoIdx, setPhotoIdx] = React.useState(0);
   const [sentIds, setSentIds] = React.useState(/* @__PURE__ */ new Set());
   const tcVal = tc || ((_a = cfg.general) == null ? void 0 : _a.tcFallback) || 3.77;
   const waNum = ((_b = cfg.general) == null ? void 0 : _b.whatsappNumber) || WA_NUMBER;
@@ -2838,145 +3033,272 @@ function ShowroomModule() {
     window.addEventListener("apInventoryUpdated", fn);
     return () => window.removeEventListener("apInventoryUpdated", fn);
   }, []);
+  React.useEffect(() => {
+    setPhotoIdx(0);
+  }, [selected == null ? void 0 : selected.id]);
   const active = inv.filter((c) => c.active);
   const brands = ["Todas", ...[...new Set(active.map((c) => c.brand))].sort()];
   const models = brandF === "Todas" ? ["Todos"] : ["Todos", ...[...new Set(active.filter((c) => c.brand === brandF).map((c) => c.model))].sort()];
   const years = Array.from({ length: CURRENT_YEAR - 2009 }, (_, i) => CURRENT_YEAR - i);
+  const priceMin = active.length ? Math.min(...active.map((c) => c.price)) : 0;
+  const priceMaxAll = active.length ? Math.max(...active.map((c) => c.price)) : 1e5;
   const filtered = React.useMemo(() => {
-    return active.filter((c) => {
+    let res = active.filter((c) => {
       if (brandF !== "Todas" && c.brand !== brandF) return false;
       if (modelF !== "Todos" && c.model !== modelF) return false;
       if (transF !== "Todas" && c.transmission !== transF) return false;
+      if (fuelF !== "Todos" && c.fuel !== fuelF) return false;
+      if (condF !== "Todas" && c.condition !== condF) return false;
       if (yearFrom && c.year < parseInt(yearFrom)) return false;
       if (yearTo && c.year > parseInt(yearTo)) return false;
-      if (maxPrice && c.price > parseFloat(maxPrice)) return false;
+      if (priceMax && c.price > parseFloat(priceMax)) return false;
+      if (kmMax && c.km > parseFloat(kmMax)) return false;
       if (search) {
         const q = search.toLowerCase();
-        if (![c.brand, c.model, c.version || "", String(c.year), c.color || ""].join(" ").toLowerCase().includes(q)) return false;
+        if (![c.brand, c.model, c.version || "", String(c.year), c.color || "", c.fuel || ""].join(" ").toLowerCase().includes(q)) return false;
       }
       return true;
     });
-  }, [active, brandF, modelF, transF, yearFrom, yearTo, maxPrice, search]);
-  const hasFilters = brandF !== "Todas" || modelF !== "Todos" || transF !== "Todas" || yearFrom || yearTo || maxPrice || search;
+    if (sortBy === "price_asc") res = [...res].sort((a, b) => a.price - b.price);
+    else if (sortBy === "price_desc") res = [...res].sort((a, b) => b.price - a.price);
+    else if (sortBy === "year_desc") res = [...res].sort((a, b) => b.year - a.year);
+    else if (sortBy === "km_asc") res = [...res].sort((a, b) => a.km - b.km);
+    else res = [...res].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+    return res;
+  }, [active, brandF, modelF, transF, fuelF, condF, yearFrom, yearTo, priceMax, kmMax, search, sortBy]);
+  const activeFilterCount = [brandF !== "Todas", modelF !== "Todos", transF !== "Todas", fuelF !== "Todos", condF !== "Todas", yearFrom, yearTo, priceMax, kmMax].filter(Boolean).length;
+  const hasFilters = activeFilterCount > 0 || search;
   const clearFilters = () => {
     setBrandF("Todas");
     setModelF("Todos");
     setTransF("Todas");
+    setFuelF("Todos");
+    setCondF("Todas");
     setYearFrom("");
     setYearTo("");
-    setMaxPrice("");
+    setPriceMax("");
+    setKmMax("");
     setSearch("");
   };
   const handleInterest = (car, e) => {
-    var _a2;
     if (e) e.stopPropagation();
     setSentIds((s) => /* @__PURE__ */ new Set([...s, car.id]));
     trackLead("showroom_interest", { carId: car.id, brand: car.brand, model: car.model, year: car.year, price: car.price, tcUsed: tcVal });
-    const tpl = ((_a2 = cfg.showroom) == null ? void 0 : _a2.waTemplate) || "Hola AutoPago! Me interesa: {brand} {model} {version} {year} \xB7 S/ {price_soles} (~${price_usd})";
     const msg = encodeURIComponent(
-      tpl.replace("{brand}", car.brand).replace("{model}", car.model).replace("{version}", car.version || "").replace("{year}", car.year).replace("{price_soles}", Math.round(car.price * tcVal).toLocaleString("es-PE")).replace("{price_usd}", car.price.toLocaleString())
+      `Hola AutoPago! \u{1F697} Me interesa este auto:
+*${car.brand} ${car.model} ${car.version || ""} ${car.year}*
+\u{1F4CD} ${car.km.toLocaleString()} km \xB7 ${car.transmission === "automatica" ? "Autom\xE1tica" : "Manual"} \xB7 ${car.fuel || ""}
+\u{1F3A8} Color: ${car.color || "\u2014"} \xB7 Condici\xF3n: ${car.condition || "\u2014"}
+\u{1F4B0} Precio: S/ ${Math.round(car.price * tcVal).toLocaleString("es-PE")} (~$${car.price.toLocaleString()})
+\xBFPodemos coordinar una visita? \u{1F64C}`
     );
     window.open(`https://wa.me/${waNum}?text=${msg}`, "_blank");
   };
   const condColor = { excelente: "#10B981", bueno: "#00C88A", regular: "#F59E0B", malo: "#EF4444" };
-  return /* @__PURE__ */ React.createElement("div", { style: { maxWidth: 1200, margin: "0 auto", padding: "24px 16px" } }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 8 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h2", { className: "section-title" }, "\u{1F699} Encuentra tu Auto"), /* @__PURE__ */ React.createElement("p", { className: "section-sub" }, filtered.length, " veh\xEDculo", filtered.length !== 1 ? "s" : "", " disponible", filtered.length !== 1 ? "s" : ""))), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 20, padding: "12px 14px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8, alignItems: "center" } }, /* @__PURE__ */ React.createElement(
+  const condLabel = { excelente: "Excelente", bueno: "Bueno", regular: "Regular", malo: "Malo" };
+  const fuelIcon = { gasolina: "\u26FD", diesel: "\u{1F6E2}\uFE0F", hibrido: "\u{1F50B}", electrico: "\u26A1" };
+  const CarCard = ({ car }) => {
+    var _a2, _b2;
+    return /* @__PURE__ */ React.createElement(
+      "div",
+      {
+        className: "ap-card showroom-card",
+        style: { padding: 0, overflow: "hidden", cursor: "pointer" },
+        onClick: () => setSelected(car)
+      },
+      /* @__PURE__ */ React.createElement("div", { style: { position: "relative" } }, /* @__PURE__ */ React.createElement(
+        "img",
+        {
+          src: ((_a2 = car.photos) == null ? void 0 : _a2[0]) || "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600&q=80",
+          alt: `${car.brand} ${car.model} ${car.year} Lima`,
+          loading: "lazy",
+          style: { width: "100%", aspectRatio: "16/9", objectFit: "cover" }
+        }
+      ), car.featured && /* @__PURE__ */ React.createElement("span", { style: { position: "absolute", top: 10, left: 10, background: "linear-gradient(90deg,#F59E0B,#EF4444)", color: "#fff", fontSize: 9, fontWeight: 800, padding: "3px 9px", borderRadius: 20, letterSpacing: ".05em" } }, "\u2B50 DESTACADO"), ((_b2 = car.photos) == null ? void 0 : _b2.length) > 1 && /* @__PURE__ */ React.createElement("span", { style: { position: "absolute", bottom: 8, right: 8, background: "rgba(0,0,0,.7)", color: "#fff", fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 8 } }, "+", car.photos.length - 1, " \u{1F4F7}"), /* @__PURE__ */ React.createElement("span", { style: { position: "absolute", top: 10, right: 10, background: `${condColor[car.condition]}22`, border: `1.5px solid ${condColor[car.condition]}55`, backdropFilter: "blur(8px)", borderRadius: 8, padding: "3px 9px", fontSize: 10, fontWeight: 700, color: condColor[car.condition] || "#fff" } }, condLabel[car.condition] || car.condition)),
+      /* @__PURE__ */ React.createElement("div", { style: { padding: "14px 16px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 15, fontWeight: 800, color: "#0B0B0B", lineHeight: 1.2 } }, car.brand, " ", car.model), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6B8F7A", marginTop: 2 } }, car.version || "\u2014", " \xB7 ", car.year)), /* @__PURE__ */ React.createElement("div", { style: { textAlign: "right", flexShrink: 0 } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 16, fontWeight: 800, color: "#00845A", fontFamily: "'DM Mono',monospace" } }, "$", car.price.toLocaleString()), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 10, color: "#6B8F7A" } }, "S/ ", Math.round(car.price * tcVal).toLocaleString("es-PE")))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 12 } }, [`${car.km.toLocaleString()} km`, car.transmission === "automatica" ? "AT" : "MT", fuelIcon[car.fuel] + " " + (car.fuel || ""), car.color || ""].filter(Boolean).map((t) => /* @__PURE__ */ React.createElement("span", { key: t, style: { fontSize: 10, color: "#4A6B5E", background: "rgba(0,168,107,.07)", border: "1px solid rgba(0,168,107,.15)", borderRadius: 20, padding: "2px 8px", fontWeight: 600 } }, t))), /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          className: "ap-btn ap-btn-primary",
+          type: "button",
+          onClick: (e) => handleInterest(car, e),
+          style: { width: "100%", padding: "10px", fontSize: 13 }
+        },
+        sentIds.has(car.id) ? "\u2705 Inter\xE9s enviado" : "\u{1F4AC} Me interesa este auto \u2192"
+      ))
+    );
+  };
+  const CarRow = ({ car }) => {
+    var _a2;
+    return /* @__PURE__ */ React.createElement(
+      "div",
+      {
+        className: "ap-card",
+        style: { display: "flex", gap: 16, padding: "12px 16px", cursor: "pointer", alignItems: "center" },
+        onClick: () => setSelected(car)
+      },
+      /* @__PURE__ */ React.createElement(
+        "img",
+        {
+          src: ((_a2 = car.photos) == null ? void 0 : _a2[0]) || "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400&q=70",
+          alt: `${car.brand} ${car.model}`,
+          loading: "lazy",
+          style: { width: 120, height: 80, objectFit: "cover", borderRadius: 10, flexShrink: 0 }
+        }
+      ),
+      /* @__PURE__ */ React.createElement("div", { style: { flex: 1, minWidth: 0 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 4 } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 15, fontWeight: 800, color: "#0B0B0B" } }, car.brand, " ", car.model, " ", car.version || ""), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 16, fontWeight: 800, color: "#00845A", fontFamily: "'DM Mono',monospace" } }, "$", car.price.toLocaleString())), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 6, flexWrap: "wrap", marginTop: 4 } }, [String(car.year), `${car.km.toLocaleString()} km`, car.transmission === "automatica" ? "Autom\xE1tica" : "Manual", car.fuel || ""].filter(Boolean).map((t) => /* @__PURE__ */ React.createElement("span", { key: t, style: { fontSize: 10, color: "#4A6B5E", background: "rgba(0,168,107,.07)", border: "1px solid rgba(0,168,107,.15)", borderRadius: 20, padding: "2px 8px", fontWeight: 600 } }, t)), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 10, fontWeight: 700, color: condColor[car.condition], padding: "2px 8px" } }, condLabel[car.condition]))),
+      /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          className: "ap-btn ap-btn-primary",
+          type: "button",
+          onClick: (e) => handleInterest(car, e),
+          style: { flexShrink: 0, padding: "8px 14px", fontSize: 12 }
+        },
+        sentIds.has(car.id) ? "\u2705" : "\u{1F4AC} Me interesa"
+      )
+    );
+  };
+  return /* @__PURE__ */ React.createElement("div", { style: { maxWidth: 1200, margin: "0 auto", padding: "clamp(16px,3vw,28px) clamp(14px,4vw,20px)" } }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 20, display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 10 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h2", { className: "section-title" }, "\u{1F699} Encuentra tu Auto"), /* @__PURE__ */ React.createElement("p", { className: "section-sub" }, filtered.length, " veh\xEDculo", filtered.length !== 1 ? "s" : "", " disponible", filtered.length !== 1 ? "s" : "", hasFilters ? ` \xB7 ${active.length} total` : "")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement(
+    "select",
+    {
+      className: "ap-input",
+      value: sortBy,
+      onChange: (e) => setSortBy(e.target.value),
+      style: { fontSize: 12, padding: "8px 32px 8px 12px", width: "auto", minWidth: 150 }
+    },
+    /* @__PURE__ */ React.createElement("option", { value: "featured" }, "\u2B50 Destacados primero"),
+    /* @__PURE__ */ React.createElement("option", { value: "price_asc" }, "\u{1F4B0} Menor precio"),
+    /* @__PURE__ */ React.createElement("option", { value: "price_desc" }, "\u{1F48E} Mayor precio"),
+    /* @__PURE__ */ React.createElement("option", { value: "year_desc" }, "\u{1F195} M\xE1s nuevos"),
+    /* @__PURE__ */ React.createElement("option", { value: "km_asc" }, "\u{1F4CD} Menos km")
+  ), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", border: "1.5px solid #DDE9E4", borderRadius: 10, overflow: "hidden" } }, [["grid", "\u229E"], ["list", "\u2630"]].map(([mode, icon]) => /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      key: mode,
+      type: "button",
+      onClick: () => setViewMode(mode),
+      style: { padding: "8px 12px", border: "none", cursor: "pointer", fontSize: 16, background: viewMode === mode ? "#00B47A" : "#F8FBF9", color: viewMode === mode ? "#fff" : "#6B8F7A", transition: "all .15s" }
+    },
+    icon
+  ))))), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16, padding: "12px 14px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement(
     "input",
     {
       className: "ap-input",
       value: search,
       onChange: (e) => setSearch(e.target.value),
-      placeholder: "\u{1F50D} Buscar por marca, modelo, color\u2026",
-      style: { flex: 1, fontSize: 13 }
+      placeholder: "\u{1F50D} Buscar marca, modelo, color\u2026",
+      style: { flex: 1, minWidth: 160, fontSize: 13 }
     }
   ), /* @__PURE__ */ React.createElement(
     "button",
     {
       type: "button",
       onClick: () => setFiltersOpen((v) => !v),
-      style: { padding: "10px 14px", borderRadius: 12, border: `1px solid ${filtersOpen ? "#00A86B" : "rgba(255,255,255,.12)"}`, background: filtersOpen ? "rgba(0,168,107,.2)" : "rgba(255,255,255,.06)", color: filtersOpen ? "#00845A" : "#6B8F7A", cursor: "pointer", fontWeight: 700, fontSize: 12, whiteSpace: "nowrap", fontFamily: "inherit", flexShrink: 0 }
+      style: { padding: "10px 14px", borderRadius: 12, border: `1.5px solid ${filtersOpen ? "#00A86B" : "#DDE9E4"}`, background: filtersOpen ? "rgba(0,168,107,.08)" : "#F8FBF9", color: filtersOpen ? "#00845A" : "#6B8F7A", cursor: "pointer", fontWeight: 700, fontSize: 12, whiteSpace: "nowrap", fontFamily: "inherit", flexShrink: 0, transition: "all .15s" }
     },
-    hasFilters ? `\u{1F527} Filtros (${[brandF !== "Todas", modelF !== "Todos", transF !== "Todas", yearFrom, yearTo, maxPrice].filter(Boolean).length})` : "\u{1F527} Filtros",
-    filtersOpen ? " \u25B2" : " \u25BC"
+    "\u{1F527} Filtros",
+    activeFilterCount > 0 ? ` (${activeFilterCount})` : "",
+    " ",
+    filtersOpen ? "\u25B2" : "\u25BC"
   ), hasFilters && /* @__PURE__ */ React.createElement(
     "button",
     {
       type: "button",
       onClick: clearFilters,
-      style: { padding: "10px 12px", borderRadius: 12, border: "1px solid rgba(239,68,68,.3)", background: "rgba(239,68,68,.07)", color: "#DC2626", cursor: "pointer", fontWeight: 700, fontSize: 12, whiteSpace: "nowrap", fontFamily: "inherit", flexShrink: 0 }
+      style: { padding: "10px 12px", borderRadius: 12, border: "1.5px solid rgba(239,68,68,.3)", background: "rgba(239,68,68,.05)", color: "#DC2626", cursor: "pointer", fontWeight: 700, fontSize: 12, whiteSpace: "nowrap", fontFamily: "inherit", flexShrink: 0 }
     },
-    "\u2715"
-  )), filtersOpen && /* @__PURE__ */ React.createElement("div", { style: { marginTop: 12, paddingTop: 12, borderTop: "1px solid rgba(255,255,255,.07)", display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(140px,1fr))", gap: 10, animation: "fadeUp .2s ease" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Marca"), /* @__PURE__ */ React.createElement("select", { className: "ap-input", value: brandF, onChange: (e) => {
+    "\u2715 Limpiar"
+  )), filtersOpen && /* @__PURE__ */ React.createElement("div", { style: { marginTop: 12, paddingTop: 12, borderTop: "1.5px solid #EAF1EE", display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(140px,1fr))", gap: 10, animation: "fadeUp .2s ease" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Marca"), /* @__PURE__ */ React.createElement("select", { className: "ap-input", value: brandF, onChange: (e) => {
     setBrandF(e.target.value);
     setModelF("Todos");
-  } }, brands.map((b) => /* @__PURE__ */ React.createElement("option", { key: b }, b)))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Modelo"), /* @__PURE__ */ React.createElement("select", { className: "ap-input", value: modelF, onChange: (e) => setModelF(e.target.value), disabled: brandF === "Todas" }, models.map((m) => /* @__PURE__ */ React.createElement("option", { key: m }, m)))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Transmisi\xF3n"), /* @__PURE__ */ React.createElement("select", { className: "ap-input", value: transF, onChange: (e) => setTransF(e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "Todas" }, "Todas"), /* @__PURE__ */ React.createElement("option", { value: "automatica" }, "Autom\xE1tica"), /* @__PURE__ */ React.createElement("option", { value: "manual" }, "Manual"))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "A\xF1o desde"), /* @__PURE__ */ React.createElement("select", { className: "ap-input", value: yearFrom, onChange: (e) => setYearFrom(e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "" }, "Cualquiera"), years.map((y) => /* @__PURE__ */ React.createElement("option", { key: y }, y)))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "A\xF1o hasta"), /* @__PURE__ */ React.createElement("select", { className: "ap-input", value: yearTo, onChange: (e) => setYearTo(e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "" }, "Cualquiera"), years.map((y) => /* @__PURE__ */ React.createElement("option", { key: y }, y)))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Precio m\xE1x. (USD)"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", type: "number", value: maxPrice, onChange: (e) => setMaxPrice(e.target.value), placeholder: "Sin l\xEDmite" })))), filtered.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", padding: "60px 20px", color: "#6B8F7A" } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 48, marginBottom: 12 } }, "\u{1F50D}"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 16, fontWeight: 700, color: "#6B8F7A" } }, "Sin veh\xEDculos con esos filtros"), hasFilters && /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-sm ap-btn-secondary", type: "button", onClick: clearFilters, style: { marginTop: 12 } }, "Ver todos los veh\xEDculos")) : /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 16 } }, filtered.map((car) => {
-    var _a2, _b2, _c2;
-    return /* @__PURE__ */ React.createElement(
-      "div",
-      {
-        key: car.id,
-        className: "ap-card",
-        style: { padding: 0, overflow: "hidden", cursor: "pointer", transition: "transform .2s,box-shadow .2s" },
-        onClick: () => setSelected(car),
-        onMouseEnter: (e) => {
-          e.currentTarget.style.transform = "translateY(-2px)";
-          e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,.3)";
-        },
-        onMouseLeave: (e) => {
-          e.currentTarget.style.transform = "";
-          e.currentTarget.style.boxShadow = "";
-        }
-      },
-      /* @__PURE__ */ React.createElement("div", { style: { position: "relative" } }, /* @__PURE__ */ React.createElement(
-        "img",
-        {
-          src: ((_a2 = car.photos) == null ? void 0 : _a2[0]) || "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600&q=80",
-          alt: `${car.brand} ${car.model}`,
-          style: { width: "100%", aspectRatio: "16/9", objectFit: "cover" }
-        }
-      ), car.featured && /* @__PURE__ */ React.createElement("span", { className: "featured-badge", style: { position: "absolute", top: 10, left: 10 } }, "\u2B50 DESTACADO"), /* @__PURE__ */ React.createElement("span", { style: { position: "absolute", top: 10, right: 10, background: "rgba(0,0,0,.7)", borderRadius: 8, padding: "3px 10px", fontSize: 11, fontWeight: 700, color: condColor[car.condition] || "#fff" } }, ((_b2 = car.condition) == null ? void 0 : _b2.charAt(0).toUpperCase()) + ((_c2 = car.condition) == null ? void 0 : _c2.slice(1)))),
-      /* @__PURE__ */ React.createElement("div", { style: { padding: "14px 16px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 15, fontWeight: 800, color: "#0B0B0B" } }, car.brand, " ", car.model), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6B8F7A" } }, car.version, " \xB7 ", car.year)), /* @__PURE__ */ React.createElement("div", { style: { textAlign: "right", flexShrink: 0 } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 15, fontWeight: 800, color: "#00C88A", fontFamily: "'DM Mono',monospace" } }, "$", car.price.toLocaleString()), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 10, color: "#6B8F7A" } }, "S/ ", Math.round(car.price * tcVal).toLocaleString("es-PE")))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 12 } }, [`${car.km.toLocaleString()} km`, car.transmission === "automatica" ? "AT" : "MT", car.fuel || "", car.color || ""].filter(Boolean).map((t) => /* @__PURE__ */ React.createElement("span", { key: t, style: { fontSize: 10, color: "#6B8F7A", background: "rgba(0,168,107,.06)", border: "1px solid rgba(0,0,0,.07)", borderRadius: 6, padding: "2px 7px" } }, t))), /* @__PURE__ */ React.createElement(
-        "button",
-        {
-          className: "ap-btn ap-btn-success",
-          type: "button",
-          onClick: (e) => handleInterest(car, e),
-          style: { width: "100%", padding: "10px", fontSize: 13 }
-        },
-        sentIds.has(car.id) ? "\u2705 Inter\xE9s enviado" : "\u{1F4AC} Me interesa"
-      ))
-    );
-  })), selected && /* @__PURE__ */ React.createElement(
+  } }, brands.map((b) => /* @__PURE__ */ React.createElement("option", { key: b }, b)))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Modelo"), /* @__PURE__ */ React.createElement("select", { className: "ap-input", value: modelF, onChange: (e) => setModelF(e.target.value), disabled: brandF === "Todas" }, models.map((m) => /* @__PURE__ */ React.createElement("option", { key: m }, m)))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Transmisi\xF3n"), /* @__PURE__ */ React.createElement("select", { className: "ap-input", value: transF, onChange: (e) => setTransF(e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "Todas" }, "Todas"), /* @__PURE__ */ React.createElement("option", { value: "automatica" }, "Autom\xE1tica"), /* @__PURE__ */ React.createElement("option", { value: "manual" }, "Manual"))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Combustible"), /* @__PURE__ */ React.createElement("select", { className: "ap-input", value: fuelF, onChange: (e) => setFuelF(e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "Todos" }, "Todos"), /* @__PURE__ */ React.createElement("option", { value: "gasolina" }, "\u26FD Gasolina"), /* @__PURE__ */ React.createElement("option", { value: "diesel" }, "\u{1F6E2}\uFE0F Diesel"), /* @__PURE__ */ React.createElement("option", { value: "hibrido" }, "\u{1F50B} H\xEDbrido"), /* @__PURE__ */ React.createElement("option", { value: "electrico" }, "\u26A1 El\xE9ctrico"))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Condici\xF3n"), /* @__PURE__ */ React.createElement("select", { className: "ap-input", value: condF, onChange: (e) => setCondF(e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "Todas" }, "Todas"), /* @__PURE__ */ React.createElement("option", { value: "excelente" }, "Excelente"), /* @__PURE__ */ React.createElement("option", { value: "bueno" }, "Bueno"), /* @__PURE__ */ React.createElement("option", { value: "regular" }, "Regular"))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "A\xF1o desde"), /* @__PURE__ */ React.createElement("select", { className: "ap-input", value: yearFrom, onChange: (e) => setYearFrom(e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "" }, "Cualquiera"), years.map((y) => /* @__PURE__ */ React.createElement("option", { key: y }, y)))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "A\xF1o hasta"), /* @__PURE__ */ React.createElement("select", { className: "ap-input", value: yearTo, onChange: (e) => setYearTo(e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "" }, "Cualquiera"), years.map((y) => /* @__PURE__ */ React.createElement("option", { key: y }, y)))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Precio m\xE1x. USD"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", type: "number", value: priceMax, onChange: (e) => setPriceMax(e.target.value), placeholder: "Sin l\xEDmite", min: "0" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Km m\xE1x."), /* @__PURE__ */ React.createElement("input", { className: "ap-input", type: "number", value: kmMax, onChange: (e) => setKmMax(e.target.value), placeholder: "Sin l\xEDmite", min: "0" })))), filtered.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", padding: "60px 20px", color: "#6B8F7A" } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 48, marginBottom: 12 } }, "\u{1F50D}"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 16, fontWeight: 700, marginBottom: 8 } }, "Sin veh\xEDculos con esos filtros"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, marginBottom: 16 } }, "Prueba ampliar el rango de b\xFAsqueda o limpiar los filtros"), hasFilters && /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-primary", type: "button", onClick: clearFilters }, "Ver todos los veh\xEDculos")) : viewMode === "grid" ? /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(min(100%,280px),1fr))", gap: 16 } }, filtered.map((car) => /* @__PURE__ */ React.createElement(CarCard, { key: car.id, car }))) : /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 10 } }, filtered.map((car) => /* @__PURE__ */ React.createElement(CarRow, { key: car.id, car }))), selected && /* @__PURE__ */ React.createElement(
     "div",
     {
       onClick: () => setSelected(null),
-      style: { position: "fixed", inset: 0, background: "rgba(0,0,0,.84)", zIndex: 1e3, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }
+      style: { position: "fixed", inset: 0, background: "rgba(0,0,0,.88)", zIndex: 1e3, display: "flex", alignItems: "center", justifyContent: "center", padding: 16, animation: "fadeIn .2s ease" }
     },
     /* @__PURE__ */ React.createElement(
       "div",
       {
         onClick: (e) => e.stopPropagation(),
-        style: { background: "linear-gradient(135deg,#0B1A3E,#0D2050)", border: "1px solid rgba(0,200,130,.3)", borderRadius: 24, maxWidth: 520, width: "100%", maxHeight: "92vh", overflowY: "auto" }
+        style: { background: "#fff", borderRadius: 24, maxWidth: 680, width: "100%", maxHeight: "94vh", overflowY: "auto", boxShadow: "0 24px 80px rgba(0,0,0,.5)", animation: "scaleIn .25s ease" }
       },
-      /* @__PURE__ */ React.createElement("div", { style: { position: "relative" } }, /* @__PURE__ */ React.createElement("img", { src: ((_c = selected.photos) == null ? void 0 : _c[0]) || "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600&q=80", alt: "", style: { width: "100%", height: 210, objectFit: "cover", borderRadius: "24px 24px 0 0" } }), /* @__PURE__ */ React.createElement(
+      /* @__PURE__ */ React.createElement("div", { style: { position: "relative" } }, /* @__PURE__ */ React.createElement(
+        "img",
+        {
+          src: ((_c = selected.photos) == null ? void 0 : _c[photoIdx]) || "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80",
+          alt: `${selected.brand} ${selected.model} ${selected.year}`,
+          style: { width: "100%", height: 260, objectFit: "cover", borderRadius: "24px 24px 0 0" }
+        }
+      ), /* @__PURE__ */ React.createElement(
         "button",
         {
           type: "button",
           onClick: () => setSelected(null),
-          style: { position: "absolute", top: 10, right: 10, width: 30, height: 30, borderRadius: "50%", background: "rgba(0,0,0,.7)", border: "none", color: "#fff", cursor: "pointer", fontSize: 14 }
+          style: { position: "absolute", top: 12, right: 12, width: 36, height: 36, borderRadius: "50%", background: "rgba(0,0,0,.65)", border: "none", color: "#fff", cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(4px)" }
         },
         "\u2715"
-      )),
-      ((_d = selected.photos) == null ? void 0 : _d.length) > 1 && /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 6, overflowX: "auto", padding: "8px 16px 0" } }, selected.photos.slice(1).map((ph, i) => /* @__PURE__ */ React.createElement("img", { key: i, src: ph, alt: "", style: { width: 72, height: 52, objectFit: "cover", borderRadius: 8, border: "1px solid #EEF3F1", flexShrink: 0 } }))),
-      /* @__PURE__ */ React.createElement("div", { style: { padding: "20px 22px 24px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 20, fontWeight: 800, color: "#E8F5EE" } }, selected.brand, " ", selected.model), /* @__PURE__ */ React.createElement("p", { style: { color: "#6B8F7A", fontSize: 13 } }, selected.version, " \xB7 ", selected.year)), /* @__PURE__ */ React.createElement("div", { style: { textAlign: "right" } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 22, fontWeight: 800, color: "#10B981", fontFamily: "'DM Mono',monospace" } }, "$", selected.price.toLocaleString()), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6B8F7A" } }, "S/ ", Math.round(selected.price * tcVal).toLocaleString("es-PE")))), /* @__PURE__ */ React.createElement("div", { className: "grid-2", style: { marginBottom: 16 } }, [["Km", `${selected.km.toLocaleString()} km`], ["Transmisi\xF3n", selected.transmission === "automatica" ? "Autom\xE1tica" : "Manual"], ["Combustible", selected.fuel || "\u2014"], ["Condici\xF3n", selected.condition || "\u2014"], ["Color", selected.color || "\u2014"], ["A\xF1o", selected.year]].filter(([, v]) => v && v !== "\u2014").map(([k, v]) => /* @__PURE__ */ React.createElement("div", { key: k, style: { background: "#FFFFFF", borderRadius: 10, padding: "8px 12px" } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 9, color: "#6B8F7A", fontWeight: 700, marginBottom: 1 } }, k.toUpperCase()), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, fontWeight: 700, color: "#1a1a1a" } }, v)))), /* @__PURE__ */ React.createElement(TcBadge, null), /* @__PURE__ */ React.createElement(
+      ), selected.featured && /* @__PURE__ */ React.createElement("span", { style: { position: "absolute", top: 12, left: 12, background: "linear-gradient(90deg,#F59E0B,#EF4444)", color: "#fff", fontSize: 10, fontWeight: 800, padding: "4px 10px", borderRadius: 20 } }, "\u2B50 DESTACADO"), ((_d = selected.photos) == null ? void 0 : _d.length) > 1 && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(
         "button",
         {
-          className: "ap-btn ap-btn-success",
+          type: "button",
+          onClick: (e) => {
+            e.stopPropagation();
+            setPhotoIdx((i) => (i - 1 + selected.photos.length) % selected.photos.length);
+          },
+          style: { position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", width: 36, height: 36, borderRadius: "50%", background: "rgba(0,0,0,.6)", border: "none", color: "#fff", cursor: "pointer", fontSize: 18, backdropFilter: "blur(4px)" }
+        },
+        "\u2039"
+      ), /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          type: "button",
+          onClick: (e) => {
+            e.stopPropagation();
+            setPhotoIdx((i) => (i + 1) % selected.photos.length);
+          },
+          style: { position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", width: 36, height: 36, borderRadius: "50%", background: "rgba(0,0,0,.6)", border: "none", color: "#fff", cursor: "pointer", fontSize: 18, backdropFilter: "blur(4px)" }
+        },
+        "\u203A"
+      ), /* @__PURE__ */ React.createElement("div", { style: { position: "absolute", bottom: 10, left: 0, right: 0, display: "flex", justifyContent: "center", gap: 5 } }, selected.photos.map((_, i) => /* @__PURE__ */ React.createElement(
+        "span",
+        {
+          key: i,
+          onClick: (e) => {
+            e.stopPropagation();
+            setPhotoIdx(i);
+          },
+          style: { width: i === photoIdx ? 18 : 6, height: 6, borderRadius: 3, background: i === photoIdx ? "#fff" : "rgba(255,255,255,.5)", cursor: "pointer", transition: "all .2s" }
+        }
+      ))))),
+      ((_e = selected.photos) == null ? void 0 : _e.length) > 1 && /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 6, overflowX: "auto", padding: "8px 16px 0", scrollbarWidth: "thin" } }, selected.photos.map((ph, i) => /* @__PURE__ */ React.createElement(
+        "img",
+        {
+          key: i,
+          src: ph,
+          alt: "",
+          loading: "lazy",
+          onClick: () => setPhotoIdx(i),
+          style: { width: 72, height: 52, objectFit: "cover", borderRadius: 8, flexShrink: 0, cursor: "pointer", border: `2px solid ${i === photoIdx ? "#00B47A" : "transparent"}`, transition: "border .15s", opacity: i === photoIdx ? 1 : 0.65 }
+        }
+      ))),
+      /* @__PURE__ */ React.createElement("div", { style: { padding: "20px 24px 28px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16, flexWrap: "wrap", gap: 10 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 22, fontWeight: 800, color: "#0B0B0B", letterSpacing: "-.3px" } }, selected.brand, " ", selected.model), /* @__PURE__ */ React.createElement("p", { style: { color: "#6B8F7A", fontSize: 13, marginTop: 2 } }, selected.version || "", " \xB7 ", selected.year, " \xB7 ", /* @__PURE__ */ React.createElement("span", { style: { color: condColor[selected.condition], fontWeight: 700 } }, condLabel[selected.condition] || selected.condition))), /* @__PURE__ */ React.createElement("div", { style: { textAlign: "right" } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 28, fontWeight: 800, color: "#00845A", fontFamily: "'DM Mono',monospace", letterSpacing: "-1px", lineHeight: 1 } }, "$", selected.price.toLocaleString()), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, color: "#6B8F7A", marginTop: 3 } }, "S/ ", Math.round(selected.price * tcVal).toLocaleString("es-PE")), /* @__PURE__ */ React.createElement(TcBadge, null))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(130px,1fr))", gap: 8, marginBottom: 18 } }, [
+        ["\u{1F4CD} Kilometraje", `${selected.km.toLocaleString()} km`],
+        ["\u2699\uFE0F Transmisi\xF3n", selected.transmission === "automatica" ? "Autom\xE1tica" : "Manual"],
+        [fuelIcon[selected.fuel] + " Combustible", selected.fuel ? selected.fuel.charAt(0).toUpperCase() + selected.fuel.slice(1) : "\u2014"],
+        ["\u{1F3A8} Color", selected.color || "\u2014"],
+        ["\u{1F4C5} A\xF1o", String(selected.year)],
+        ["\u{1F3F7}\uFE0F Condici\xF3n", condLabel[selected.condition] || selected.condition || "\u2014"]
+      ].map(([k, v]) => /* @__PURE__ */ React.createElement("div", { key: k, style: { background: "#F8FBF9", border: "1.5px solid #EAF1EE", borderRadius: 12, padding: "10px 12px" } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 9, color: "#6B8F7A", fontWeight: 700, marginBottom: 3, letterSpacing: ".06em", textTransform: "uppercase" } }, k), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 14, fontWeight: 700, color: "#1A2E26" } }, v)))), selected.notes && /* @__PURE__ */ React.createElement("div", { style: { background: "#F0F9F5", border: "1.5px solid #C2EDD8", borderRadius: 12, padding: "12px 16px", marginBottom: 16, fontSize: 13, color: "#0B3C2E", lineHeight: 1.65 } }, "\u{1F4DD} ", selected.notes), /* @__PURE__ */ React.createElement(
+        "button",
+        {
+          className: "ap-btn ap-btn-primary",
           type: "button",
           onClick: (e) => handleInterest(selected, e),
-          style: { width: "100%", padding: "14px", marginTop: 14, fontSize: 14 }
+          style: { width: "100%", padding: "16px", fontSize: 15, borderRadius: 16 }
         },
-        sentIds.has(selected.id) ? "\u2705 \xA1Inter\xE9s enviado!" : "\u{1F4AC} Me interesa este auto \u2192"
-      ))
+        sentIds.has(selected.id) ? "\u2705 \xA1Inter\xE9s enviado! Te contactamos pronto" : "\u{1F4AC} Me interesa \u2014 Consultar por WhatsApp \u2192"
+      ), /* @__PURE__ */ React.createElement("p", { style: { textAlign: "center", fontSize: 11, color: "#9FB3A5", marginTop: 10 } }, "Respuesta en menos de 2 horas en horario de atenci\xF3n"))
     )
   ));
 }
@@ -3088,7 +3410,7 @@ function AdminShell({ session, onLogout, tcSource }) {
     /* @__PURE__ */ React.createElement("span", { style: { fontSize: 16 } }, n.icon),
     n.label
   )), /* @__PURE__ */ React.createElement("div", { style: { flex: 1 } }), /* @__PURE__ */ React.createElement("div", { style: { marginTop: 12, padding: "12px 10px", background: "rgba(0,0,0,.03)", borderRadius: 12, border: "1px solid rgba(0,0,0,.06)" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, marginBottom: 8 } }, /* @__PURE__ */ React.createElement("div", { style: { width: 30, height: 30, borderRadius: "50%", background: `linear-gradient(135deg,${ROLE_BADGE[session.role]},${ROLE_BADGE[session.role]}80)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, flexShrink: 0 } }, session.email[0].toUpperCase()), /* @__PURE__ */ React.createElement("div", { style: { overflow: "hidden" } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6B8F7A", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }, session.email), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 9, fontWeight: 700, color: ROLE_BADGE[session.role] } }, session.role.toUpperCase()))), /* @__PURE__ */ React.createElement("div", { className: "admin-item", onClick: onLogout, style: { color: "#DC2626", padding: "7px 10px", borderRadius: 8, fontSize: 12 } }, /* @__PURE__ */ React.createElement("span", null, "\u{1F6AA}"), " Cerrar sesi\xF3n")));
-  return /* @__PURE__ */ React.createElement("div", { style: { display: "flex", minHeight: "100vh" } }, /* @__PURE__ */ React.createElement("div", { className: "desktop-only" }, renderSidebar()), /* @__PURE__ */ React.createElement("div", { style: { display: "none" }, id: "admin-mobile-bar" }), /* @__PURE__ */ React.createElement("div", { style: { flex: 1, overflowY: "auto", background: "rgba(5,10,25,.6)" } }, /* @__PURE__ */ React.createElement("div", { className: "ap-burger", style: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", background: "rgba(3,8,22,.98)", borderBottom: "1px solid rgba(255,255,255,.06)", position: "sticky", top: 0, zIndex: 100 } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 14, fontWeight: 800, color: "#fff" } }, "Auto", /* @__PURE__ */ React.createElement("span", { style: { color: "#00C88A" } }, "Pago"), " Admin"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8 } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 12, color: "#6B8F7A", fontFamily: "'DM Mono',monospace" } }, "TC ", tc == null ? void 0 : tc.toFixed(2)), /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement("div", { style: { display: "flex", minHeight: "100vh" } }, /* @__PURE__ */ React.createElement("div", { className: "desktop-only" }, renderSidebar()), /* @__PURE__ */ React.createElement("div", { style: { display: "none" }, id: "admin-mobile-bar" }), /* @__PURE__ */ React.createElement("div", { style: { flex: 1, overflowY: "auto", background: "#030810" } }, /* @__PURE__ */ React.createElement("div", { className: "ap-burger", style: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", background: "rgba(3,8,22,.98)", borderBottom: "1px solid rgba(255,255,255,.06)", position: "sticky", top: 0, zIndex: 100 } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 14, fontWeight: 800, color: "#fff" } }, "Auto", /* @__PURE__ */ React.createElement("span", { style: { color: "#00C88A" } }, "Pago"), " Admin"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8 } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 12, color: "#6B8F7A", fontFamily: "'DM Mono',monospace" } }, "TC ", tc == null ? void 0 : tc.toFixed(2)), /* @__PURE__ */ React.createElement(
     "button",
     {
       type: "button",
@@ -3638,7 +3960,7 @@ function AdminConfig() {
       a.download = "leads.csv";
       a.click();
     } }, "\u{1F4E5} Exportar todos a CSV"));
-  })()), tab === "sincronizacion" && /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 20 } }, /* @__PURE__ */ React.createElement("div", { style: { background: "#F3FBF7", border: "1.5px solid #C2EDD8", borderRadius: 18, padding: "24px 24px 20px" } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 16, fontWeight: 800, color: "#0B3C2E", marginBottom: 6 } }, "\u2601\uFE0F Sincronizaci\xF3n Global"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, color: "#5F7D73", lineHeight: 1.65, marginBottom: 16 } }, "Cuando guardas cambios (m\xF3dulos visibles, precios, par\xE1metros), se publican autom\xE1ticamente a ", /* @__PURE__ */ React.createElement("strong", null, "todos los dispositivos"), " que visiten AutoPago \u2014 sin necesidad de re-desplegar. Usa ", /* @__PURE__ */ React.createElement("a", { href: "https://jsonbin.io", target: "_blank", rel: "noreferrer", style: { color: "#00B47A" } }, "JSONBin.io"), " (gratis)."), /* @__PURE__ */ React.createElement("div", { style: { background: "#E8F8F2", borderRadius: 12, padding: "12px 16px", fontSize: 12, color: "#0B7A52", marginBottom: 20 } }, /* @__PURE__ */ React.createElement("strong", null, "Setup en 2 minutos:"), ' 1) Crea cuenta en jsonbin.io \xB7 2) Copia tu API Key de "API Keys" \xB7 3) P\xE9gala abajo y haz clic en "Crear Bin" \xB7 4) Listo \u2705'), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "API Key de JSONBin"), /* @__PURE__ */ React.createElement(
+  })()), tab === "sincronizacion" && /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 20 } }, /* @__PURE__ */ React.createElement("div", { style: { background: "#F3FBF7", border: "1.5px solid #C2EDD8", borderRadius: 18, padding: "24px 24px 20px" } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 16, fontWeight: 800, color: "#0B3C2E", marginBottom: 6 } }, "\u2601\uFE0F Sincronizaci\xF3n Global"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, color: "#5F7D73", lineHeight: 1.65, marginBottom: 16 } }, "Cuando guardas cambios (m\xF3dulos visibles, precios, par\xE1metros), se publican autom\xE1ticamente a ", /* @__PURE__ */ React.createElement("strong", null, "todos los dispositivos"), " que visiten AutoPago \u2014 sin necesidad de re-desplegar. Usa ", /* @__PURE__ */ React.createElement("a", { href: "https://jsonbin.io", target: "_blank", rel: "noreferrer", style: { color: "#00B47A" } }, "JSONBin.io"), " (gratis)."), /* @__PURE__ */ React.createElement("div", { style: { background: "#E8F8F2", borderRadius: 12, padding: "14px 16px", fontSize: 12, color: "#0B7A52", marginBottom: 20, lineHeight: 1.8 } }, /* @__PURE__ */ React.createElement("strong", null, "\u{1F4CB} Setup en 3 pasos:"), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("span", { style: { opacity: 0.85 } }, "1\uFE0F\u20E3 Crea cuenta gratuita en ", /* @__PURE__ */ React.createElement("a", { href: "https://jsonbin.io", target: "_blank", rel: "noreferrer", style: { color: "#00845A", fontWeight: 700 } }, "jsonbin.io"), /* @__PURE__ */ React.createElement("br", null), "2\uFE0F\u20E3 En tu dashboard, ve a ", /* @__PURE__ */ React.createElement("strong", null, "API Keys \u2192 Add Key"), " y copia la clave (empieza con ", /* @__PURE__ */ React.createElement("code", { style: { background: "rgba(0,0,0,.08)", padding: "1px 5px", borderRadius: 4 } }, "$2a$10$\u2026"), ")", /* @__PURE__ */ React.createElement("br", null), '3\uFE0F\u20E3 P\xE9gala en el campo "API Key" y haz clic en ', /* @__PURE__ */ React.createElement("strong", null, "\u{1F195} Crear Bin"))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "API Key de JSONBin"), /* @__PURE__ */ React.createElement(
     "input",
     {
       className: "ap-input",
@@ -3663,12 +3985,10 @@ function AdminConfig() {
     const r = await REMOTE_SYNC.createBin(cfg, key);
     setSyncing(false);
     if (r.ok) {
-      setSyncMsg(`\u2705 Bin creado: ${r.binId}
-
-Para que TODOS los usuarios vean los cambios, agrega esta l\xEDnea en tu index.html (dentro de <head>) y redespliega:
-${r.htmlMeta}`);
+      setSyncMsg(`\u2705 Bin creado: ${r.binId}`);
+      window.dispatchEvent(new Event("ap-bin-created"));
     } else {
-      setSyncMsg("\u274C " + r.msg);
+      setSyncMsg("\u274C " + (r.msg || "Error al crear el Bin. Verifica tu API Key."));
     }
   } }, syncing ? "\u23F3 Creando\u2026" : "\u{1F195} Crear Bin nuevo"), /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-secondary", onClick: async () => {
     setSyncing(true);
@@ -3682,7 +4002,7 @@ ${r.htmlMeta}`);
     const remote = await REMOTE_SYNC.fetch();
     setSyncing(false);
     setSyncMsg(remote ? "\u2705 Configuraci\xF3n remota verificada" : "\u274C No se pudo conectar");
-  } }, "\u{1F50D} Verificar conexi\xF3n")), syncMsg && /* @__PURE__ */ React.createElement("div", { style: { marginTop: 12, fontSize: 13, fontWeight: 600, color: syncMsg.startsWith("\u274C") ? "#DC2626" : "#00845A" } }, syncMsg)), /* @__PURE__ */ React.createElement("div", { style: { background: "#EFF6FF", border: "1.5px solid #BFDBFE", borderRadius: 14, padding: "16px 20px", fontSize: 12.5, color: "#1E3A8A", lineHeight: 1.7 } }, /* @__PURE__ */ React.createElement("strong", null, "\u{1F4CC} Para activar la sincronizaci\xF3n global en todos los dispositivos:"), /* @__PURE__ */ React.createElement("br", null), "1. Crea el Bin (bot\xF3n arriba) \u2192 copia el Bin ID generado", /* @__PURE__ */ React.createElement("br", null), "2. Agrega ", /* @__PURE__ */ React.createElement("code", { style: { background: "#DBEAFE", padding: "1px 6px", borderRadius: 4 } }, '<meta name="ap-bin-id" content="TU_BIN_ID">'), " en el ", /* @__PURE__ */ React.createElement("code", null, "<head>"), " de tu index.html", /* @__PURE__ */ React.createElement("br", null), "3. Redespliega \u2192 todos los visitantes ahora leen la config desde el Bin \u2705"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 13, color: "#5F7D73" } }, /* @__PURE__ */ React.createElement("strong", { style: { color: "#0B3C2E" } }, "\xBFC\xF3mo funciona?"), /* @__PURE__ */ React.createElement("br", null), "Al visitar AutoPago, cada usuario descarga autom\xE1ticamente la configuraci\xF3n global (en background). Los cambios de m\xF3dulos visibles se sincronizan en menos de 5 segundos. No se requiere redeployment ni backend propio.")), tab === "backup" && /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 20 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 } }, [
+  } }, "\u{1F50D} Verificar conexi\xF3n")), syncMsg && /* @__PURE__ */ React.createElement("div", { style: { marginTop: 12, fontSize: 13, fontWeight: 600, color: syncMsg.startsWith("\u274C") ? "#DC2626" : "#00845A" } }, syncMsg)), /* @__PURE__ */ React.createElement("div", { style: { background: "#EFF6FF", border: "1.5px solid #BFDBFE", borderRadius: 14, padding: "16px 20px", fontSize: 12.5, color: "#1E3A8A", lineHeight: 1.7 } }, /* @__PURE__ */ React.createElement("strong", null, "\u{1F4CC} \xBFPor qu\xE9 necesito el meta tag en index.html?"), /* @__PURE__ */ React.createElement("br", null), "1. Crea el Bin (bot\xF3n arriba) \u2192 copia el Bin ID generado", /* @__PURE__ */ React.createElement("br", null), "2. Agrega ", /* @__PURE__ */ React.createElement("code", { style: { background: "#DBEAFE", padding: "1px 6px", borderRadius: 4 } }, '<meta name="ap-bin-id" content="TU_BIN_ID">'), " en el ", /* @__PURE__ */ React.createElement("code", null, "<head>"), " de tu index.html", /* @__PURE__ */ React.createElement("br", null), "3. Redespliega \u2192 todos los visitantes ahora leen la config desde el Bin \u2705"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 13, color: "#5F7D73" } }, /* @__PURE__ */ React.createElement("strong", { style: { color: "#0B3C2E" } }, "\xBFC\xF3mo funciona?"), /* @__PURE__ */ React.createElement("br", null), "Al visitar AutoPago, cada usuario descarga autom\xE1ticamente la configuraci\xF3n global (en background). Los cambios de m\xF3dulos visibles se sincronizan en menos de 5 segundos. No se requiere redeployment ni backend propio.")), tab === "backup" && /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 20 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 } }, [
     { label: "Configuraci\xF3n", key: "config", load: loadConfig, icon: "\u2699\uFE0F" },
     { label: "Leads CRM", key: "leads", load: loadLeads, icon: "\u{1F4E5}" },
     { label: "Inventario", key: "inv", load: () => {
@@ -4046,14 +4366,43 @@ function App() {
         return React.createElement(AppErrorBoundary, null, React.createElement(Home, { onNav: navigate }));
     }
   };
-  return /* @__PURE__ */ React.createElement(AppCtx.Provider, { value: ctx }, /* @__PURE__ */ React.createElement("div", { style: { minHeight: "100vh", display: "flex", flexDirection: "column" } }, /* @__PURE__ */ React.createElement(Navbar, { page: currentPage, onNav: navigate, onAdmin: goAdmin }), /* @__PURE__ */ React.createElement("main", { style: { flex: 1 } }, renderPage()), /* @__PURE__ */ React.createElement(AppFooter, { onNav: navigate })));
+  const showStickyCTA = currentPage === "home";
+  return /* @__PURE__ */ React.createElement(AppCtx.Provider, { value: ctx }, /* @__PURE__ */ React.createElement("div", { style: { minHeight: "100vh", display: "flex", flexDirection: "column" } }, /* @__PURE__ */ React.createElement(Navbar, { page: currentPage, onNav: navigate, onAdmin: goAdmin }), /* @__PURE__ */ React.createElement("main", { style: { flex: 1 } }, renderPage()), /* @__PURE__ */ React.createElement(AppFooter, { onNav: navigate }), showStickyCTA && /* @__PURE__ */ React.createElement("div", { className: "sticky-cta-mobile", style: {
+    position: "fixed",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 200,
+    background: "rgba(255,255,255,.96)",
+    backdropFilter: "blur(12px)",
+    borderTop: "1.5px solid #EAF1EE",
+    padding: "12px 16px",
+    display: "none",
+    gap: 8,
+    alignItems: "center",
+    boxShadow: "0 -4px 24px rgba(0,0,0,.08)"
+  } }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      className: "ap-btn-cta",
+      style: { flex: 1, padding: "13px", fontSize: 14, textAlign: "center" },
+      onClick: () => navigate("comprar")
+    },
+    "\u{1F697} Tasar mi auto gratis \u2192"
+  ), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      className: "ap-btn",
+      style: { flexShrink: 0, padding: "13px 16px", fontSize: 13, borderRadius: 14 },
+      onClick: () => navigate("credito")
+    },
+    "\u{1F4B3} Cr\xE9dito"
+  ))));
 }
 function AppWithBoundary() {
   return React.createElement(AppErrorBoundary, null, React.createElement(App));
 }
 
-
-// Mount
 const domContainer = document.getElementById('root');
 const reactRoot = ReactDOM.createRoot(domContainer);
 reactRoot.render(React.createElement(AppWithBoundary));
