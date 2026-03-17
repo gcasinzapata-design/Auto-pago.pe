@@ -564,7 +564,8 @@ const VDB = {
     "A6": { p: 74e3, o: "european", c: "sedan" },
     "Q3": { p: 52e3, o: "european", c: "suv" },
     "Q5": { p: 68e3, o: "european", c: "suv" },
-    "Q7": { p: 96e3, o: "european", c: "suv" }
+    "Q7": { p: 96e3, o: "european", c: "suv" },
+    "Q8": { p: 118e3, o: "european", c: "suv" }
   },
   Volkswagen: {
     Polo: { p: 19500, o: "european", c: "hatchback" },
@@ -584,7 +585,9 @@ const VDB = {
     Captiva: { p: 3e4, o: "american", c: "suv" },
     Tracker: { p: 26e3, o: "american", c: "suv" },
     Trailblazer: { p: 42e3, o: "american", c: "suv" },
-    Colorado: { p: 44e3, o: "american", c: "pickup" }
+    Colorado: { p: 44e3, o: "american", c: "pickup" },
+    Tahoe: { p: 72e3, o: "american", c: "suv" },
+    Suburban: { p: 84e3, o: "american", c: "suv" }
   },
   Ford: {
     Territory: { p: 28e3, o: "american", c: "suv" },
@@ -872,6 +875,7 @@ const TRIMS = (() => {
   set("Audi", "Q3", ["35 TFSI", "S Line", "RS Q3"]);
   set("Audi", "Q5", ["35 TFSI", "45 TFSI", "S Line", "Black Edition"]);
   set("Audi", "Q7", ["45 TFSI", "55 TFSI", "S Line"]);
+  set("Audi", "Q8", ["55 TFSI", "Competition", "RS Q8"]);
   set("Volkswagen", "Polo", ["Trendline", "Comfortline", "Highline"]);
   set("Volkswagen", "Golf", ["Trendline", "Comfortline", "Highline", "GTI"]);
   set("Volkswagen", "Jetta", ["Trendline", "Comfortline", "Highline", "GLI"]);
@@ -894,6 +898,8 @@ const TRIMS = (() => {
   set("Chevrolet", "Trailblazer", ["LT", "RS", "Premier"]);
   set("Chevrolet", "Captiva", ["LS", "LT", "Premier"]);
   set("Chevrolet", "Colorado", ["LT", "Z71", "ZR2"]);
+  set("Chevrolet", "Tahoe", ["LS", "LT", "Premier", "High Country"]);
+  set("Chevrolet", "Suburban", ["LS", "LT", "Premier", "High Country"]);
   set("Jeep", "Renegade", ["Sport", "Latitude", "Limited", "Trailhawk"]);
   set("Jeep", "Compass", ["Sport", "Latitude", "Limited", "Trailhawk"]);
   set("Jeep", "Commander", ["Sport", "Longitude", "Limited"]);
@@ -1001,6 +1007,9 @@ const TRIMS = (() => {
   set("Maxus", "T60", ["GL", "GLS", "Luxury"]);
   set("Maxus", "T70", ["GL", "GLS", "Luxury"]);
   set("Great Wall", "Wingle", ["Est\xE1ndar", "Plus", "4WD"]);
+  set("Audi", "Q8", ["45 TFSI", "55 TFSI", "S Line", "RS Q8"]);
+  set("Chevrolet", "Tahoe", ["LS", "LT", "RST", "Premier", "High Country"]);
+  set("Chevrolet", "Suburban", ["LS", "LT", "RST", "Premier", "High Country"]);
   return out;
 })();
 const DEP = {
@@ -1042,9 +1051,10 @@ function mktCal(origin, age, cat = "") {
   return m;
 }
 function consignaMarketVal(vr, year) {
-  const age = Math.max(0, CURRENT_YEAR - parseInt(year, 10));
-  const cal = mktCal(vr.origin, age, vr.category);
-  return Math.round(vr.value * cal / 500) * 500;
+  const { offer } = calcOffer(vr);
+  const natural = Math.round(vr.value * (vr.isPremium ? 1.14 : 1.1) / 500) * 500;
+  const offerFloor = Math.round(offer * 1.2 / 500) * 500;
+  return Math.max(natural, offerFloor);
 }
 const PREMIUM_ORIGINS = /* @__PURE__ */ new Set(["european"]);
 const isPremium = (o) => PREMIUM_ORIGINS.has(o);
@@ -1228,20 +1238,21 @@ const GLOBAL_CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Mono:wght@400;500&display=swap');
 
 /* \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
-   AUTOPAGO \xB7 WISE-INSPIRED DESIGN SYSTEM v9
-   Font: Plus Jakarta Sans \u2014 clean, modern, fintech-grade
-   Philosophy: Radical white space \xB7 Words that earn pixels
+   AUTOPAGO \xB7 DESIGN SYSTEM v10 \u2014 Premium Fintech Forms
+   Font: Plus Jakarta Sans \xB7 DM Mono for numbers
+   Philosophy: Generous space \xB7 Clear hierarchy \xB7 Trust signals
 \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 */
 :root {
   --p:       #00B47A;  --p-dk:  #008F60;  --p-lt:  #E6F7F1;  --p-xlt: #F3FCF8;
   --dark:    #163300;  --mid:   #1D4A35;  --text:  #0B2619;  --muted: #6B7E75;
   --border:  #E4EDE8;  --surf:  #F5F9F6;  --white: #FFFFFF;
-  --pill:    9999px;   --r:     14px;     --r-lg:  22px;     --nav-h: 70px;
-  --sh-xs:   0 1px 3px rgba(0,0,0,.06);
-  --sh-sm:   0 2px 10px rgba(0,0,0,.07);
-  --sh-md:   0 8px 30px rgba(0,0,0,.09);
-  --sh-lg:   0 24px 72px rgba(0,0,0,.10);
+  --pill:    9999px;   --r:     16px;     --r-lg:  24px;     --nav-h: 70px;
+  --sh-xs:   0 1px 4px rgba(0,0,0,.05);
+  --sh-sm:   0 2px 12px rgba(0,0,0,.07);
+  --sh-md:   0 8px 32px rgba(0,0,0,.09);
+  --sh-lg:   0 24px 72px rgba(0,0,0,.11);
   --sh-p:    0 8px 28px rgba(0,180,122,.28);
+  --inp-h:   52px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -1293,7 +1304,7 @@ button,input,select,textarea{font-family:'Plus Jakarta Sans',sans-serif}
   line-height: 1.70;
 }
 .sec-label {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: .12em;
   text-transform: uppercase;
@@ -1321,11 +1332,7 @@ nav {
   letter-spacing: -0.8px;
   color: var(--dark);
 }
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
+.nav-links { display:flex; align-items:center; gap:4px; }
 .nav-link {
   font-size: 14px;
   font-weight: 600;
@@ -1339,14 +1346,10 @@ nav {
 }
 .nav-link:hover, .nav-link.active { color: var(--dark); background: var(--p-lt); }
 .nav-cta {
-  font-size: 13px;
-  font-weight: 700;
-  background: var(--dark);
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  padding: 10px 20px;
-  border-radius: 50px;
+  font-size: 13px; font-weight: 700;
+  background: var(--dark); color: #fff;
+  border: none; cursor: pointer;
+  padding: 10px 20px; border-radius: 50px;
   transition: background .18s, transform .18s;
 }
 .nav-cta:hover { background: var(--p-dk); transform: translateY(-1px); }
@@ -1355,13 +1358,11 @@ nav {
 .home-hero-section {
   background: #fff;
   padding: clamp(80px,11vw,140px) clamp(20px,5vw,40px) clamp(60px,8vw,100px);
-  position: relative;
-  overflow: hidden;
+  position: relative; overflow: hidden;
 }
 .home-hero-section::before {
   content: "";
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0;
   background:
     radial-gradient(ellipse 70% 80% at 110% 50%, rgba(0,180,122,.07) 0%, transparent 70%),
     radial-gradient(ellipse 50% 60% at -20% 80%, rgba(0,60,46,.04) 0%, transparent 70%);
@@ -1372,205 +1373,158 @@ nav {
   grid-template-columns: 1fr 1fr;
   gap: clamp(40px,6vw,80px);
   align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
-  position: relative;
+  max-width: 1200px; margin: 0 auto; position: relative;
 }
-@media(max-width:840px) {
-  .home-hero-grid { grid-template-columns: 1fr }
-  .home-hero-right { display: none }
-}
-.home-hero-stats {
-  display: flex;
-  gap: clamp(20px,3vw,36px);
-  margin-top: 44px;
-  flex-wrap: wrap;
-}
-.stat-badge {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.stat-badge .n {
-  font-size: 24px;
-  font-weight: 800;
-  font-family: 'DM Mono', monospace;
-  color: var(--dark);
-  letter-spacing: -1px;
-}
-.stat-badge .l {
-  font-size: 11px;
-  color: var(--muted);
-  font-weight: 500;
-}
+@media(max-width:840px) { .home-hero-grid{grid-template-columns:1fr} .home-hero-right{display:none} }
+.home-hero-stats { display:flex; gap:clamp(20px,3vw,36px); margin-top:44px; flex-wrap:wrap; }
+.stat-badge { display:flex; flex-direction:column; gap:2px; }
+.stat-badge .n { font-size:24px; font-weight:800; font-family:'DM Mono',monospace; color:var(--dark); letter-spacing:-1px; }
+.stat-badge .l { font-size:11px; color:var(--muted); font-weight:500; }
 
 /* \u2500\u2500 UI FLOAT CARD \u2500\u2500 */
 .ui-float-card {
-  background: #fff;
-  border: 1.5px solid var(--border);
-  border-radius: 20px;
-  padding: 24px;
-  box-shadow: var(--sh-lg);
-  animation: floatUp 4s ease-in-out infinite;
+  background: #fff; border:1.5px solid var(--border); border-radius:20px;
+  padding: 24px; box-shadow: var(--sh-lg); animation: floatUp 4s ease-in-out infinite;
 }
-.ui-float-card .val {
-  font-size: 34px;
-  font-weight: 800;
-  font-family: 'DM Mono', monospace;
-  letter-spacing: -2px;
-  color: var(--dark);
-}
+.ui-float-card .val { font-size:34px; font-weight:800; font-family:'DM Mono',monospace; letter-spacing:-2px; color:var(--dark); }
 
 /* \u2500\u2500 TRUST BAR \u2500\u2500 */
-.trust-bar-wrap {
-  background: #fff;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  padding: 18px 0;
-}
-.home-trust-bar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(20px,4vw,48px);
-  flex-wrap: wrap;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 clamp(20px,5vw,40px);
-}
-.trust-bar-item {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--muted);
-}
+.trust-bar-wrap { background:#fff; border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:18px 0; }
+.home-trust-bar { display:flex; align-items:center; justify-content:center; gap:clamp(20px,4vw,48px); flex-wrap:wrap; max-width:1200px; margin:0 auto; padding:0 clamp(20px,5vw,40px); }
+.trust-bar-item { display:flex; align-items:center; gap:7px; font-size:13px; font-weight:600; color:var(--muted); }
 
 /* \u2500\u2500 MODULE CARDS \u2500\u2500 */
-.home-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
-}
+.home-cards-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
 .module-card {
-  background: #fff;
-  border: 1.5px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: 28px 24px;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
+  background: #fff; border:1.5px solid var(--border); border-radius:var(--r-lg);
+  padding: 28px 24px; cursor:pointer; display:flex; flex-direction:column;
   transition: border-color .22s, box-shadow .22s, transform .22s;
 }
-.module-card:hover {
-  border-color: var(--p);
-  box-shadow: 0 8px 32px rgba(0,180,122,.15);
-  transform: translateY(-4px);
-}
-.module-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-  margin-bottom: 16px;
-}
-.module-cta {
-  margin-top: 20px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--p);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  transition: gap .18s;
-}
-.module-card:hover .module-cta { gap: 8px; }
+.module-card:hover { border-color:var(--p); box-shadow:0 8px 32px rgba(0,180,122,.15); transform:translateY(-4px); }
+.module-icon { width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; margin-bottom:16px; }
+.module-cta { margin-top:20px; font-size:13px; font-weight:700; color:var(--p); display:flex; align-items:center; gap:4px; transition:gap .18s; }
+.module-card:hover .module-cta { gap:8px; }
 
 /* \u2500\u2500 BENEFITS SLIDER \u2500\u2500 */
-.benefits-track-wrap { overflow: hidden; padding: 8px 0; }
-.benefits-track {
-  display: flex;
-  gap: 20px;
-  width: max-content;
-  animation: scrollX 38s linear infinite;
-}
-.benefits-track:hover { animation-play-state: paused }
-.benefit-card {
-  background: #fff;
-  border: 1.5px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: 28px 24px;
-  width: 280px;
-  flex-shrink: 0;
-}
-.home-steps-grid {
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  gap: 20px;
-}
+.benefits-track-wrap { overflow:hidden; padding:8px 0; }
+.benefits-track { display:flex; gap:20px; width:max-content; animation:scrollX 38s linear infinite; }
+.benefits-track:hover { animation-play-state:paused }
+.benefit-card { background:#fff; border:1.5px solid var(--border); border-radius:var(--r-lg); padding:28px 24px; width:280px; flex-shrink:0; }
+.home-steps-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
 @media(max-width:768px) { .home-steps-grid{grid-template-columns:1fr} }
 
 /* \u2500\u2500 BUTTONS \u2500\u2500 */
 .ap-btn-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--p);
-  color: #fff;
-  font-size: 15px;
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
-  padding: 14px 28px;
-  border-radius: var(--pill);
-  transition: background .18s, transform .18s, box-shadow .18s;
-  box-shadow: var(--sh-p);
+  display: inline-flex; align-items:center; gap:8px;
+  background: linear-gradient(135deg, var(--p), var(--p-dk));
+  color: #fff; font-size:15px; font-weight:700;
+  border: none; cursor:pointer;
+  padding: 16px 32px; border-radius: var(--pill);
+  transition: all .2s; box-shadow: var(--sh-p);
+  letter-spacing: -.2px;
 }
-.ap-btn-cta:hover { background: var(--p-dk); transform: translateY(-2px); box-shadow: 0 14px 36px rgba(0,180,122,.35); }
-.ap-btn { display:inline-flex; align-items:center; gap:6px; font-size:14px; font-weight:600; border:1.5px solid var(--border); cursor:pointer; padding:12px 22px; border-radius:var(--pill); transition:all .18s; background:#fff; color:var(--text); }
+.ap-btn-cta:hover { background:linear-gradient(135deg,#00C88A,var(--p)); transform:translateY(-2px); box-shadow:0 14px 36px rgba(0,180,122,.35); }
+.ap-btn { display:inline-flex; align-items:center; gap:6px; font-size:14px; font-weight:600; border:1.5px solid var(--border); cursor:pointer; padding:11px 22px; border-radius:var(--pill); transition:all .18s; background:#fff; color:var(--text); }
 .ap-btn:hover { border-color:var(--p); color:var(--p); background:var(--p-lt); }
-.ap-btn-primary   { background:var(--p); color:#fff; border-color:var(--p); }
-.ap-btn-primary:hover { background:var(--p-dk); }
+.ap-btn-primary   { background:linear-gradient(135deg,var(--p),var(--p-dk)); color:#fff; border-color:transparent; box-shadow:var(--sh-p); }
+.ap-btn-primary:hover { transform:translateY(-1px); box-shadow:0 10px 28px rgba(0,180,122,.35); }
 .ap-btn-secondary { background:#fff; border-color:var(--border); }
 .ap-btn-secondary:hover { border-color:var(--p); color:var(--p); }
 .ap-btn-ghost     { background:transparent; border-color:transparent; color:var(--muted); }
 .ap-btn-ghost:hover { color:var(--dark); background:var(--p-lt); }
+.ap-btn-sm { padding:7px 14px; font-size:12px; }
 
 /* \u2500\u2500 CARDS / SURFACES \u2500\u2500 */
 .ap-card {
   background: #fff;
   border: 1.5px solid var(--border);
-  border-radius: var(--r);
-  box-shadow: var(--sh-xs);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-sm);
+  padding: 28px 32px;
+  margin-bottom: 16px;
 }
+@media(max-width:600px) { .ap-card { padding: 20px 18px; } }
 
-/* \u2500\u2500 FORM ELEMENTS \u2500\u2500 */
-.ap-label { font-size:12px; font-weight:600; color:var(--muted); display:block; margin-bottom:5px; letter-spacing:.02em }
+/* \u2500\u2500 FORM ELEMENTS \u2014 MODERN PREMIUM STYLE \u2500\u2500 */
+.ap-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--mid);
+  display: block;
+  margin-bottom: 7px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
 .ap-input {
   width: 100%;
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  padding: 10px 14px;
-  font-size: 14px;
+  height: var(--inp-h);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 0 16px;
+  font-size: 15px;
   font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 500;
   color: var(--text);
-  background: #fff;
-  transition: border-color .15s;
+  background: var(--surf);
+  transition: border-color .15s, box-shadow .15s, background .15s;
   outline: none;
 }
-.ap-input:focus { border-color: var(--p); box-shadow: 0 0 0 3px rgba(0,180,122,.12); }
-.ap-input::placeholder { color:#B5C5BF }
-.ap-select { appearance:none; background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23637381'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center }
+.ap-input:focus {
+  border-color: var(--p);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(0,180,122,.10);
+}
+.ap-input::placeholder { color: #B5C5BF; font-weight: 400; }
+.ap-input.err { border-color:#EF4444; box-shadow:0 0 0 4px rgba(239,68,68,.08); }
+textarea.ap-input { height: auto; padding: 14px 16px; }
+select.ap-input {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='7' viewBox='0 0 12 7' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2300B47A' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  cursor: pointer;
+}
+select.ap-input:disabled { opacity:.45; cursor:not-allowed; }
+
+/* Form group with floating-label feel */
+.ap-field { display:flex; flex-direction:column; gap:0; }
+
+/* \u2500\u2500 FORM SECTIONS (card headers) \u2500\u2500 */
+.form-section-header {
+  display: flex; align-items: center; gap: 12px;
+  padding-bottom: 20px; margin-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+.form-section-icon {
+  width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--p-lt), var(--p-xlt));
+  border: 1.5px solid rgba(0,180,122,.2);
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+}
+.form-section-title { font-size: 16px; font-weight: 700; color: var(--dark); }
+.form-section-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* \u2500\u2500 CHECKBOX / LEGAL CHECKS \u2500\u2500 */
+.ap-check {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 18px;
+  background: var(--surf); border-radius: 12px;
+  border: 1.5px solid var(--border); cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.ap-check:hover { border-color: var(--p); background: var(--p-xlt); }
+.ap-check input[type="checkbox"] {
+  width: 18px; height: 18px; accent-color: var(--p);
+  cursor: pointer; flex-shrink: 0; margin-top: 1px;
+}
 
 /* \u2500\u2500 LAYOUT HELPERS \u2500\u2500 */
-.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px }
-@media(max-width:600px){.grid-2{grid-template-columns:1fr}}
-.module-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px }
-@media(max-width:600px){.module-form-grid{grid-template-columns:1fr}}
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+@media(max-width:600px){ .grid-2{grid-template-columns:1fr} }
+.grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+@media(max-width:600px){ .grid-3{grid-template-columns:1fr} }
+.module-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+@media(max-width:600px){ .module-form-grid{grid-template-columns:1fr} }
 
 /* \u2500\u2500 TOGGLE \u2500\u2500 */
 .toggle { width:44px; height:24px; border-radius:12px; background:#DDE5E0; cursor:pointer; position:relative; transition:background .2s; flex-shrink:0 }
@@ -1578,12 +1532,19 @@ nav {
 .toggle-thumb { position:absolute; top:2px; left:2px; width:20px; height:20px; border-radius:50%; background:#fff; box-shadow:var(--sh-xs); transition:transform .18s cubic-bezier(.34,1.56,.64,1) }
 .toggle.on .toggle-thumb { transform:translateX(20px) }
 
-/* \u2500\u2500 FOOTER \u2500\u2500 */
-.footer-grid {
-  display: grid;
-  grid-template-columns: 1.4fr repeat(3,1fr);
-  gap: 40px;
+/* \u2500\u2500 PHONE INPUT \u2500\u2500 */
+.phone-wrap { display:flex; }
+.phone-prefix {
+  display:flex; align-items:center; justify-content:center;
+  padding: 0 14px; background: var(--p-lt); border: 2px solid var(--border);
+  border-right: none; border-radius: 12px 0 0 12px;
+  font-size:14px; font-weight:700; color:var(--p); white-space:nowrap; flex-shrink:0;
+  height: var(--inp-h);
 }
+.phone-input { border-radius: 0 12px 12px 0 !important; }
+
+/* \u2500\u2500 FOOTER \u2500\u2500 */
+.footer-grid { display:grid; grid-template-columns:1.4fr repeat(3,1fr); gap:40px; }
 @media(max-width:768px) { .footer-grid { grid-template-columns:1fr 1fr } }
 @media(max-width:480px) { .footer-grid { grid-template-columns:1fr } }
 
@@ -1592,17 +1553,70 @@ nav {
 .ap-drawer { position:fixed; inset:0; z-index:300 }
 .ap-drawer-bg { position:absolute; inset:0; background:rgba(0,0,0,.35); backdrop-filter:blur(4px) }
 .ap-drawer-panel { position:absolute; top:0; right:0; bottom:0; width:min(280px,85vw); background:#fff; box-shadow:var(--sh-lg); padding:24px 0; overflow-y:auto; animation:scaleIn .25s ease }
-@media(max-width:768px) { .ap-burger { display:flex } .nav-links { display:none } }
+@media(max-width:768px) { .ap-burger{display:flex} .nav-links{display:none} }
 
-/* \u2500\u2500 ADMIN \u2500\u2500 */
-.admin-overlay {position:fixed;inset:0;z-index:200;background:rgba(11,28,22,.65);backdrop-filter:blur(8px);display:flex;align-items:flex-start;justify-content:center;padding:clamp(16px,3vw,32px)}
-.admin-sheet {background:#fff;border-radius:24px;width:100%;max-width:840px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--sh-lg)}
-.admin-header {padding:20px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.admin-tabs {display:flex;gap:0;overflow-x:auto;border-bottom:1px solid var(--border);flex-shrink:0;padding:0 12px}
-.admin-tab-btn {flex-shrink:0;background:none;border:none;cursor:pointer;padding:11px 14px;font-size:12px;font-weight:600;color:var(--muted);border-bottom:2.5px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
-.admin-tab-btn.active {color:var(--p);border-bottom-color:var(--p)}
-.admin-body {flex:1;overflow-y:auto;padding:24px 28px}
-@media(max-width:600px){.admin-body{padding:16px 16px}}
+/* \u2500\u2500 ADMIN SHELL LAYOUT \u2500\u2500 */
+.desktop-only{display:block}
+@media(max-width:768px){.desktop-only{display:none !important}}
+.admin-item{
+  display:flex; align-items:center; gap:10px;
+  padding:10px 12px; border-radius:10px; cursor:pointer;
+  color:#6B8F7A; font-size:13px; font-weight:600;
+  transition:all .15s; margin:1px 0;
+  font-family:inherit; border:none; background:none;
+  width:100%; text-align:left; letter-spacing:.01em;
+}
+.admin-item:hover { background:rgba(255,255,255,.07); color:#C8DDD6; }
+.admin-item.active {
+  background:linear-gradient(90deg,rgba(0,200,138,.18),rgba(0,200,138,.04));
+  color:#00C88A; border-left:3px solid #00C88A; padding-left:9px;
+  font-weight:700;
+}
+
+/* \u2500\u2500 ADMIN STAT CARDS \u2500\u2500 */
+.admin-stat-card {
+  background:linear-gradient(135deg,rgba(255,255,255,.06) 0%,rgba(255,255,255,.02) 100%);
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:16px; padding:20px 22px;
+  transition:border-color .2s;
+}
+.admin-stat-card:hover { border-color:rgba(0,200,138,.3); }
+.admin-stat-num {
+  font-size:36px; font-weight:800; letter-spacing:-1.5px;
+  font-family:'DM Mono',monospace; line-height:1;
+}
+.admin-stat-label { font-size:11px; color:#6B8F7A; font-weight:600; letter-spacing:.06em; text-transform:uppercase; margin-top:4px; }
+.admin-stat-sub { font-size:11px; color:#4A6B5E; margin-top:6px; }
+
+/* \u2500\u2500 ADMIN SECTION HEADERS \u2500\u2500 */
+.admin-section-title { font-size:20px; font-weight:800; color:#E8F5EE; margin-bottom:4px; letter-spacing:-.3px; }
+.admin-section-sub { font-size:12px; color:#5A8070; }
+
+/* \u2500\u2500 ADMIN TABLES \u2500\u2500 */
+.admin-table-row {
+  display:grid; align-items:center; padding:13px 16px;
+  border-radius:10px; font-size:13px; color:#C8DDD6;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  transition:background .13s;
+}
+.admin-table-row:hover { background:rgba(255,255,255,.04); color:#E8F5EE; }
+.admin-badge {
+  display:inline-flex; align-items:center; padding:3px 9px;
+  border-radius:20px; font-size:11px; font-weight:700;
+}
+
+/* \u2500\u2500 ADMIN KPI CARDS \u2500\u2500 */
+.kpi-card {
+  background:linear-gradient(135deg,rgba(255,255,255,.07) 0%,rgba(255,255,255,.02) 100%);
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:16px; padding:20px 22px;
+  transition:border-color .2s, transform .2s;
+  display:flex; flex-direction:column; gap:4px;
+}
+.kpi-card:hover { transform:translateY(-2px); }
+.kpi-label { font-size:11px; font-weight:700; color:#5A8070; letter-spacing:.07em; text-transform:uppercase; }
+.kpi-val { font-size:30px; font-weight:800; letter-spacing:-1px; font-family:'DM Mono',monospace; line-height:1; margin:4px 0; }
+.kpi-sub { font-size:11px; color:#4A6B5E; }
 
 /* \u2500\u2500 LEADS PANEL \u2500\u2500 */
 .leads-row {display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:center;padding:12px 14px;border-radius:10px;border:1px solid var(--border);font-size:13px}
@@ -1627,25 +1641,19 @@ nav {
 /* \u2500\u2500 CREDITO TERMS \u2500\u2500 */
 .credito-terms-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
+/* \u2500\u2500 RANGE SLIDER \u2500\u2500 */
+.ap-slider { -webkit-appearance:none; appearance:none; height:6px; border-radius:3px; outline:none; cursor:pointer; }
+.ap-slider::-webkit-slider-thumb { -webkit-appearance:none; width:22px; height:22px; border-radius:50%; background:var(--p); cursor:pointer; border:3px solid #fff; box-shadow:0 2px 8px rgba(0,180,122,.4); }
+.ap-slider::-moz-range-thumb { width:22px; height:22px; border-radius:50%; background:var(--p); cursor:pointer; border:3px solid #fff; box-shadow:0 2px 8px rgba(0,180,122,.4); }
+
 /* \u2500\u2500 RESPONSIVE FIXES \u2500\u2500 */
 @media(min-width:769px){.ap-burger{display:none !important}}
 @media(max-width:600px){
   .module-form-grid{grid-template-columns:1fr !important}
   .credito-terms-grid{grid-template-columns:1fr !important}
+  .grid-3{grid-template-columns:1fr 1fr !important}
 }
 
-/* \u2500\u2500 ADMIN LAYOUT \u2500\u2500 */
-.desktop-only{display:block}
-@media(max-width:768px){.desktop-only{display:none !important}}
-.admin-item{
-  display:flex;align-items:center;gap:10px;
-  padding:9px 12px;border-radius:9px;cursor:pointer;
-  color:#9FB3A5;font-size:13px;font-weight:600;
-  transition:all .15s ease;margin:1px 0;
-  font-family:inherit;border:none;background:none;width:100%;text-align:left;
-}
-.admin-item:hover{background:rgba(255,255,255,.07);color:#fff}
-.admin-item.active{background:rgba(0,168,107,.18);color:#00C88A}
 `;
 const AppCtx = React.createContext({
   tc: 3.77,
@@ -1679,15 +1687,17 @@ function Money({ usd, size = 32 }) {
   const tcVal = tc || 3.77;
   return /* @__PURE__ */ React.createElement("span", { style: { display: "inline-flex", alignItems: "baseline", gap: 6, flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: size, fontWeight: 800, fontFamily: "'DM Mono',monospace", letterSpacing: "-1.5px", color: "#10B981", lineHeight: 1 } }, "$", usd.toLocaleString()), /* @__PURE__ */ React.createElement("span", { style: { fontSize: size * 0.4, color: "#6B8F7A", fontWeight: 600 } }, "\xB7 S/ ", Math.round(usd * tcVal).toLocaleString("es-PE")));
 }
-function ContactForm({ value: d = {}, onChange: set, compact = false }) {
+function ContactForm({ value: raw, onChange: set, compact = false }) {
+  const d = raw || {};
+  const upd = (k, v) => set(__spreadProps(__spreadValues({}, d), { [k]: v }));
   const dniOk = d.docType === "dni" ? /^\d{8}$/.test(d.docNum || "") : /^[A-Za-z0-9]{9,12}$/.test(d.docNum || "");
   const phoneOk = /^9\d{8}$/.test(d.phone || "");
-  return /* @__PURE__ */ React.createElement("div", { className: "module-form-grid" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Nombres"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", value: d.firstName || "", onChange: (e) => set("firstName", e.target.value), placeholder: "Juan" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Apellidos"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", value: d.lastName || "", onChange: (e) => set("lastName", e.target.value), placeholder: "Garc\xEDa" })), /* @__PURE__ */ React.createElement("div", { style: { gridColumn: "span 2" } }, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Correo electr\xF3nico"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", type: "email", value: d.email || "", onChange: (e) => set("email", e.target.value), placeholder: "juan@ejemplo.com" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Tipo de documento"), /* @__PURE__ */ React.createElement("select", { className: "ap-input", value: d.docType || "dni", onChange: (e) => set("docType", e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "dni" }, "DNI"), /* @__PURE__ */ React.createElement("option", { value: "ce" }, "Carn\xE9 de Extranjer\xEDa"))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "N\xB0 de documento"), /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement("div", { className: "module-form-grid" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Nombres"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", value: d.firstName || "", onChange: (e) => upd("firstName", e.target.value), placeholder: "Juan" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Apellidos"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", value: d.lastName || "", onChange: (e) => upd("lastName", e.target.value), placeholder: "Garc\xEDa" })), /* @__PURE__ */ React.createElement("div", { style: { gridColumn: "span 2" } }, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Correo electr\xF3nico"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", type: "email", value: d.email || "", onChange: (e) => upd("email", e.target.value), placeholder: "juan@ejemplo.com" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Tipo de documento"), /* @__PURE__ */ React.createElement("select", { className: "ap-input", value: d.docType || "dni", onChange: (e) => upd("docType", e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "dni" }, "DNI"), /* @__PURE__ */ React.createElement("option", { value: "ce" }, "Carn\xE9 de Extranjer\xEDa"))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "N\xB0 de documento"), /* @__PURE__ */ React.createElement(
     "input",
     {
       className: `ap-input${d.docNum && !dniOk ? " err" : ""}`,
       value: d.docNum || "",
-      onChange: (e) => set("docNum", e.target.value.replace(/\s/g, "")),
+      onChange: (e) => upd("docNum", e.target.value.replace(/\s/g, "")),
       placeholder: d.docType === "ce" ? "Ej: B00123456" : "Ej: 12345678",
       maxLength: d.docType === "ce" ? 12 : 8
     }
@@ -1697,7 +1707,7 @@ function ContactForm({ value: d = {}, onChange: set, compact = false }) {
       className: `ap-input phone-input${d.phone && !phoneOk ? " err" : ""}`,
       type: "tel",
       value: d.phone || "",
-      onChange: (e) => set("phone", e.target.value.replace(/\D/g, "").slice(0, 9)),
+      onChange: (e) => upd("phone", e.target.value.replace(/\D/g, "").slice(0, 9)),
       placeholder: "999 999 999",
       maxLength: 9
     }
@@ -2237,7 +2247,7 @@ function ComprarModule({ onNav }) {
 \u{1F3F7}\uFE0F Condici\xF3n: ${vehicle.condition}` + (vehicle.notes ? `
 \u{1F4DD} ${vehicle.notes}` : "") + `
 \u2705 ${offerLabel}: $${result.offer.toLocaleString()} (S/ ${oSoles})
-\u{1F464} ${contact.firstName} ${contact.lastName} \xB7 ${(_a2 = contact.docType) == null ? void 0 : _a2.toUpperCase()} ${contact.docNum} \xB7 +51${contact.phone}
+\u{1F464} ${(contact == null ? void 0 : contact.firstName) || ""} ${(contact == null ? void 0 : contact.lastName) || ""} \xB7 ${((_a2 = contact == null ? void 0 : contact.docType) == null ? void 0 : _a2.toUpperCase()) || ""} ${(contact == null ? void 0 : contact.docNum) || ""} \xB7 +51${(contact == null ? void 0 : contact.phone) || ""}
 \u27A1\uFE0F Quedo a la espera de la visita de inspecci\xF3n para oferta final.`
     );
     window.open(`https://wa.me/${waNum}?text=${msg}`, "_blank");
@@ -2270,7 +2280,7 @@ function ComprarModule({ onNav }) {
       disabled: !isVehicleValid(vehicle) || loading,
       style: { width: "100%", padding: "15px", marginTop: 20, fontSize: 15 }
     },
-    loading ? "\u23F3 Calculando pre-oferta\u2026" : "\u{1F50D} Ver mi pre-oferta \u2192"
+    loading ? "\u23F3 Valuando tu veh\xEDculo\u2026" : "\u{1F4CB} Obtener mi pre-oferta gratuita \u2192"
   ), step === 2 && /* @__PURE__ */ React.createElement("div", { style: { marginTop: 12, padding: "9px 14px", background: "rgba(16,185,129,.08)", border: "1px solid rgba(16,185,129,.2)", borderRadius: 10, display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 12, color: "#00845A" } }, "\u2713 Veh\xEDculo tasado"), /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-sm ap-btn-secondary", type: "button", onClick: () => {
     setStep(1);
     setResult(null);
@@ -2280,7 +2290,7 @@ function ComprarModule({ onNav }) {
     ["\u{1F512}", "Proceso seguro", "Notar\xEDa p\xFAblica + transferencia garantizada"],
     ["\u{1F4C9}", "Sin m\xE1s depreciaci\xF3n", "Tu auto pierde valor cada semana que pasa"],
     ["\u{1F91D}", "Sin regateo", "La oferta final es firme, sin sorpresas"]
-  ].map(([ic, t, d]) => /* @__PURE__ */ React.createElement("div", { key: t, style: { display: "flex", gap: 8, padding: "10px 12px", background: "rgba(0,0,0,.03)", borderRadius: 12, border: "1px solid rgba(0,0,0,.06)" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 18, flexShrink: 0 } }, ic), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, fontWeight: 700, color: "#0B0B0B", marginBottom: 2 } }, t), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6B8F7A" } }, d)))))), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(StepBadge, { n: 2, active: true }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 15, fontWeight: 700, color: "#00845A" } }, "Tus datos de contacto"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6B8F7A", marginTop: 1 } }, "Para coordinar la visita de inspecci\xF3n"))), /* @__PURE__ */ React.createElement(ContactForm, { value: contact, onChange: setContact })), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement(LegalChecks, { values: checks, onChange: setChecks })), /* @__PURE__ */ React.createElement(
+  ].map(([ic, t, d]) => /* @__PURE__ */ React.createElement("div", { key: t, style: { display: "flex", gap: 8, padding: "10px 12px", background: "rgba(0,0,0,.03)", borderRadius: 12, border: "1px solid rgba(0,0,0,.06)" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 18, flexShrink: 0 } }, ic), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, fontWeight: 700, color: "#0B0B0B", marginBottom: 2 } }, t), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6B8F7A" } }, d)))))), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(StepBadge, { n: 2, active: true }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 15, fontWeight: 700, color: "#00845A" } }, "Tus datos de contacto"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6B8F7A", marginTop: 1 } }, "Para coordinar la visita de inspecci\xF3n"))), /* @__PURE__ */ React.createElement(ContactForm, { value: contact || {}, onChange: setContact })), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement(LegalChecks, { values: checks, onChange: setChecks })), /* @__PURE__ */ React.createElement(
     "button",
     {
       className: "ap-btn ap-btn-success",
@@ -2289,7 +2299,7 @@ function ComprarModule({ onNav }) {
       disabled: !canSend,
       style: { width: "100%", padding: "17px", fontSize: 15, marginBottom: 8 }
     },
-    waSent ? "\u2705 \xA1Coordinando visita!" : `\u{1F4AC} Acepto la ${offerLabel} \u2013 Coordinar visita \u2192`
+    waSent ? "\u2705 \xA1Coordinando visita!" : `\u2705 Acepto la ${offerLabel} \xB7 Agendar inspecci\xF3n \u2192`
   ), !canSend && /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6B8F7A", textAlign: "center", marginBottom: 16 } }, !isContactValid(contact) ? "Completa y valida tus datos \xB7 " : "", !checks.owner || !checks.terms ? "Acepta las declaraciones obligatorias" : ""), /* @__PURE__ */ React.createElement("div", { className: "ap-divider" }), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, fontWeight: 700, color: "#6B8F7A", marginBottom: 12, textAlign: "center" } }, "\xBFPrefieres otra opci\xF3n?"), /* @__PURE__ */ React.createElement("div", { className: "grid-2" }, [
     { id: "consigna", icon: "\u{1F4CB}", t: "Venderlo por mi cuenta", s: "Con ayuda de AutoPago como consignatario", col: "#059669", bg: "rgba(5,150,105,.07)", bc: "rgba(16,185,129,.2)" },
     { id: "credito", icon: "\u{1F4B3}", t: "Necesito liquidez r\xE1pida", s: "Pr\xE9stamo usando mi auto como garant\xEDa", col: "#00B4D8", bg: "rgba(124,58,237,.07)", bc: "rgba(0,200,130,.2)" }
@@ -2418,7 +2428,7 @@ function ConsignaModule() {
 ` + (vehicle.notes ? `\u{1F4DD} ${vehicle.notes}
 ` : "") + `\u{1F4B0} Precio de consigna: $${Math.round(selPrice / tcVal).toLocaleString()} (S/ ${selPrice.toLocaleString()})
 \u{1F4F7} Fotos adjuntas: ${photos.length}
-\u{1F464} ${contact.firstName} ${contact.lastName} \xB7 ${(_a2 = contact.docType) == null ? void 0 : _a2.toUpperCase()} ${contact.docNum} \xB7 +51${contact.phone}`
+\u{1F464} ${(contact == null ? void 0 : contact.firstName) || ""} ${(contact == null ? void 0 : contact.lastName) || ""} \xB7 ${((_a2 = contact == null ? void 0 : contact.docType) == null ? void 0 : _a2.toUpperCase()) || ""} ${(contact == null ? void 0 : contact.docNum) || ""} \xB7 +51${(contact == null ? void 0 : contact.phone) || ""}`
     );
     window.open(`https://wa.me/${waNum}?text=${msg}`, "_blank");
   };
@@ -2441,7 +2451,7 @@ function ConsignaModule() {
       disabled: !isVehicleValid(vehicle),
       style: { width: "100%", padding: "14px", marginTop: 16 }
     },
-    "\u{1F4CA} Ver rango de precios y d\xEDas estimados \u2192"
+    "\u{1F4CA} Calcular precio y tiempo de venta \u2192"
   ) : /* @__PURE__ */ React.createElement("div", { style: { marginTop: 12, padding: "9px 14px", background: "rgba(16,185,129,.08)", border: "1px solid rgba(16,185,129,.2)", borderRadius: 10, display: "flex", justifyContent: "space-between" } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 12, color: "#00845A" } }, "\u2713 Tasaci\xF3n realizada"), /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-sm ap-btn-secondary", type: "button", onClick: () => {
     setStep(1);
     setResult(null);
@@ -2462,7 +2472,7 @@ function ConsignaModule() {
       style: { position: "absolute", top: -5, right: -5, width: 16, height: 16, borderRadius: "50%", background: "#EF4444", border: "none", color: "#fff", fontSize: 9, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }
     },
     "\u2715"
-  ))))), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(StepBadge, { n: 4, active: true }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 15, fontWeight: 700, color: "#00845A" } }, "Tus datos"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6B8F7A", marginTop: 1 } }, "Para firmar el contrato de consigna"))), /* @__PURE__ */ React.createElement(ContactForm, { value: contact, onChange: setContact })), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement(LegalChecks, { values: checks, onChange: setChecks })), /* @__PURE__ */ React.createElement(
+  ))))), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(StepBadge, { n: 4, active: true }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 15, fontWeight: 700, color: "#00845A" } }, "Tus datos"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6B8F7A", marginTop: 1 } }, "Para firmar el contrato de consigna"))), /* @__PURE__ */ React.createElement(ContactForm, { value: contact || {}, onChange: setContact })), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement(LegalChecks, { values: checks, onChange: setChecks })), /* @__PURE__ */ React.createElement(
     "button",
     {
       className: "ap-btn ap-btn-success",
@@ -2471,7 +2481,7 @@ function ConsignaModule() {
       disabled: !canWA,
       style: { width: "100%", padding: "16px", fontSize: 15 }
     },
-    waSent ? "\u2705 \xA1Coordinando contrato!" : `\u{1F4AC} Consignar a $${Math.round(selPrice / tcVal).toLocaleString()} \u2192`
+    waSent ? "\u2705 \xA1Coordinando contrato!" : `\u{1F91D} Iniciar consignaci\xF3n \xB7 $${Math.round(selPrice / tcVal).toLocaleString()} \u2192`
   ), !canWA && /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6B8F7A", textAlign: "center", marginTop: 8 } }, !isContactValid(contact) ? "Completa tus datos \xB7 " : "", !checks.owner || !checks.terms ? "Acepta las declaraciones obligatorias" : "")));
 }
 function AmortChart({ schedule }) {
@@ -2637,7 +2647,7 @@ function CreditoModule() {
 \u{1F697} ${veh.brand} ${veh.model} ${veh.version || ""} ${veh.year} \xB7 ${parseInt(veh.km).toLocaleString()}km
 \u{1F4B0} Monto: $${calcOut.amtU.toLocaleString()} (S/ ${calcOut.amtS.toLocaleString()})
 \u{1F4C5} Plazo: ${calcOut.termN} meses \xB7 Cuota: S/ ${calcOut.pmtS.toLocaleString()}/mes
-\u{1F464} ${contact.firstName} ${contact.lastName} \xB7 +51${contact.phone}`
+\u{1F464} ${(contact == null ? void 0 : contact.firstName) || ""} ${(contact == null ? void 0 : contact.lastName) || ""} \xB7 +51${(contact == null ? void 0 : contact.phone) || ""}`
     );
     window.open(`https://wa.me/${waNum}?text=${msg}`, "_blank");
     trackLead("credito_whatsapp", __spreadProps(__spreadValues(__spreadValues({}, veh), contact), { term: calcOut.termN }));
@@ -2795,7 +2805,7 @@ function CreditoModule() {
       }
     },
     showAmort ? "\u25B2 Ocultar tabla" : "\u25BC Ver cronograma completo"
-  ), showAmort && schedule.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "ap-scroll", style: { marginTop: 12, maxHeight: 220, overflowY: "auto" } }, /* @__PURE__ */ React.createElement("table", { className: "ap-table", style: { minWidth: 440 } }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", null, "Mes"), /* @__PURE__ */ React.createElement("th", null, "Cuota ($)"), /* @__PURE__ */ React.createElement("th", null, "Capital"), /* @__PURE__ */ React.createElement("th", null, "Inter\xE9s"), /* @__PURE__ */ React.createElement("th", null, "Saldo"))), /* @__PURE__ */ React.createElement("tbody", null, schedule.map((r) => /* @__PURE__ */ React.createElement("tr", { key: r.period }, /* @__PURE__ */ React.createElement("td", { className: "mono" }, r.period), /* @__PURE__ */ React.createElement("td", { className: "mono", style: { color: "var(--p)" } }, "$", Math.round(r.payment).toLocaleString()), /* @__PURE__ */ React.createElement("td", { className: "mono", style: { color: "#00845A" } }, "$", Math.round(r.principal).toLocaleString()), /* @__PURE__ */ React.createElement("td", { className: "mono", style: { color: "#DC2626" } }, "$", Math.round(r.interest).toLocaleString()), /* @__PURE__ */ React.createElement("td", { className: "mono" }, "$", Math.round(r.balance).toLocaleString()))))))), /* @__PURE__ */ React.createElement(CreditStepper, { termN: calcOut.termN, pmtS: calcOut.pmtS, totalS: calcOut.totalS, tcVal }), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(StepBadge, { n: 3, active: step >= 3 }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 15, fontWeight: 700, color: "var(--dark)" } }, "Tus datos de contacto"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "var(--muted)", marginTop: 2 } }, "Para coordinar el peritaje de tu veh\xEDculo"))), /* @__PURE__ */ React.createElement(ContactForm, { value: contact, onChange: setContact })), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement(LegalChecks, { values: checks, onChange: setChecks })), /* @__PURE__ */ React.createElement(
+  ), showAmort && schedule.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "ap-scroll", style: { marginTop: 12, maxHeight: 220, overflowY: "auto" } }, /* @__PURE__ */ React.createElement("table", { className: "ap-table", style: { minWidth: 440 } }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", null, "Mes"), /* @__PURE__ */ React.createElement("th", null, "Cuota ($)"), /* @__PURE__ */ React.createElement("th", null, "Capital"), /* @__PURE__ */ React.createElement("th", null, "Inter\xE9s"), /* @__PURE__ */ React.createElement("th", null, "Saldo"))), /* @__PURE__ */ React.createElement("tbody", null, schedule.map((r) => /* @__PURE__ */ React.createElement("tr", { key: r.period }, /* @__PURE__ */ React.createElement("td", { className: "mono" }, r.period), /* @__PURE__ */ React.createElement("td", { className: "mono", style: { color: "var(--p)" } }, "$", Math.round(r.payment).toLocaleString()), /* @__PURE__ */ React.createElement("td", { className: "mono", style: { color: "#00845A" } }, "$", Math.round(r.principal).toLocaleString()), /* @__PURE__ */ React.createElement("td", { className: "mono", style: { color: "#DC2626" } }, "$", Math.round(r.interest).toLocaleString()), /* @__PURE__ */ React.createElement("td", { className: "mono" }, "$", Math.round(r.balance).toLocaleString()))))))), /* @__PURE__ */ React.createElement(CreditStepper, { termN: calcOut.termN, pmtS: calcOut.pmtS, totalS: calcOut.totalS, tcVal }), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(StepBadge, { n: 3, active: step >= 3 }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 15, fontWeight: 700, color: "var(--dark)" } }, "Tus datos de contacto"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "var(--muted)", marginTop: 2 } }, "Para coordinar el peritaje de tu veh\xEDculo"))), /* @__PURE__ */ React.createElement(ContactForm, { value: contact || {}, onChange: setContact })), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 16 } }, /* @__PURE__ */ React.createElement(LegalChecks, { values: checks, onChange: setChecks })), /* @__PURE__ */ React.createElement(
     "button",
     {
       className: "ap-btn ap-btn-success",
@@ -2804,7 +2814,7 @@ function CreditoModule() {
       disabled: !canWA,
       style: { width: "100%", padding: "16px", fontSize: 15 }
     },
-    waSent ? "\u2705 \xA1Solicitud enviada! Te contactamos pronto" : "\u{1F4AC} Solicitar pr\xE9stamo por WhatsApp \u2192"
+    waSent ? "\u2705 \xA1Solicitud enviada! Te contactamos pronto" : "\u{1F4AC} Solicitar mi cr\xE9dito ahora \u2192"
   ), !canWA && /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "var(--muted)", textAlign: "center", marginTop: 8 } }, !isContactValid(contact) ? "Completa tus datos \xB7 " : "", !checks.owner || !checks.terms ? "Acepta las declaraciones obligatorias" : "")));
 }
 function ShowroomModule() {
@@ -2957,7 +2967,7 @@ function ShowroomModule() {
         "\u2715"
       )),
       ((_d = selected.photos) == null ? void 0 : _d.length) > 1 && /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 6, overflowX: "auto", padding: "8px 16px 0" } }, selected.photos.slice(1).map((ph, i) => /* @__PURE__ */ React.createElement("img", { key: i, src: ph, alt: "", style: { width: 72, height: 52, objectFit: "cover", borderRadius: 8, border: "1px solid #EEF3F1", flexShrink: 0 } }))),
-      /* @__PURE__ */ React.createElement("div", { style: { padding: "20px 22px 24px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 20, fontWeight: 800, color: "#0B0B0B" } }, selected.brand, " ", selected.model), /* @__PURE__ */ React.createElement("p", { style: { color: "#6B8F7A", fontSize: 13 } }, selected.version, " \xB7 ", selected.year)), /* @__PURE__ */ React.createElement("div", { style: { textAlign: "right" } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 22, fontWeight: 800, color: "#10B981", fontFamily: "'DM Mono',monospace" } }, "$", selected.price.toLocaleString()), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6B8F7A" } }, "S/ ", Math.round(selected.price * tcVal).toLocaleString("es-PE")))), /* @__PURE__ */ React.createElement("div", { className: "grid-2", style: { marginBottom: 16 } }, [["Km", `${selected.km.toLocaleString()} km`], ["Transmisi\xF3n", selected.transmission === "automatica" ? "Autom\xE1tica" : "Manual"], ["Combustible", selected.fuel || "\u2014"], ["Condici\xF3n", selected.condition || "\u2014"], ["Color", selected.color || "\u2014"], ["A\xF1o", selected.year]].filter(([, v]) => v && v !== "\u2014").map(([k, v]) => /* @__PURE__ */ React.createElement("div", { key: k, style: { background: "#FFFFFF", borderRadius: 10, padding: "8px 12px" } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 9, color: "#6B8F7A", fontWeight: 700, marginBottom: 1 } }, k.toUpperCase()), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, fontWeight: 700, color: "#1a1a1a" } }, v)))), /* @__PURE__ */ React.createElement(TcBadge, null), /* @__PURE__ */ React.createElement(
+      /* @__PURE__ */ React.createElement("div", { style: { padding: "20px 22px 24px" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 20, fontWeight: 800, color: "#E8F5EE" } }, selected.brand, " ", selected.model), /* @__PURE__ */ React.createElement("p", { style: { color: "#6B8F7A", fontSize: 13 } }, selected.version, " \xB7 ", selected.year)), /* @__PURE__ */ React.createElement("div", { style: { textAlign: "right" } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 22, fontWeight: 800, color: "#10B981", fontFamily: "'DM Mono',monospace" } }, "$", selected.price.toLocaleString()), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, color: "#6B8F7A" } }, "S/ ", Math.round(selected.price * tcVal).toLocaleString("es-PE")))), /* @__PURE__ */ React.createElement("div", { className: "grid-2", style: { marginBottom: 16 } }, [["Km", `${selected.km.toLocaleString()} km`], ["Transmisi\xF3n", selected.transmission === "automatica" ? "Autom\xE1tica" : "Manual"], ["Combustible", selected.fuel || "\u2014"], ["Condici\xF3n", selected.condition || "\u2014"], ["Color", selected.color || "\u2014"], ["A\xF1o", selected.year]].filter(([, v]) => v && v !== "\u2014").map(([k, v]) => /* @__PURE__ */ React.createElement("div", { key: k, style: { background: "#FFFFFF", borderRadius: 10, padding: "8px 12px" } }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 9, color: "#6B8F7A", fontWeight: 700, marginBottom: 1 } }, k.toUpperCase()), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, fontWeight: 700, color: "#1a1a1a" } }, v)))), /* @__PURE__ */ React.createElement(TcBadge, null), /* @__PURE__ */ React.createElement(
         "button",
         {
           className: "ap-btn ap-btn-success",
@@ -3148,7 +3158,7 @@ function AdminDashboard({ session }) {
     { k: "consigna", icon: "\u{1F4CB}", label: "Consigna", c: "#10B981", types: ["consigna_quote", "consigna_whatsapp", "consigna_upload_start"] },
     { k: "showroom", icon: "\u{1F3EA}", label: "Encuentra tu Auto", c: "#F59E0B", types: ["showroom_interest"] }
   ];
-  return /* @__PURE__ */ React.createElement("div", { style: { paddingTop: 24 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20, flexWrap: "wrap", gap: 10 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 20, fontWeight: 800, color: "#0B0B0B" } }, "Dashboard"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, color: "#6B8F7A", marginTop: 2 } }, "Bienvenido, ", /* @__PURE__ */ React.createElement("span", { style: { color: "#00845A" } }, session.email), " \xB7 ", (/* @__PURE__ */ new Date()).toLocaleDateString("es-PE", { weekday: "long", day: "numeric", month: "long" }))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 4 } }, [7, 14, 30].map((d) => /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement("div", { style: { paddingTop: 24 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20, flexWrap: "wrap", gap: 10 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 20, fontWeight: 800, color: "#E8F5EE" } }, "Dashboard"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, color: "#6B8F7A", marginTop: 2 } }, "Bienvenido, ", /* @__PURE__ */ React.createElement("span", { style: { color: "#00845A" } }, session.email), " \xB7 ", (/* @__PURE__ */ new Date()).toLocaleDateString("es-PE", { weekday: "long", day: "numeric", month: "long" }))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 4 } }, [7, 14, 30].map((d) => /* @__PURE__ */ React.createElement(
     "button",
     {
       key: d,
@@ -3205,7 +3215,7 @@ function AdminLeads() {
     if (search && !JSON.stringify(l).toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
-  return /* @__PURE__ */ React.createElement("div", { style: { paddingTop: 24 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18, flexWrap: "wrap", gap: 10 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 20, fontWeight: 800, color: "#0B0B0B" } }, "\u{1F4E5} Leads"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, color: "#6B8F7A", marginTop: 2 } }, filtered.length, " de ", leads.length)), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8, flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement("div", { style: { paddingTop: 24 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18, flexWrap: "wrap", gap: 10 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 20, fontWeight: 800, color: "#E8F5EE" } }, "\u{1F4E5} Leads"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, color: "#6B8F7A", marginTop: 2 } }, filtered.length, " de ", leads.length)), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8, flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement(
     "input",
     {
       className: "ap-input",
@@ -3281,7 +3291,7 @@ function AdminCredits() {
   ];
   const RISK_COL = { low: "#10B981", normal: "#F59E0B", high: "#EF4444" };
   const CRED_COL = { eval: "#F59E0B", active: "#10B981", risk: "#EF4444", closed: "#6B8F7A" };
-  return /* @__PURE__ */ React.createElement("div", { style: { paddingTop: 24 } }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 18 } }, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 20, fontWeight: 800, color: "#0B0B0B" } }, "\u{1F4B3} Cartera de cr\xE9ditos"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, color: "#6B8F7A", marginTop: 2 } }, rows.length, " solicitudes en total")), /* @__PURE__ */ React.createElement("div", { className: "grid-4", style: { marginBottom: 20 } }, kpis.map((k) => /* @__PURE__ */ React.createElement("div", { key: k.l, className: "kpi-card", style: { borderColor: `${k.c}22` } }, /* @__PURE__ */ React.createElement("span", { className: "kpi-label" }, k.l), /* @__PURE__ */ React.createElement("span", { className: "kpi-val", style: { color: k.c, fontSize: 20 } }, typeof k.v === "number" ? k.v : k.v), /* @__PURE__ */ React.createElement("span", { className: "kpi-sub" }, k.sub)))), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { padding: 0, overflow: "hidden" } }, /* @__PURE__ */ React.createElement("div", { className: "ap-scroll" }, /* @__PURE__ */ React.createElement("table", { className: "ap-table" }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", null, "Solicitante"), /* @__PURE__ */ React.createElement("th", null, "Veh\xEDculo"), /* @__PURE__ */ React.createElement("th", null, "Monto (S/)"), /* @__PURE__ */ React.createElement("th", null, "Cuota/Plazo"), /* @__PURE__ */ React.createElement("th", null, "Estado"), /* @__PURE__ */ React.createElement("th", null, "Riesgo"))), /* @__PURE__ */ React.createElement("tbody", null, rows.length === 0 ? /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", { colSpan: 6, style: { textAlign: "center", padding: "40px", color: "#6B8F7A" } }, "Las solicitudes aparecen aqu\xED cuando usuarios completan el formulario de cr\xE9dito.")) : rows.map((r) => {
+  return /* @__PURE__ */ React.createElement("div", { style: { paddingTop: 24 } }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 18 } }, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 20, fontWeight: 800, color: "#E8F5EE" } }, "\u{1F4B3} Cartera de cr\xE9ditos"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, color: "#6B8F7A", marginTop: 2 } }, rows.length, " solicitudes en total")), /* @__PURE__ */ React.createElement("div", { className: "grid-4", style: { marginBottom: 20 } }, kpis.map((k) => /* @__PURE__ */ React.createElement("div", { key: k.l, className: "kpi-card", style: { borderColor: `${k.c}22` } }, /* @__PURE__ */ React.createElement("span", { className: "kpi-label" }, k.l), /* @__PURE__ */ React.createElement("span", { className: "kpi-val", style: { color: k.c, fontSize: 20 } }, typeof k.v === "number" ? k.v : k.v), /* @__PURE__ */ React.createElement("span", { className: "kpi-sub" }, k.sub)))), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { padding: 0, overflow: "hidden" } }, /* @__PURE__ */ React.createElement("div", { className: "ap-scroll" }, /* @__PURE__ */ React.createElement("table", { className: "ap-table" }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", null, "Solicitante"), /* @__PURE__ */ React.createElement("th", null, "Veh\xEDculo"), /* @__PURE__ */ React.createElement("th", null, "Monto (S/)"), /* @__PURE__ */ React.createElement("th", null, "Cuota/Plazo"), /* @__PURE__ */ React.createElement("th", null, "Estado"), /* @__PURE__ */ React.createElement("th", null, "Riesgo"))), /* @__PURE__ */ React.createElement("tbody", null, rows.length === 0 ? /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", { colSpan: 6, style: { textAlign: "center", padding: "40px", color: "#6B8F7A" } }, "Las solicitudes aparecen aqu\xED cuando usuarios completan el formulario de cr\xE9dito.")) : rows.map((r) => {
     var _a;
     const p = r.payload || {};
     return /* @__PURE__ */ React.createElement("tr", { key: r.id }, /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("p", { style: { fontWeight: 700, color: "#0B0B0B", fontSize: 12 } }, p.firstName || "\u2014", " ", p.lastName || ""), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 10, color: "#6B8F7A" } }, "+51", p.phone || "", " \xB7 ", (_a = p.docType) == null ? void 0 : _a.toUpperCase(), " ", p.docNum)), /* @__PURE__ */ React.createElement("td", { style: { fontSize: 12 } }, /* @__PURE__ */ React.createElement("span", { style: { fontWeight: 600, color: "#1a1a1a" } }, p.brand, " ", p.model), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("span", { style: { color: "#6B8F7A", fontSize: 10 } }, p.year, " \xB7 ", (p.km || 0).toLocaleString(), "km")), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("span", { style: { fontFamily: "'DM Mono',monospace", color: "#007A5E", fontWeight: 800, fontSize: 13 } }, "$", Math.round((p.amountSoles || 0) / tcVal).toLocaleString()), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 10, color: "#6B8F7A" } }, "S/ ", (p.amountSoles || 0).toLocaleString())), /* @__PURE__ */ React.createElement("td", { style: { fontSize: 11, color: "#6B8F7A" } }, "S/ ", (p.monthlyPaymentSoles || 0).toLocaleString(), "/mes", /* @__PURE__ */ React.createElement("br", null), p.term, "m"), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement(
@@ -3375,7 +3385,7 @@ function AdminShowroom() {
       }
     )), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 24, marginBottom: 20 } }, /* @__PURE__ */ React.createElement("label", { style: { display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 13, fontWeight: 700, color: "#2d2d2d" } }, /* @__PURE__ */ React.createElement("input", { type: "checkbox", checked: !!form.active, onChange: (e) => fset("active", e.target.checked), style: { accentColor: "#00A86B" } }), "Activo (visible en showroom)"), /* @__PURE__ */ React.createElement("label", { style: { display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 13, fontWeight: 700, color: "#2d2d2d" } }, /* @__PURE__ */ React.createElement("input", { type: "checkbox", checked: !!form.featured, onChange: (e) => fset("featured", e.target.checked), style: { accentColor: "#F59E0B" } }), "\u2B50 Destacado")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 10 } }, /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-primary", type: "button", onClick: save, style: { flex: 1 } }, editing === "new" ? "\u2795 Agregar al inventario" : "\u{1F4BE} Guardar cambios"), /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-secondary", type: "button", onClick: () => setEditing(null) }, "Cancelar"))));
   }
-  return /* @__PURE__ */ React.createElement("div", { style: { paddingTop: 24 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18, flexWrap: "wrap", gap: 10 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 20, fontWeight: 800, color: "#0B0B0B" } }, "\u{1F699} Inventario \u2014 Encuentra tu Auto"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, color: "#6B8F7A", marginTop: 2 } }, inv.length, " veh\xEDculos \xB7 ", inv.filter((c) => c.active).length, " activos \xB7 ", inv.filter((c) => c.featured).length, " destacados")), /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement("div", { style: { paddingTop: 24 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18, flexWrap: "wrap", gap: 10 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 20, fontWeight: 800, color: "#E8F5EE" } }, "\u{1F699} Inventario \u2014 Encuentra tu Auto"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, color: "#6B8F7A", marginTop: 2 } }, inv.length, " veh\xEDculos \xB7 ", inv.filter((c) => c.active).length, " activos \xB7 ", inv.filter((c) => c.featured).length, " destacados")), /* @__PURE__ */ React.createElement(
     "button",
     {
       className: "ap-btn ap-btn-primary ap-btn-sm",
@@ -3778,7 +3788,7 @@ function AdminPricer() {
     { id: "compara", label: "\u{1F4CB} Comparativa" },
     { id: "lote", label: "\u{1F522} Lote" }
   ];
-  return /* @__PURE__ */ React.createElement("div", { style: { paddingTop: 24 } }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 24 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 20, fontWeight: 800, color: "#0B0B0B" } }, "\u{1F3AF} Motor de Tasaci\xF3n"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, color: "#5F7D73", marginTop: 4 } }, "Simulador avanzado \xB7 Resultados en tiempo real \xB7 Validado contra datos de mercado Mar-2026")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" } }, TABS.map((t) => /* @__PURE__ */ React.createElement("button", { key: t.id, className: `ap-pill${tab === t.id ? " active" : ""}`, onClick: () => setTab(t.id) }, t.label))), tab === "tasa" && /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "360px 1fr", gap: 24, alignItems: "start" } }, /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { padding: 24 } }, /* @__PURE__ */ React.createElement("div", { style: { fontWeight: 700, marginBottom: 16, fontSize: 14 } }, "Datos del veh\xEDculo"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 12 } }, /* @__PURE__ */ React.createElement(Sel, { k: "brand", label: "Marca", opts: brands }), /* @__PURE__ */ React.createElement(Sel, { k: "model", label: "Modelo", opts: models, disabled: !v.brand }), /* @__PURE__ */ React.createElement(Sel, { k: "version", label: "Versi\xF3n / Trim", opts: trims, disabled: !v.model }), /* @__PURE__ */ React.createElement(Sel, { k: "year", label: "A\xF1o", opts: years.map((y) => ({ v: String(y), l: String(y) })) }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Kilometraje"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", type: "number", value: v.km, onChange: (e) => setV(__spreadProps(__spreadValues({}, v), { km: e.target.value })), placeholder: "Ej: 65000" })), /* @__PURE__ */ React.createElement(Sel, { k: "transmission", label: "Transmisi\xF3n", opts: [{ v: "automatica", l: "Autom\xE1tica" }, { v: "manual", l: "Manual" }] }), /* @__PURE__ */ React.createElement(Sel, { k: "condition", label: "Condici\xF3n", opts: [{ v: "excelente", l: "Excelente" }, { v: "bueno", l: "Bueno" }, { v: "regular", l: "Regular" }, { v: "malo", l: "Malo" }] }))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 16 } }, !res ? /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { padding: 40, textAlign: "center", color: "#5F7D73", fontSize: 14 } }, "Completa los datos del veh\xEDculo para ver la tasaci\xF3n en tiempo real") : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12 } }, [
+  return /* @__PURE__ */ React.createElement("div", { style: { paddingTop: 24 } }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 24 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 20, fontWeight: 800, color: "#E8F5EE" } }, "\u{1F3AF} Motor de Tasaci\xF3n"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, color: "#5F7D73", marginTop: 4 } }, "Simulador avanzado \xB7 Resultados en tiempo real \xB7 Validado contra datos de mercado Mar-2026")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" } }, TABS.map((t) => /* @__PURE__ */ React.createElement("button", { key: t.id, className: `ap-pill${tab === t.id ? " active" : ""}`, onClick: () => setTab(t.id) }, t.label))), tab === "tasa" && /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "360px 1fr", gap: 24, alignItems: "start" } }, /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { padding: 24 } }, /* @__PURE__ */ React.createElement("div", { style: { fontWeight: 700, marginBottom: 16, fontSize: 14 } }, "Datos del veh\xEDculo"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 12 } }, /* @__PURE__ */ React.createElement(Sel, { k: "brand", label: "Marca", opts: brands }), /* @__PURE__ */ React.createElement(Sel, { k: "model", label: "Modelo", opts: models, disabled: !v.brand }), /* @__PURE__ */ React.createElement(Sel, { k: "version", label: "Versi\xF3n / Trim", opts: trims, disabled: !v.model }), /* @__PURE__ */ React.createElement(Sel, { k: "year", label: "A\xF1o", opts: years.map((y) => ({ v: String(y), l: String(y) })) }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Kilometraje"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", type: "number", value: v.km, onChange: (e) => setV(__spreadProps(__spreadValues({}, v), { km: e.target.value })), placeholder: "Ej: 65000" })), /* @__PURE__ */ React.createElement(Sel, { k: "transmission", label: "Transmisi\xF3n", opts: [{ v: "automatica", l: "Autom\xE1tica" }, { v: "manual", l: "Manual" }] }), /* @__PURE__ */ React.createElement(Sel, { k: "condition", label: "Condici\xF3n", opts: [{ v: "excelente", l: "Excelente" }, { v: "bueno", l: "Bueno" }, { v: "regular", l: "Regular" }, { v: "malo", l: "Malo" }] }))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 16 } }, !res ? /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { padding: 40, textAlign: "center", color: "#5F7D73", fontSize: 14 } }, "Completa los datos del veh\xEDculo para ver la tasaci\xF3n en tiempo real") : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12 } }, [
     { label: "Valor Mercado", val: `$${res.vr.value.toLocaleString()}`, sub: `S/ ${Math.round(res.vr.value * tcVal).toLocaleString()}`, color: "#0B3C2E", bg: "#E8F8F2" },
     { label: "Precio Consigna", val: `$${res.consigna.toLocaleString()}`, sub: `S/ ${Math.round(res.consigna * tcVal).toLocaleString()}`, color: "#00845A", bg: "#F3FBF7" },
     { label: "Oferta Compra", val: `$${res.dealerOffer.toLocaleString()}`, sub: `S/ ${Math.round(res.dealerOffer * tcVal).toLocaleString()}`, color: "#5F7D73", bg: "#F7FBF9" }
@@ -3849,7 +3859,7 @@ function AdminAnalytics() {
     var _a;
     return s + (((_a = l.meta) == null ? void 0 : _a.estimatedValue) || 0);
   }, 0) / valuedLeads.length) : 0;
-  return /* @__PURE__ */ React.createElement("div", { style: { paddingTop: 24 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24, flexWrap: "wrap", gap: 10 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 20, fontWeight: 800, color: "#0B0B0B" } }, "\u{1F4C8} Analytics"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, color: "#5F7D73", marginTop: 4 } }, "Rendimiento del embudo y conversiones")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8 } }, [7, 14, 30, 90].map((d) => /* @__PURE__ */ React.createElement("button", { key: d, className: `ap-pill${period === d ? " active" : ""}`, onClick: () => setPeriod(d) }, "\xDAltimos ", d, "d")))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12, marginBottom: 24 } }, [
+  return /* @__PURE__ */ React.createElement("div", { style: { paddingTop: 24 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24, flexWrap: "wrap", gap: 10 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 20, fontWeight: 800, color: "#E8F5EE" } }, "\u{1F4C8} Analytics"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, color: "#5F7D73", marginTop: 4 } }, "Rendimiento del embudo y conversiones")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8 } }, [7, 14, 30, 90].map((d) => /* @__PURE__ */ React.createElement("button", { key: d, className: `ap-pill${period === d ? " active" : ""}`, onClick: () => setPeriod(d) }, "\xDAltimos ", d, "d")))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12, marginBottom: 24 } }, [
     { label: "Total Leads", val: pLeads.length, icon: "\u{1F465}", color: "#0B3C2E" },
     { label: "Cotizaciones", val: quotes, icon: "\u{1F4CA}", color: "#00845A" },
     { label: "Contactos WA", val: contacts, icon: "\u{1F4AC}", color: "#00B47A" },
@@ -3891,7 +3901,7 @@ function AdminUsers({ session }) {
     setUsers(next);
   };
   const ROLE_COLORS = { owner: "#F59E0B", admin: "#00A86B", analyst: "#10B981", viewer: "#6B8F7A" };
-  return /* @__PURE__ */ React.createElement("div", { style: { paddingTop: 24 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18, flexWrap: "wrap", gap: 10 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 20, fontWeight: 800, color: "#0B0B0B" } }, "\u{1F465} Usuarios"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, color: "#6B8F7A", marginTop: 2 } }, users.length, " usuarios \xB7 ", users.filter((u) => u.isActive).length, " activos")), session.role === "owner" && /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-primary ap-btn-sm", type: "button", onClick: () => setAdding((v) => !v) }, adding ? "\u2715 Cancelar" : "\u2795 Agregar usuario")), adding && /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 20 } }, /* @__PURE__ */ React.createElement("div", { className: "grid-2", style: { marginBottom: 14 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Email"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", type: "email", value: form.email, onChange: (e) => fset("email", e.target.value), placeholder: "nuevo@autopago.pe" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Contrase\xF1a"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", type: "password", value: form.password, onChange: (e) => fset("password", e.target.value), placeholder: "min. 8 chars" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Rol"), /* @__PURE__ */ React.createElement("select", { className: "ap-input", value: form.role, onChange: (e) => fset("role", e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "owner" }, "Owner \u2014 acceso total"), /* @__PURE__ */ React.createElement("option", { value: "admin" }, "Admin \u2014 sin gesti\xF3n de usuarios"), /* @__PURE__ */ React.createElement("option", { value: "analyst" }, "Analista \u2014 solo lectura"), /* @__PURE__ */ React.createElement("option", { value: "viewer" }, "Viewer \u2014 solo dashboard")))), /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-success ap-btn-sm", type: "button", onClick: addUser, disabled: !form.email || !form.password }, "\u2705 Crear usuario")), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { padding: 0, overflow: "hidden", marginBottom: 20 } }, /* @__PURE__ */ React.createElement("div", { className: "ap-scroll" }, /* @__PURE__ */ React.createElement("table", { className: "ap-table" }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", null, "Usuario"), /* @__PURE__ */ React.createElement("th", null, "Rol"), /* @__PURE__ */ React.createElement("th", null, "Estado"), session.role === "owner" && /* @__PURE__ */ React.createElement("th", null, "Acciones"))), /* @__PURE__ */ React.createElement("tbody", null, users.map((u) => /* @__PURE__ */ React.createElement("tr", { key: u.id }, /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8 } }, /* @__PURE__ */ React.createElement("div", { style: { width: 28, height: 28, borderRadius: "50%", background: `${ROLE_COLORS[u.role]}20`, border: `1px solid ${ROLE_COLORS[u.role]}50`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: ROLE_COLORS[u.role], flexShrink: 0 } }, u.email[0].toUpperCase()), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, fontWeight: u.id === session.userId ? 700 : 400, color: "#0B0B0B" } }, u.email), u.id === session.userId && /* @__PURE__ */ React.createElement("span", { style: { fontSize: 9, color: "#6B8F7A" } }, "\u2190 t\xFA")))), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, fontWeight: 700, color: ROLE_COLORS[u.role], background: `${ROLE_COLORS[u.role]}18`, padding: "3px 10px", borderRadius: 50 } }, u.role.toUpperCase())), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, fontWeight: 700, color: u.isActive ? "#10B981" : "#EF4444" } }, u.isActive ? "\u25CF Activo" : "\u25CF Inactivo")), session.role === "owner" && /* @__PURE__ */ React.createElement("td", null, u.id !== session.userId && /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 6 } }, /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-sm ap-btn-secondary", type: "button", onClick: () => toggle(u.id), style: { fontSize: 11 } }, u.isActive ? "Desactivar" : "Activar"), /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-sm ap-btn-danger", type: "button", onClick: () => del(u.id) }, "\u{1F5D1}\uFE0F"))))))))), /* @__PURE__ */ React.createElement("div", { className: "ap-card" }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, fontWeight: 700, color: "#00845A", marginBottom: 12 } }, "Matriz de permisos"), /* @__PURE__ */ React.createElement("div", { className: "ap-scroll" }, /* @__PURE__ */ React.createElement("table", { className: "ap-table" }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", null, "Secci\xF3n"), /* @__PURE__ */ React.createElement("th", { style: { color: ROLE_COLORS.owner } }, "Owner"), /* @__PURE__ */ React.createElement("th", { style: { color: ROLE_COLORS.admin } }, "Admin"), /* @__PURE__ */ React.createElement("th", { style: { color: ROLE_COLORS.analyst } }, "Analista"), /* @__PURE__ */ React.createElement("th", { style: { color: ROLE_COLORS.viewer } }, "Viewer"))), /* @__PURE__ */ React.createElement("tbody", null, ["dashboard", "leads", "credits", "showroom", "config", "users"].map((s) => /* @__PURE__ */ React.createElement("tr", { key: s }, /* @__PURE__ */ React.createElement("td", { style: { fontWeight: 700, color: "#0B0B0B", textTransform: "capitalize" } }, s), ["owner", "admin", "analyst", "viewer"].map((r) => /* @__PURE__ */ React.createElement("td", { key: r, style: { textAlign: "center" } }, canAccess(r, s) ? /* @__PURE__ */ React.createElement("span", { style: { color: "#10B981", fontSize: 16 } }, "\u2713") : /* @__PURE__ */ React.createElement("span", { style: { color: "#9FB3A5", fontSize: 14 } }, "\u2014"))))))))));
+  return /* @__PURE__ */ React.createElement("div", { style: { paddingTop: 24 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18, flexWrap: "wrap", gap: 10 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { style: { fontSize: 20, fontWeight: 800, color: "#E8F5EE" } }, "\u{1F465} Usuarios"), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, color: "#6B8F7A", marginTop: 2 } }, users.length, " usuarios \xB7 ", users.filter((u) => u.isActive).length, " activos")), session.role === "owner" && /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-primary ap-btn-sm", type: "button", onClick: () => setAdding((v) => !v) }, adding ? "\u2715 Cancelar" : "\u2795 Agregar usuario")), adding && /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { marginBottom: 20 } }, /* @__PURE__ */ React.createElement("div", { className: "grid-2", style: { marginBottom: 14 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Email"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", type: "email", value: form.email, onChange: (e) => fset("email", e.target.value), placeholder: "nuevo@autopago.pe" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Contrase\xF1a"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", type: "password", value: form.password, onChange: (e) => fset("password", e.target.value), placeholder: "min. 8 chars" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Rol"), /* @__PURE__ */ React.createElement("select", { className: "ap-input", value: form.role, onChange: (e) => fset("role", e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "owner" }, "Owner \u2014 acceso total"), /* @__PURE__ */ React.createElement("option", { value: "admin" }, "Admin \u2014 sin gesti\xF3n de usuarios"), /* @__PURE__ */ React.createElement("option", { value: "analyst" }, "Analista \u2014 solo lectura"), /* @__PURE__ */ React.createElement("option", { value: "viewer" }, "Viewer \u2014 solo dashboard")))), /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-success ap-btn-sm", type: "button", onClick: addUser, disabled: !form.email || !form.password }, "\u2705 Crear usuario")), /* @__PURE__ */ React.createElement("div", { className: "ap-card", style: { padding: 0, overflow: "hidden", marginBottom: 20 } }, /* @__PURE__ */ React.createElement("div", { className: "ap-scroll" }, /* @__PURE__ */ React.createElement("table", { className: "ap-table" }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", null, "Usuario"), /* @__PURE__ */ React.createElement("th", null, "Rol"), /* @__PURE__ */ React.createElement("th", null, "Estado"), session.role === "owner" && /* @__PURE__ */ React.createElement("th", null, "Acciones"))), /* @__PURE__ */ React.createElement("tbody", null, users.map((u) => /* @__PURE__ */ React.createElement("tr", { key: u.id }, /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8 } }, /* @__PURE__ */ React.createElement("div", { style: { width: 28, height: 28, borderRadius: "50%", background: `${ROLE_COLORS[u.role]}20`, border: `1px solid ${ROLE_COLORS[u.role]}50`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: ROLE_COLORS[u.role], flexShrink: 0 } }, u.email[0].toUpperCase()), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, fontWeight: u.id === session.userId ? 700 : 400, color: "#0B0B0B" } }, u.email), u.id === session.userId && /* @__PURE__ */ React.createElement("span", { style: { fontSize: 9, color: "#6B8F7A" } }, "\u2190 t\xFA")))), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, fontWeight: 700, color: ROLE_COLORS[u.role], background: `${ROLE_COLORS[u.role]}18`, padding: "3px 10px", borderRadius: 50 } }, u.role.toUpperCase())), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, fontWeight: 700, color: u.isActive ? "#10B981" : "#EF4444" } }, u.isActive ? "\u25CF Activo" : "\u25CF Inactivo")), session.role === "owner" && /* @__PURE__ */ React.createElement("td", null, u.id !== session.userId && /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 6 } }, /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-sm ap-btn-secondary", type: "button", onClick: () => toggle(u.id), style: { fontSize: 11 } }, u.isActive ? "Desactivar" : "Activar"), /* @__PURE__ */ React.createElement("button", { className: "ap-btn ap-btn-sm ap-btn-danger", type: "button", onClick: () => del(u.id) }, "\u{1F5D1}\uFE0F"))))))))), /* @__PURE__ */ React.createElement("div", { className: "ap-card" }, /* @__PURE__ */ React.createElement("p", { style: { fontSize: 13, fontWeight: 700, color: "#00845A", marginBottom: 12 } }, "Matriz de permisos"), /* @__PURE__ */ React.createElement("div", { className: "ap-scroll" }, /* @__PURE__ */ React.createElement("table", { className: "ap-table" }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", null, "Secci\xF3n"), /* @__PURE__ */ React.createElement("th", { style: { color: ROLE_COLORS.owner } }, "Owner"), /* @__PURE__ */ React.createElement("th", { style: { color: ROLE_COLORS.admin } }, "Admin"), /* @__PURE__ */ React.createElement("th", { style: { color: ROLE_COLORS.analyst } }, "Analista"), /* @__PURE__ */ React.createElement("th", { style: { color: ROLE_COLORS.viewer } }, "Viewer"))), /* @__PURE__ */ React.createElement("tbody", null, ["dashboard", "leads", "credits", "showroom", "config", "users"].map((s) => /* @__PURE__ */ React.createElement("tr", { key: s }, /* @__PURE__ */ React.createElement("td", { style: { fontWeight: 700, color: "#0B0B0B", textTransform: "capitalize" } }, s), ["owner", "admin", "analyst", "viewer"].map((r) => /* @__PURE__ */ React.createElement("td", { key: r, style: { textAlign: "center" } }, canAccess(r, s) ? /* @__PURE__ */ React.createElement("span", { style: { color: "#10B981", fontSize: 16 } }, "\u2713") : /* @__PURE__ */ React.createElement("span", { style: { color: "#9FB3A5", fontSize: 14 } }, "\u2014"))))))))));
 }
 function App() {
   var _a, _b, _c;
