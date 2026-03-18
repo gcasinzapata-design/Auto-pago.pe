@@ -1163,19 +1163,22 @@ function valuate(brand, model, year, km, transmission, condition = "bueno", vers
   const expPerYear = category === "pickup" ? 2e4 : category === "suv" ? 17e3 : 15500;
   const expectedKm = Math.max(1, age) * expPerYear;
   const kmRatio = expectedKm > 0 ? kmInt / expectedKm : 1;
-  let kmAdj = 0;
-  if (kmRatio < 0.65) kmAdj = 0.04;
-  else if (kmRatio < 0.85) kmAdj = 0.02;
-  else if (kmRatio < 1.15) kmAdj = 0;
-  else if (kmRatio < 1.5) kmAdj = -0.05;
-  else kmAdj = -0.11;
+  let kmAdj;
+  if (kmRatio <= 0.4) kmAdj = 0.08;
+  else if (kmRatio <= 0.65) kmAdj = 0.05;
+  else if (kmRatio <= 0.85) kmAdj = 0.02;
+  else if (kmRatio <= 1.05) kmAdj = 0;
+  else if (kmRatio <= 1.25) kmAdj = -0.04;
+  else if (kmRatio <= 1.6) kmAdj = -0.09;
+  else if (kmRatio <= 2) kmAdj = -0.15;
+  else kmAdj = -0.2;
   val *= 1 + kmAdj;
   if (transmission === "automatica") val *= 1.03;
-  val *= (_c = { excelente: 1.06, bueno: 1, regular: 0.9, malo: 0.78 }[condition]) != null ? _c : 1;
+  val *= (_c = { excelente: 1.1, bueno: 1, regular: 0.87, malo: 0.72 }[condition]) != null ? _c : 1;
   val *= trimMult(version);
-  const ageCap = base * (age <= 1 ? 0.95 : age <= 3 ? 0.88 : age <= 5 ? 0.8 : 0.72);
+  const ageCap = base * (age <= 1 ? 0.97 : age <= 3 ? 0.9 : age <= 5 ? 0.83 : 0.76);
   val = Math.min(val, ageCap);
-  val = Math.max(val, base * floor * 0.94);
+  val = Math.max(val, base * floor * 0.9);
   val = Math.round(val / 500) * 500;
   const conservativePct = (_e = (_d = loadConfig().credito) == null ? void 0 : _d.conservativePct) != null ? _e : 0.1;
   const conservativeValue = Math.round(val * (1 - conservativePct) / 500) * 500;
@@ -1330,6 +1333,10 @@ button,input,select,textarea{font-family:'Plus Jakarta Sans',sans-serif}
 @keyframes fadeUp   {from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn   {from{opacity:0}to{opacity:1}}
 @keyframes scaleIn  {from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+@keyframes pulse-cta {
+  0%,100%{ box-shadow:0 6px 24px rgba(0,168,107,.35); }
+  50%{ box-shadow:0 8px 36px rgba(0,168,107,.60); }
+}
 @keyframes floatUp  {0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
 @keyframes scrollX  {0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 @keyframes shimmer  {0%{background-position:-400px 0}100%{background-position:400px 0}}
@@ -1496,6 +1503,30 @@ nav {
 .ap-btn-secondary:hover { border-color:var(--p); color:var(--p); }
 .ap-btn-ghost     { background:transparent; border-color:transparent; color:var(--muted); }
 .ap-btn-ghost:hover { color:var(--dark); background:var(--p-lt); }
+.ap-btn-success {
+  background: linear-gradient(135deg, #00C88A, #00A86B);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 6px 24px rgba(0,168,107,.35), 0 2px 8px rgba(0,0,0,.08);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .01em;
+  animation: pulse-cta 2.2s ease-in-out infinite;
+}
+.ap-btn-success:hover:not(:disabled) {
+  background: linear-gradient(135deg, #00D494, #00B47A);
+  box-shadow: 0 10px 32px rgba(0,168,107,.45);
+  transform: translateY(-2px);
+}
+.ap-btn-success:active { transform: translateY(0); }
+.ap-btn-success:disabled {
+  background: #C8D9D0;
+  color: #8FA89E;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+  animation: none;
+}
 .ap-btn-sm { padding:7px 14px; font-size:12px; }
 
 /* \u2500\u2500 CARDS / SURFACES \u2500\u2500 */
@@ -1819,18 +1850,22 @@ function Money({ usd, size = 32 }) {
 function ContactForm({ value: raw, onChange: set, compact = false }) {
   const d = raw || {};
   const upd = (k, v) => set(__spreadProps(__spreadValues({}, d), { [k]: v }));
-  const dniOk = d.docType === "dni" ? /^\d{8}$/.test(d.docNum || "") : /^[A-Za-z0-9]{9,12}$/.test(d.docNum || "");
+  React.useEffect(() => {
+    if (!d.docType) upd("docType", "dni");
+  }, []);
+  const effectiveDocType = d.docType || "dni";
+  const dniOk = effectiveDocType === "dni" ? /^\d{8}$/.test(d.docNum || "") : /^[A-Za-z0-9]{9,12}$/.test(d.docNum || "");
   const phoneOk = /^9\d{8}$/.test(d.phone || "");
-  return /* @__PURE__ */ React.createElement("div", { className: "module-form-grid" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Nombres"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", value: d.firstName || "", onChange: (e) => upd("firstName", e.target.value), placeholder: "Juan" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Apellidos"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", value: d.lastName || "", onChange: (e) => upd("lastName", e.target.value), placeholder: "Garc\xEDa" })), /* @__PURE__ */ React.createElement("div", { style: { gridColumn: "span 2" } }, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Correo electr\xF3nico"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", type: "email", value: d.email || "", onChange: (e) => upd("email", e.target.value), placeholder: "juan@ejemplo.com" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Tipo de documento"), /* @__PURE__ */ React.createElement("select", { className: "ap-input", value: d.docType || "dni", onChange: (e) => upd("docType", e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "dni" }, "DNI"), /* @__PURE__ */ React.createElement("option", { value: "ce" }, "Carn\xE9 de Extranjer\xEDa"))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "N\xB0 de documento"), /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement("div", { className: "module-form-grid" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Nombres"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", value: d.firstName || "", onChange: (e) => upd("firstName", e.target.value), placeholder: "Juan" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Apellidos"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", value: d.lastName || "", onChange: (e) => upd("lastName", e.target.value), placeholder: "Garc\xEDa" })), /* @__PURE__ */ React.createElement("div", { style: { gridColumn: "span 2" } }, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Correo electr\xF3nico"), /* @__PURE__ */ React.createElement("input", { className: "ap-input", type: "email", value: d.email || "", onChange: (e) => upd("email", e.target.value), placeholder: "juan@ejemplo.com" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Tipo de documento"), /* @__PURE__ */ React.createElement("select", { className: "ap-input", value: effectiveDocType, onChange: (e) => upd("docType", e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "dni" }, "DNI"), /* @__PURE__ */ React.createElement("option", { value: "ce" }, "Carn\xE9 de Extranjer\xEDa"))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "N\xB0 de documento"), /* @__PURE__ */ React.createElement(
     "input",
     {
       className: `ap-input${d.docNum && !dniOk ? " err" : ""}`,
       value: d.docNum || "",
       onChange: (e) => upd("docNum", e.target.value.replace(/\s/g, "")),
-      placeholder: d.docType === "ce" ? "Ej: B00123456" : "Ej: 12345678",
-      maxLength: d.docType === "ce" ? 12 : 8
+      placeholder: effectiveDocType === "ce" ? "Ej: B00123456" : "Ej: 12345678",
+      maxLength: effectiveDocType === "ce" ? 12 : 8
     }
-  ), d.docNum && /* @__PURE__ */ React.createElement("p", { style: { fontSize: 10, marginTop: 3, color: dniOk ? "#10B981" : "#EF4444" } }, dniOk ? "\u2713 Formato v\xE1lido" : d.docType === "dni" ? "El DNI debe tener 8 d\xEDgitos" : "El CE debe tener 9-12 caracteres alfanum\xE9ricos", /* @__PURE__ */ React.createElement("span", { style: { color: "#9FB3A5", marginLeft: 6 } }, "\xB7 Validaci\xF3n RENIEC en producci\xF3n"))), /* @__PURE__ */ React.createElement("div", { style: { gridColumn: "span 2" } }, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Celular (Per\xFA)"), /* @__PURE__ */ React.createElement("div", { className: "phone-wrap" }, /* @__PURE__ */ React.createElement("span", { className: "phone-prefix" }, "\u{1F1F5}\u{1F1EA} +51"), /* @__PURE__ */ React.createElement(
+  ), d.docNum && /* @__PURE__ */ React.createElement("p", { style: { fontSize: 10, marginTop: 3, color: dniOk ? "#10B981" : "#EF4444" } }, dniOk ? "\u2713 Formato v\xE1lido" : effectiveDocType === "dni" ? "El DNI debe tener 8 d\xEDgitos" : "El CE debe tener 9-12 caracteres alfanum\xE9ricos", /* @__PURE__ */ React.createElement("span", { style: { color: "#9FB3A5", marginLeft: 6 } }, "\xB7 Validaci\xF3n RENIEC en producci\xF3n"))), /* @__PURE__ */ React.createElement("div", { style: { gridColumn: "span 2" } }, /* @__PURE__ */ React.createElement("label", { className: "ap-label" }, "Celular (Per\xFA)"), /* @__PURE__ */ React.createElement("div", { className: "phone-wrap" }, /* @__PURE__ */ React.createElement("span", { className: "phone-prefix" }, "\u{1F1F5}\u{1F1EA} +51"), /* @__PURE__ */ React.createElement(
     "input",
     {
       className: `ap-input phone-input${d.phone && !phoneOk ? " err" : ""}`,
@@ -1846,8 +1881,8 @@ function isContactValid(c) {
   if (!c) return false;
   const { firstName, lastName, docType, docNum, phone } = c;
   if (!(firstName == null ? void 0 : firstName.trim()) || !(lastName == null ? void 0 : lastName.trim())) return false;
-  if (!docType) return false;
-  const docOk = docType === "dni" ? /^\d{8}$/.test(docNum || "") : /^[A-Za-z0-9]{9,12}$/.test(docNum || "");
+  const effDocType = docType || "dni";
+  const docOk = effDocType === "dni" ? /^\d{8}$/.test(docNum || "") : /^[A-Za-z0-9]{9,12}$/.test(docNum || "");
   if (!docOk) return false;
   if (!/^9\d{8}$/.test(phone || "")) return false;
   return true;
@@ -4404,9 +4439,7 @@ function AppWithBoundary() {
   return React.createElement(AppErrorBoundary, null, React.createElement(App));
 }
 
-const domContainer = document.getElementById('root');
-const reactRoot = ReactDOM.createRoot(domContainer);
-reactRoot.render(React.createElement(AppWithBoundary));
+const r=ReactDOM.createRoot(document.getElementById('root'));r.render(React.createElement(AppWithBoundary));
 })();
 </script>
 </body>
