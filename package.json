@@ -1,0 +1,14 @@
+{
+  "name": "autopago-pe",
+  "version": "1.0.0",
+  "description": "AutoPago - Compramos, Financiamos y Vendemos Autos en Lima, Perú",
+  "private": true,
+  "scripts": {
+    "build": "echo 'Static HTML project - no build needed'",
+    "dev": "npx serve .",
+    "lint": "echo 'No linting configured'"
+  },
+  "dependencies": {
+    "@vercel/speed-insights": "^1.0.12"
+  }
+}
