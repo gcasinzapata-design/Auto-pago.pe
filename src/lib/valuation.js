@@ -22,14 +22,14 @@ const median = (arr) => {
   return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2
 }
 
-// Precio de referencia según el rango del catálogo: un auto reciente cae cerca del máximo,
-// uno de 12 años cerca del mínimo; más antiguo sigue depreciando con piso.
+// Precio de referencia: depreciación exponencial entre el valor de un auto de este año (max)
+// y el de uno de 12 años (min), calibrado con avisos reales de Neoauto. Más antiguo sigue bajando con piso.
 export function priorValue(brand, model, year) {
   const r = MODEL_DB[brand]?.models?.[model]
   if (!r) return null
   const age = Math.max(0, CURRENT_YEAR - year)
-  const pos = clamp(1 - age / 12, 0, 1)
-  let v = r.min + (r.max - r.min) * pos
+  const t = Math.min(age, 12) / 12
+  let v = r.max * Math.pow(r.min / r.max, t)
   if (age > 12) v *= Math.max(0.35, 1 - 0.05 * (age - 12))
   return v
 }
