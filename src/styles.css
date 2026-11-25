@@ -264,3 +264,33 @@ table.t td { padding: 12px 8px; border-bottom: 1px solid var(--line); vertical-a
   .trust-item { flex-direction: column; align-items: flex-start; gap: 8px; }
   .trust-ico { width: 34px; height: 34px; }
 }
+
+/* ── Tasador paso a paso ── */
+.q-label { font-size: 17px; font-weight: 700; letter-spacing: -0.01em; }
+.crumbs { display: flex; gap: 6px; flex-wrap: wrap; margin: -8px 0 14px; }
+.opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.opts.years { display: grid; grid-template-columns: repeat(5, 1fr); }
+.opts.cols { display: grid; grid-template-columns: 1fr 1fr; }
+.opt { border: 1px solid var(--line); background: var(--white); border-radius: 999px; padding: 10px 16px; font-weight: 600; font-size: 15px; cursor: pointer; transition: border-color .12s, background .12s; }
+.opts.years .opt, .opts.cols .opt { border-radius: var(--r-s); padding: 12px 8px; }
+@media (hover: hover) { .opt:hover, .cond:hover { border-color: var(--brand); background: var(--brand-tint); } }
+.opt:active, .cond:active { border-color: var(--brand); background: var(--brand-tint); }
+.opt.ghost { color: var(--stone); border-style: dashed; }
+.conds { display: grid; gap: 8px; }
+.cond { text-align: left; border: 1px solid var(--line); background: var(--white); border-radius: var(--r-m); padding: 14px 16px; cursor: pointer; display: flex; flex-direction: column; gap: 2px; }
+.cond b { font-size: 15.5px; }
+.cond span { font-size: 13.5px; color: var(--stone); }
+.linkbtn { background: none; border: 0; color: var(--stone); font-weight: 600; font-size: 14px; cursor: pointer; padding: 4px 0; align-self: flex-start; }
+.linkbtn:hover { color: var(--ink); }
+.lockbox { border: 1px dashed var(--brand); border-radius: var(--r-m); padding: 16px; }
+.lockbox.on { border-style: solid; background: var(--white); }
+.countdown { font-variant-numeric: tabular-nums; font-weight: 800; font-size: 20px; color: var(--brand); letter-spacing: .02em; }
+.why { border-top: 1px solid var(--line); padding-top: 12px; }
+.why summary { cursor: pointer; font-weight: 700; font-size: 14.5px; color: var(--ink-2); }
+.cmp { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13.5px; }
+.cmp th { text-align: left; font-size: 12.5px; color: var(--stone); font-weight: 600; padding: 6px 4px; }
+.cmp td { padding: 8px 4px; border-top: 1px solid var(--line); vertical-align: top; }
+.cmp td:first-child { font-weight: 600; }
+@media (max-width: 420px) { .opts.years { grid-template-columns: repeat(4, 1fr); } }
+
+.sticky-cta.hide { display: none !important; }

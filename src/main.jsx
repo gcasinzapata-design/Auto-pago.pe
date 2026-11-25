@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import './styles.css'
 import { DEFAULT_CFG, loadConfig } from './lib/config'
+import { bootAnalytics } from './lib/track'
 import { Home, Seminuevos, Faq } from './pages/Public'
 const Revendedores = lazy(() => import('./pages/Revendedores'))
 const Admin = lazy(() => import('./pages/admin/Admin'))
@@ -11,6 +12,7 @@ function App() {
   const [cfg, setCfg] = useState(DEFAULT_CFG)
   useEffect(() => {
     loadConfig().then(setCfg).catch(() => {})
+    bootAnalytics()
   }, [])
   return (
     <BrowserRouter>

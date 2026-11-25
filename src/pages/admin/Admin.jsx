@@ -10,6 +10,57 @@ import Inventory from './Inventory'
 import Resellers from './Resellers'
 import Market from './Market'
 
+function Funnel() {
+  const [rows, setRows] = useState(null)
+  useEffect(() => {
+    const since = new Date(Date.now() - 30 * 864e5).toISOString()
+    supabase
+      .from('ap_funnel_events')
+      .select('session_id,event,step')
+      .gte('created_at', since)
+      .limit(20000)
+      .then(({ data }) => {
+        const uniq = (pred) => new Set((data || []).filter(pred).map((r) => r.session_id)).size
+        setRows([
+          ['Empezó a tasar', uniq((r) => r.event === 'tasador_start')],
+          ['Eligió modelo', uniq((r) => r.event === 'step_complete' && r.step === 'modelo')],
+          ['Eligió año', uniq((r) => r.event === 'step_complete' && r.step === 'año')],
+          ['Eligió km', uniq((r) => r.event === 'step_complete' && r.step === 'km')],
+          ['Vio su pre-oferta', uniq((r) => r.event === 'quote_shown')],
+          ['Congeló precio (lead)', uniq((r) => r.event === 'lead_submitted')],
+          ['Abrió WhatsApp', uniq((r) => r.event === 'wa_open')],
+        ])
+      })
+  }, [])
+  const max = rows ? Math.max(1, rows[0][1]) : 1
+  return (
+    <div className="panel" style={{ marginTop: 14 }}>
+      <h3>Embudo del tasador · últimos 30 días</h3>
+      {!rows ? (
+        <p className="small muted">Cargando…</p>
+      ) : rows[0][1] === 0 ? (
+        <p className="small muted">Aún no hay visitas registradas. El embudo se llena solo cuando la gente usa el tasador.</p>
+      ) : (
+        <div className="stack" style={{ gap: 8, marginTop: 10 }}>
+          {rows.map(([l, n], i) => (
+            <div key={l} className="small">
+              <div className="row" style={{ justifyContent: 'space-between' }}>
+                <span>{l}</span>
+                <b>
+                  {n} {i > 0 && rows[i - 1][1] ? <span className="muted">({Math.round((n / rows[i - 1][1]) * 100)}%)</span> : null}
+                </b>
+              </div>
+              <div style={{ height: 8, background: 'var(--surface)', borderRadius: 4 }}>
+                <div style={{ width: `${(n / max) * 100}%`, height: '100%', background: 'var(--brand)', borderRadius: 4 }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function Summary({ leads, cars, go }) {
   const week = Date.now() - 7 * 864e5
   const k = useMemo(() => {
@@ -69,6 +120,7 @@ function Summary({ leads, cars, go }) {
           {k.due.length === 0 && <p className="small muted">Sin pendientes vencidos.</p>}
         </div>
       </div>
+      <Funnel />
     </>
   )
 }

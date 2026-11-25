@@ -8,12 +8,21 @@ import { FAQ } from '../lib/faq'
 import { Check, Shield, Clock, Bank, Doc, Home as HomeIco, Car, Tag, Coins, WhatsApp } from '../components/Icons'
 
 function Layout({ cfg, children }) {
+  // Oculta la barra fija mientras el tasador está en pantalla
+  const [hide, setHide] = useState(false)
+  useEffect(() => {
+    const el = document.getElementById('tasar')
+    if (!el || !('IntersectionObserver' in window)) return
+    const io = new IntersectionObserver(([e]) => setHide(e.isIntersecting), { threshold: 0.15 })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
   return (
     <>
       <Nav cfg={cfg} />
       <main>{children}</main>
       <Footer cfg={cfg} />
-      <div className="sticky-cta">
+      <div className={'sticky-cta' + (hide ? ' hide' : '')}>
         <a className="btn btn-signal" href="/#tasar">
           Calcular pre-oferta
         </a>
