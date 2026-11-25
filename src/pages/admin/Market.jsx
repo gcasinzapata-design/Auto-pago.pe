@@ -132,14 +132,9 @@ function Overrides() {
   )
 }
 
-const attr = (it, id) => it.attributes?.find((a) => a.id === id)?.value_name
-
 function Listings() {
   const [stats, setStats] = useState(null)
   const [log, setLog] = useState([])
-  const [busy, setBusy] = useState(false)
-  const [fx, setFx] = useState(3.75)
-  const [brand, setBrand] = useState('Toyota')
   const [paste, setPaste] = useState('')
   const loadStats = async () => {
     const { count } = await supabase.from('ap_market_listings').select('*', { count: 'exact', head: true })
@@ -156,44 +151,6 @@ function Listings() {
     const { error } = await supabase.from('ap_market_listings').upsert(rows, { onConflict: 'source,source_id', ignoreDuplicates: false })
     if (error) push('Error al guardar: ' + error.message)
     return error ? 0 : rows.length
-  }
-
-  // Corre desde tu navegador (IP residencial), igual que el scraper de la v7.
-  const runML = async () => {
-    setBusy(true)
-    setLog([])
-    const models = Object.keys(MODEL_DB[brand].models)
-    let total = 0
-    for (const model of models) {
-      try {
-        const url = `https://api.mercadolibre.com/sites/MPE/search?category=MPE1744&q=${encodeURIComponent(brand + ' ' + model)}&limit=50`
-        const r = await fetch(url)
-        if (!r.ok) {
-          push(`${model}: MercadoLibre respondió ${r.status}. Usa la importación manual de abajo.`)
-          if (r.status === 401 || r.status === 403) break
-          continue
-        }
-        const j = await r.json()
-        const rows = (j.results || [])
-          .map((it) => {
-            const year = +attr(it, 'VEHICLE_YEAR') || null
-            const km = parseInt((attr(it, 'KILOMETERS') || '').replace(/\D/g, '')) || null
-            const usdP = it.currency_id === 'USD' ? it.price : it.price / fx
-            return year && usdP > 1000
-              ? { brand, model, year, km, price_usd: Math.round(usdP), price_pen: it.currency_id === 'PEN' ? it.price : Math.round(it.price * fx), transmission: attr(it, 'TRANSMISSION'), fuel: attr(it, 'FUEL_TYPE'), version: attr(it, 'TRIM'), location: it.address?.state_name || it.location?.state?.name, source: 'mercadolibre', source_id: it.id, source_url: it.permalink, scraped_at: new Date().toISOString() }
-              : null
-          })
-          .filter(Boolean)
-        const n = await save(rows)
-        total += n
-        push(`${model}: ${n} avisos`)
-      } catch (e) {
-        push(`${model}: no se pudo conectar (${e.message}).`)
-      }
-    }
-    push(`Listo: ${total} avisos guardados.`)
-    setBusy(false)
-    loadStats()
   }
 
   // Formato: marca,modelo,año,precio_usd,km,url  (una fila por aviso)
@@ -214,21 +171,8 @@ function Listings() {
       <h3>Avisos del mercado</h3>
       <p className="small muted">
         {stats ? `${stats.count} avisos guardados` : 'Cargando…'}
-        {stats?.last && ` · última actualización ${new Date(stats.last).toLocaleDateString('es-PE')}`}. Con 8 o más avisos comparables, la pre-oferta usa el mercado real en vez del catálogo.
+        {stats?.last && ` · última actualización ${new Date(stats.last).toLocaleDateString('es-PE')}`}. Fuente principal: Neoauto. Con 8 o más avisos comparables, la pre-oferta usa el mercado real en vez del catálogo.
       </p>
-      <div className="row">
-        <select className="select" style={{ width: 'auto' }} aria-label="Marca a actualizar" value={brand} onChange={(e) => setBrand(e.target.value)}>
-          {BRANDS.map((b) => (
-            <option key={b}>{b}</option>
-          ))}
-        </select>
-        <label className="row small">
-          Tipo de cambio <input className="input" style={{ width: 90 }} type="number" step="0.01" value={fx} onChange={(e) => setFx(+e.target.value)} />
-        </label>
-        <button className="btn btn-sm" disabled={busy} onClick={runML}>
-          {busy ? 'Buscando…' : 'Actualizar desde MercadoLibre'}
-        </button>
-      </div>
       {log.length > 0 && (
         <pre className="small" style={{ background: '#f7f8f5', padding: 10, borderRadius: 4, maxHeight: 180, overflow: 'auto', whiteSpace: 'pre-wrap' }}>
           {log.join('\n')}
