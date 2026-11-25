@@ -83,7 +83,7 @@ function Settings({ cfg, setCfg }) {
       general: { ...(raw.general || {}), whatsappNumber: f.whatsapp.replace(/\D/g, '') },
       consigna: { ...(raw.consigna || {}), commissionPct: +f.commission / 100 },
       penalties: f.penalties,
-      margin: { pct: +f.margin.pct, minUsd: +f.margin.minUsd },
+      margin: { pct: Math.max(25, +f.margin.pct || 25), minUsd: +f.margin.minUsd },
       modules: { ...(raw.modules || {}), comprar: f.modules.compramos, consigna: f.modules.consigna, credito: f.modules.prestamos, seminuevos: f.modules.seminuevos },
     }
     const { error } = await supabase.from('ap_admin_config').update({ config, updated_at: new Date().toISOString() }).eq('id', 1)
@@ -111,8 +111,8 @@ function Settings({ cfg, setCfg }) {
           </div>
           <div />
           <div className="field">
-            <label htmlFor="c-mp">Margen objetivo (%)</label>
-            <input id="c-mp" className="input" type="number" value={f.margin.pct} onChange={(e) => setF({ ...f, margin: { ...f.margin, pct: e.target.value } })} />
+            <label htmlFor="c-mp">Descuento pago inmediato (%, mín. 25)</label>
+            <input id="c-mp" className="input" type="number" min="25" value={f.margin.pct} onChange={(e) => setF({ ...f, margin: { ...f.margin, pct: e.target.value } })} />
           </div>
           <div className="field">
             <label htmlFor="c-mm">Margen mínimo (US$)</label>

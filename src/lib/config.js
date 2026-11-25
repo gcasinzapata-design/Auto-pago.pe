@@ -16,7 +16,7 @@ export const DEFAULT_CFG = {
   baseTEA: 26,
   modules: { compramos: true, consigna: true, prestamos: true, seminuevos: true },
   penalties: { japones: 0, coreano: 5, chino: 20, americano: 10, europeo: 5 },
-  margin: { pct: 7, minUsd: 900 },
+  margin: { pct: 25, minUsd: 900 },
 }
 
 export const wa = (num, text) => `https://wa.me/${num}?text=${encodeURIComponent(text)}`
@@ -39,7 +39,7 @@ export async function loadConfig() {
     whatsapp: c.general?.whatsappNumber || DEFAULT_CFG.whatsapp,
     commission: c.consigna?.commissionPct ? c.consigna.commissionPct * 100 : DEFAULT_CFG.commission,
     penalties: { ...DEFAULT_CFG.penalties, ...(c.penalties || {}) },
-    margin: { ...DEFAULT_CFG.margin, ...(c.margin || {}) },
+    margin: { ...DEFAULT_CFG.margin, ...(c.margin || {}), pct: Math.max(25, c.margin?.pct ?? 25) },
     modules: {
       compramos: mods.comprar !== false,
       consigna: mods.consigna !== false,

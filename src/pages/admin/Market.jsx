@@ -55,9 +55,10 @@ function InternalTasador({ cfg }) {
             {row('Catálogo', usd(v.catalog), 'Rango del modelo ajustado por año')}
             {v.override && row('Tu precio manual', usd(v.override), 'Pesa 85% sobre el catálogo')}
             {row('Mediana de avisos', v.marketMed ? usd(v.marketMed) : '—', `${v.samples} avisos ±1 año, ya con –7% de negociación · peso ${Math.round(v.weightMarket * 100)}%`)}
-            {row('Valor de mercado', usd(v.marketValue), 'Ajustado por km y estado')}
-            {row(`Castigo ${v.origin}`, `${v.penaltyPct}%`, 'Configurable en Ajustes')}
-            {row('Oferta sugerida', usd(v.offer), `Deja margen de ${usd(v.margin)} (mín. ${cfg.margin.pct}% o ${usd(cfg.margin.minUsd)})`)}
+            {row('Valor comercial', usd(v.marketValue), 'Ajustado por km y estado')}
+            {row('Descuento pago inmediato', `${v.discPct}%`, 'Regla AutoPago: mínimo 25% bajo valor comercial')}
+            {row(`Castigo ${v.origin}`, `${v.penaltyPct}%`, 'Encima del descuento · configurable en Ajustes')}
+            {row('Oferta máxima', usd(v.offer), `${Math.round((1 - v.offer / v.marketValue) * 100)}% bajo valor comercial · margen bruto ${usd(v.margin)}`)}
             {row('Pre-oferta que ve el cliente', `${usd(v.offerLow)} – ${usd(v.offerHigh)}`, `Confianza ${v.confidence}`)}
           </tbody>
         </table>

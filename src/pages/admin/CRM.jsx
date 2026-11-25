@@ -66,11 +66,11 @@ function LeadDrawer({ lead, cfg, onClose, onSaved }) {
           <div className="panel" style={{ background: '#f7f8f5' }}>
             <div className="grid3 small">
               <div>
-                Valor de mercado
+                Valor comercial
                 <div className="car-price">{usd(val.marketValue)}</div>
               </div>
               <div>
-                Oferta sugerida
+                Oferta máxima (−{val.discPct}%)
                 <div className="car-price">{usd(val.offer)}</div>
               </div>
               <div>

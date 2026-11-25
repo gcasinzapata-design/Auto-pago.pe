@@ -4,6 +4,7 @@ import { supabase } from './config'
 export { MODEL_DB }
 export const BRANDS = Object.keys(MODEL_DB).sort((a, b) => a.localeCompare(b, 'es'))
 export const CURRENT_YEAR = new Date().getFullYear()
+export const MIN_DISCOUNT = 25 // % mínimo bajo valor comercial para pago inmediato
 export const YEARS = Array.from({ length: 20 }, (_, i) => CURRENT_YEAR - i)
 
 export const CONDITIONS = [
@@ -90,11 +91,12 @@ export function valuate({ brand, model, year, km, condition = 'bueno', market = 
 
   const origin = MODEL_DB[brand]?.origin || ''
   const penaltyPct = cfg?.penalties?.[origin] ?? 0
-  const mPct = (cfg?.margin?.pct ?? 7) / 100
-  const mMin = cfg?.margin?.minUsd ?? 900
-  const afterPenalty = marketValue * (1 - penaltyPct / 100)
-  const margin = Math.max(marketValue * mPct, mMin)
-  const offer = Math.max(0, afterPenalty - margin)
+  // Regla de negocio: la oferta de pago inmediato va como mínimo 25% bajo el valor comercial.
+  // El castigo por origen se aplica encima de ese 25%.
+  const discPct = Math.max(MIN_DISCOUNT, cfg?.margin?.pct ?? MIN_DISCOUNT)
+  const minUsd = cfg?.margin?.minUsd ?? 0
+  const afterDiscount = marketValue * (1 - discPct / 100) * (1 - penaltyPct / 100)
+  const offer = Math.max(0, Math.min(afterDiscount, marketValue - minUsd))
 
   const confidence = n >= 8 || (override && n >= 3) ? 'alta' : n >= 3 || override ? 'media' : 'baja'
   const spread = confidence === 'alta' ? 0.03 : confidence === 'media' ? 0.05 : 0.08
@@ -110,8 +112,10 @@ export function valuate({ brand, model, year, km, condition = 'bueno', market = 
     origin,
     penaltyPct,
     offer,
+    discPct,
+    // El techo del rango nunca supera la oferta con 25% de descuento
     offerLow: offer * (1 - spread),
-    offerHigh: offer * (1 + spread * 0.25),
+    offerHigh: offer,
     margin: marketValue - offer,
     confidence,
   }
