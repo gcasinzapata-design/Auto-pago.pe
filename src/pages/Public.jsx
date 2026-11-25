@@ -5,6 +5,7 @@ import Tasador from '../components/Tasador'
 import { usd, wa, submitLead } from '../lib/config'
 import { loadPublicInventory } from '../lib/inventory'
 import { FAQ } from '../lib/faq'
+import { Check, Shield, Clock, Bank, Doc, Home as HomeIco, Car, Tag, Coins, WhatsApp } from '../components/Icons'
 
 function Layout({ cfg, children }) {
   return (
@@ -14,10 +15,10 @@ function Layout({ cfg, children }) {
       <Footer cfg={cfg} />
       <div className="sticky-cta">
         <a className="btn btn-signal" href="/#tasar">
-          Tasar mi auto
+          Calcular pre-oferta
         </a>
-        <a className="btn btn-wa" href={wa(cfg.whatsapp, 'Hola AutoPago')} target="_blank" rel="noreferrer">
-          WhatsApp
+        <a className="btn btn-wa" aria-label="WhatsApp" href={wa(cfg.whatsapp, 'Hola AutoPago')} target="_blank" rel="noreferrer" style={{ flex: '0 0 auto' }}>
+          <WhatsApp />
         </a>
       </div>
     </>
@@ -202,74 +203,117 @@ export function Home({ cfg }) {
       <section className="hero">
         <div className="wrap hero-grid">
           <div>
-            <h1>Tu auto, vendido hoy y pagado al contado.</h1>
-            <p className="lead">
-              Compramos autos usados en Lima. Te damos una pre-oferta en segundos, la oferta final por WhatsApp en menos de 2 horas y el pago el mismo día de la inspección.
-            </p>
-            <div className="row">
-              <a href="#tasar" className="btn btn-signal">
-                Tasar mi auto gratis
-              </a>
-              <a href="#como" className="btn btn-ghost" style={{ color: '#fff', borderColor: '#fff' }}>
-                Cómo funciona
-              </a>
-            </div>
-            <div className="hero-facts">
-              <span>
-                <strong>2 h</strong>oferta final
-              </span>
-              <span>
-                <strong>24–48 h</strong>pago completo
-              </span>
-              <span>
-                <strong>38</strong>marcas que compramos
-              </span>
-            </div>
+            <span className="pill">
+              <span className="dot" /> Compramos tu auto en Lima
+            </span>
+            <h1>Vende tu auto hoy, con pago seguro el mismo día.</h1>
+            <p className="lead">Calcula tu pre-oferta en segundos. Te enviamos la oferta final por WhatsApp en menos de 2 horas y pagamos por transferencia al firmar ante notario.</p>
+            <ul className="checks">
+              <li>
+                <Check /> Inspección gratis en tu casa
+              </li>
+              <li>
+                <Check /> Pago por transferencia bancaria
+              </li>
+              <li>
+                <Check /> Compramos autos con deuda
+              </li>
+              <li>
+                <Check /> Nos encargamos de todo el trámite
+              </li>
+            </ul>
+            <figure className="hero-photo">
+              <img src="/img/trust.jpg" alt="Entrega de llaves al cerrar la venta de un auto" />
+              <figcaption>
+                <Shield width="18" height="18" style={{ color: 'var(--brand)' }} /> Transferencia ante notario e inscrita en SUNARP
+              </figcaption>
+            </figure>
           </div>
           {cfg.modules.compramos && <Tasador cfg={cfg} />}
         </div>
       </section>
 
-      <section className="sec" id="como">
-        <div className="wrap">
-          <div className="sec-head">
-            <h2>Así vendes tu auto</h2>
-          </div>
-          <div className="steps">
-            {[
-              ['Tasa en línea', 'Marca, modelo, año y kilometraje. Ves tu pre-oferta al instante, comparada con avisos reales de Lima.'],
-              ['Recibe la oferta', 'Te escribimos por WhatsApp con una oferta final en menos de 2 horas. Sin compromiso.'],
-              ['Cobra el mismo día', 'Inspeccionamos en tu casa o en nuestra oficina, firmamos la transferencia y te pagamos. Si tiene deuda, la cancelamos nosotros.'],
-            ].map(([t, d], k) => (
-              <div className="step" key={t}>
-                <div className="step-n">{k + 1}</div>
-                <h3>{t}</h3>
-                <p className="muted">{d}</p>
+      <div className="trustbar">
+        <div className="wrap trustbar-in">
+          {[
+            [Clock, 'Oferta en 2 horas', 'Por WhatsApp, sin compromiso'],
+            [Bank, 'Pago el mismo día', 'Transferencia a tu cuenta'],
+            [Doc, 'Trámite legal', 'Notaría y SUNARP'],
+            [HomeIco, 'Vamos a ti', 'Toda Lima Metropolitana'],
+          ].map(([I, t, d]) => (
+            <div className="trust-item" key={t}>
+              <span className="trust-ico">
+                <I />
+              </span>
+              <div>
+                <b>{t}</b>
+                <span>{d}</span>
               </div>
-            ))}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <section className="sec" id="como">
+        <div className="wrap split">
+          <div>
+            <div className="sec-head" style={{ marginBottom: 20 }}>
+              <h2>Vender tu auto, sin vueltas</h2>
+              <p className="lead">Tres pasos y el dinero en tu cuenta. Tú no tienes que publicar, negociar ni recibir desconocidos.</p>
+            </div>
+            <ol className="steps">
+              {[
+                ['Calcula tu pre-oferta', 'Marca, modelo, año y kilometraje. La comparamos con autos similares que se venden hoy en Lima.'],
+                ['Recibe la oferta final', 'Un asesor te escribe por WhatsApp en menos de 2 horas. Si no te convence, no pasa nada.'],
+                ['Firma y cobra', 'Revisamos el auto en tu casa, firmamos ante notario y te transferimos el mismo día. Si tiene deuda, la pagamos al banco por ti.'],
+              ].map(([t, d], k) => (
+                <li className="step" key={t}>
+                  <span className="step-n">{k + 1}</span>
+                  <div>
+                    <h3>{t}</h3>
+                    <p className="muted">{d}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+            <a href="#tasar" className="btn btn-signal" style={{ marginTop: 20 }}>
+              Calcular mi pre-oferta
+            </a>
+          </div>
+          <div className="split-photo">
+            <img src="/img/process.jpg" alt="Cliente recibiendo su oferta por WhatsApp" loading="lazy" />
           </div>
         </div>
       </section>
 
-      <section className="sec band" id="servicios">
+      <section className="sec alt" id="servicios">
         <div className="wrap">
           <div className="sec-head">
-            <h2>Tres formas de sacarle dinero a tu auto</h2>
+            <h2>Elige cómo sacarle dinero a tu auto</h2>
+            <p className="lead">Según cuánto apuro tengas y si quieres seguir usándolo.</p>
           </div>
-          <div className="services" style={{ color: 'var(--ink)' }}>
+          <div className="services">
             {cfg.modules.compramos && (
               <div className="svc main">
+                <span className="svc-ico">
+                  <Coins />
+                </span>
+                <span className="meta">Lo más rápido</span>
                 <span className="big">Compra inmediata</span>
-                <p>Te compramos el auto al contado. La opción más rápida si necesitas el dinero ya.</p>
-                <a className="btn" href="#tasar">
-                  Tasar mi auto
+                <p>Te compramos el auto al contado. Ideal si necesitas el dinero esta semana.</p>
+                <a className="btn btn-signal" href="#tasar">
+                  Calcular pre-oferta
                 </a>
               </div>
             )}
             {cfg.modules.consigna && (
               <div className="svc">
+                <span className="svc-ico">
+                  <Tag />
+                </span>
+                <span className="meta">Mejor precio</span>
                 <span className="big">Consignación</span>
-                <p>Lo vendemos por ti al mejor precio. Cobramos {cfg.commission}% solo cuando se vende.</p>
+                <p>Lo vendemos por ti al precio de mercado. Solo cobramos {cfg.commission}% cuando se vende.</p>
                 <button className="btn btn-ghost" onClick={() => setSvc('consigna')}>
                   Consignar mi auto
                 </button>
@@ -277,10 +321,14 @@ export function Home({ cfg }) {
             )}
             {cfg.modules.prestamos && (
               <div className="svc">
-                <span className="big">Préstamo</span>
-                <p>Usa tu auto como garantía. Desde {cfg.baseTEA}% TEA y de 6 a 60 meses.</p>
+                <span className="svc-ico">
+                  <Car />
+                </span>
+                <span className="meta">Desde {cfg.baseTEA}% TEA</span>
+                <span className="big">Préstamo con tu auto</span>
+                <p>Recibe efectivo usando tu auto como garantía, de 6 a 60 meses.</p>
                 <button className="btn btn-ghost" onClick={() => setSvc('prestamos')}>
-                  Simular préstamo
+                  Simular mi cuota
                 </button>
               </div>
             )}
@@ -291,10 +339,10 @@ export function Home({ cfg }) {
       {cfg.modules.seminuevos && cars && cars.length > 0 && (
         <section className="sec">
           <div className="wrap">
-            <div className="sec-head row" style={{ justifyContent: 'space-between' }}>
+            <div className="row" style={{ justifyContent: 'space-between', marginBottom: 32 }}>
               <h2>Seminuevos disponibles</h2>
               <Link to="/seminuevos" className="btn btn-ghost btn-sm">
-                Ver todos ({cars.length})
+                Ver los {cars.length}
               </Link>
             </div>
             <div className="cars">
@@ -306,20 +354,44 @@ export function Home({ cfg }) {
         </section>
       )}
 
-      <section className="sec" style={{ background: '#fff' }}>
-        <div className="wrap faq">
-          <div className="sec-head">
+      <section className="sec">
+        <div className="wrap faq-grid faq">
+          <div>
             <h2>Preguntas frecuentes</h2>
+            <p className="lead" style={{ marginTop: 12 }}>
+              ¿Otra duda? Escríbenos y te responde una persona, no un bot.
+            </p>
+            <a className="btn btn-wa" style={{ marginTop: 20 }} href={wa(cfg.whatsapp, 'Hola AutoPago, tengo una consulta')} target="_blank" rel="noreferrer">
+              <WhatsApp /> Hablar con un asesor
+            </a>
           </div>
-          {FAQ.slice(0, 5).map((q) => (
-            <details key={q.q}>
-              <summary>{q.q}</summary>
-              <p>{q.a}</p>
-            </details>
-          ))}
-          <p style={{ marginTop: 20 }}>
-            <Link to="/faq">Ver todas las preguntas</Link>
-          </p>
+          <div>
+            {FAQ.slice(0, 6).map((q) => (
+              <details key={q.q}>
+                <summary>{q.q}</summary>
+                <p>{q.a}</p>
+              </details>
+            ))}
+            <p style={{ marginTop: 20 }}>
+              <Link to="/faq" style={{ fontWeight: 600, color: 'var(--brand)' }}>
+                Ver todas las preguntas
+              </Link>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section style={{ padding: '0 0 96px' }}>
+        <div className="wrap">
+          <div className="cta-band">
+            <div>
+              <h2 style={{ color: '#fff' }}>¿Cuánto vale tu auto hoy?</h2>
+              <p>Pre-oferta gratis en 30 segundos, sin registrarte.</p>
+            </div>
+            <a href="#tasar" className="btn btn-signal">
+              Calcular ahora
+            </a>
+          </div>
         </div>
       </section>
 
@@ -347,7 +419,7 @@ export function Seminuevos({ cfg }) {
       <section className="sec">
         <div className="wrap">
           <div className="sec-head">
-            <h1 style={{ fontSize: 'clamp(40px,6vw,72px)' }}>Seminuevos</h1>
+            <h1>Seminuevos</h1>
             <p className="lead measure">Autos revisados, con papeles en regla y listos para transferir.</p>
           </div>
           <div className="filters">
@@ -395,7 +467,7 @@ export function Faq({ cfg }) {
       <section className="sec">
         <div className="wrap faq">
           <div className="sec-head">
-            <h1 style={{ fontSize: 'clamp(40px,6vw,72px)' }}>Preguntas frecuentes</h1>
+            <h1>Preguntas frecuentes</h1>
           </div>
           {FAQ.map((q) => (
             <details key={q.q}>

@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { BRANDS, MODEL_DB, YEARS, CONDITIONS, CURRENT_YEAR, valuate, fetchMarket } from '../lib/valuation'
 import { usd, wa, submitLead } from '../lib/config'
-import { Plate } from './Shell'
+import { Result } from './Shell'
+import { Lock, WhatsApp } from './Icons'
 
 export default function Tasador({ cfg }) {
   const [f, setF] = useState({ brand: '', model: '', year: CURRENT_YEAR - 4, km: 50000, condition: 'bueno' })
@@ -76,14 +77,19 @@ export default function Tasador({ cfg }) {
 
   return (
     <div className="quote" id="tasar">
-      <h2>¿Cuánto te pagamos por tu auto?</h2>
-      <p className="muted small" style={{ marginBottom: 18 }}>
-        Pre-oferta al instante con precios reales del mercado de Lima. La oferta final llega por WhatsApp en menos de 2 horas.
+      <h2>{step === 'contacto' ? '¿A dónde te enviamos la oferta?' : step === 'enviado' ? 'Listo, ya la estamos revisando' : '¿Cuánto vale tu auto?'}</h2>
+      <p className="muted small">
+        {step === 'auto' ? 'Pre-oferta gratis en 30 segundos. Sin registrarte.' : step === 'contacto' ? 'Un asesor te escribe por WhatsApp con la oferta final.' : 'Te escribimos en menos de 2 horas.'}
       </p>
+      <div className="quote-steps" aria-hidden="true">
+        <span className="on" />
+        <span className={step !== 'auto' ? 'on' : ''} />
+        <span className={step === 'enviado' ? 'on' : ''} />
+      </div>
 
       {step === 'auto' && (
         <div className="stack">
-          <div className="grid2">
+          <div className="grid2 keep">
             <div className="field">
               <label htmlFor="t-brand">Marca</label>
               <select id="t-brand" className="select" value={f.brand} onChange={(e) => set('brand', e.target.value)}>
@@ -126,27 +132,30 @@ export default function Tasador({ cfg }) {
             </select>
           </div>
 
-          <Plate
-            empty={!v}
+          <Result
+            state={v ? 'on' : 'empty'}
             revealKey={v ? Math.round(v.offer / 100) : 'e'}
-            value={v ? `$${(Math.round(v.offerLow / 100) * 100).toLocaleString('en-US')} – ${(Math.round(v.offerHigh / 100) * 100).toLocaleString('en-US')}` : '$ —'}
-            caption={
-              v
-                ? `Pre-oferta en dólares para tu ${vehicle}` + (v.samples ? `, comparado con ${v.samples} avisos similares` : '')
-                : 'Completa marca y modelo para ver tu pre-oferta'
-            }
+            label={v ? `Te pagaríamos entre` : 'Tu pre-oferta'}
+            value={v ? `US$ ${(Math.round(v.offerLow / 100) * 100).toLocaleString('en-US')} – ${(Math.round(v.offerHigh / 100) * 100).toLocaleString('en-US')}` : 'US$ —'}
+            caption={v ? (v.samples ? `Basado en ${v.samples} autos similares publicados en Lima.` : `Referencia para tu ${vehicle}. La confirmamos al ver el auto.`) : 'Elige marca y modelo para calcularla.'}
           />
-          <button className="btn btn-signal" disabled={!v} onClick={() => setStep('contacto')}>
-            Recibir oferta final por WhatsApp
+          <button className="btn btn-signal btn-block" disabled={!v} onClick={() => setStep('contacto')}>
+            Quiero mi oferta final
           </button>
+          <p className="secure">
+            <Lock /> Sin compromiso. No compartimos tus datos.
+          </p>
         </div>
       )}
 
       {step === 'contacto' && (
         <form className="stack" onSubmit={send}>
-          <p>
-            <strong>{vehicle}</strong> · pre-oferta {usd(v?.offerLow)} – {usd(v?.offerHigh)}
-          </p>
+          <div className="result on">
+            <div className="result-label">{vehicle}</div>
+            <div className="result-num" style={{ fontSize: 24 }}>
+              {usd(Math.round((v?.offerLow || 0) / 100) * 100)} – {usd(Math.round((v?.offerHigh || 0) / 100) * 100)}
+            </div>
+          </div>
           <div className="field">
             <label htmlFor="c-name">Tu nombre</label>
             <input id="c-name" className="input" autoComplete="name" value={c.name} onChange={(e) => setC({ ...c, name: e.target.value })} />
@@ -169,21 +178,19 @@ export default function Tasador({ cfg }) {
             </select>
           </div>
           {err && <p className="err">{err}</p>}
-          <div className="row">
-            <button type="button" className="btn btn-ghost" onClick={() => setStep('auto')}>
-              Volver
-            </button>
-            <button className="btn btn-wa" disabled={sending}>
-              {sending ? 'Enviando…' : 'Enviar por WhatsApp'}
-            </button>
-          </div>
+          <button className="btn btn-wa btn-block" disabled={sending}>
+            <WhatsApp /> {sending ? 'Enviando…' : 'Recibir oferta por WhatsApp'}
+          </button>
+          <button type="button" className="btn btn-ghost btn-block" onClick={() => setStep('auto')}>
+            Cambiar datos del auto
+          </button>
         </form>
       )}
 
       {step === 'enviado' && (
         <div className="stack">
-          <Plate value="Recibido" caption="Te escribimos por WhatsApp con la oferta final en menos de 2 horas." revealKey="ok" />
-          <button className="btn btn-ghost" onClick={() => setStep('auto')}>
+          <Result state="on" label="Solicitud recibida" value="¡Gracias!" caption="Si no se abrió WhatsApp, escríbenos al +51 970 625 242." revealKey="ok" />
+          <button className="btn btn-ghost btn-block" onClick={() => setStep('auto')}>
             Tasar otro auto
           </button>
         </div>
