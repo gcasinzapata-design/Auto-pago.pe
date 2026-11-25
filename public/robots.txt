@@ -1,8 +1,5 @@
 User-agent: *
 Allow: /
-
-# Sitemaps
+Disallow: /admin
+Disallow: /revendedores
 Sitemap: https://www.autopago.pe/sitemap.xml
-
-# Block admin
-Disallow: /#admin
