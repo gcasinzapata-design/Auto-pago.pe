@@ -263,6 +263,37 @@ export function Home({ cfg }) {
         </div>
       </div>
 
+      <section className="sec alt" id="metodo">
+        <div className="wrap">
+          <div className="sec-head">
+            <h2>Cómo calculamos tu oferta</h2>
+            <p className="lead">Sin adivinanzas: la pre-oferta sale de datos, y la oferta final de ver tu auto.</p>
+          </div>
+          <div className="method">
+            <div className="method-item">
+              <b className="big">+2,600</b>
+              <h3>Precios reales de Lima</h3>
+              <p>Comparamos tu auto con avisos actuales del mismo modelo y año.</p>
+            </div>
+            <div className="method-item">
+              <b className="big">km</b>
+              <h3>Ajuste por uso</h3>
+              <p>Corregimos por kilometraje frente a lo normal para su año y por su estado.</p>
+            </div>
+            <div className="method-item">
+              <b className="big">0</b>
+              <h3>Costos para ti</h3>
+              <p>El pago inmediato ya incluye trámite notarial, SUNARP, revisión y el riesgo de reventa.</p>
+            </div>
+            <div className="method-item">
+              <b className="big">2 h</b>
+              <h3>Oferta final</h3>
+              <p>Un asesor confirma el monto tras la revisión física gratuita en tu casa.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="sec" id="como">
         <div className="wrap split">
           <div>

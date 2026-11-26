@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { BRANDS, MODEL_DB, CONDITIONS, CURRENT_YEAR, valuate, fetchMarket } from '../lib/valuation'
-import { usd, wa, submitLead } from '../lib/config'
+import { wa, submitLead, supabase } from '../lib/config'
 import { track } from '../lib/track'
-import { Lock, WhatsApp, Check, Clock } from './Icons'
+import { Lock, WhatsApp, Check, Clock, Shield } from './Icons'
 
 const POPULAR = ['Toyota', 'Hyundai', 'Kia', 'Nissan', 'Suzuki', 'Mazda', 'Mitsubishi', 'Honda', 'Chevrolet', 'Volkswagen', 'Subaru']
 const KM = [
@@ -21,6 +21,12 @@ const COND_HELP = {
 const STEPS = ['marca', 'modelo', 'año', 'km', 'estado']
 const LOCK_H = 48
 const round100 = (n) => Math.round(n / 100) * 100
+const newFolio = () => {
+  const d = new Date()
+  const ymd = String(d.getFullYear()).slice(2) + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0')
+  return `AP-${ymd}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`
+}
+const fmtDate = (d) => d.toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' }) + ' · ' + d.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' })
 
 function Countdown({ until }) {
   const [now, setNow] = useState(() => Date.now())
@@ -49,6 +55,9 @@ export default function Tasador({ cfg }) {
   const [lockedUntil, setLockedUntil] = useState(null)
   const [sending, setSending] = useState(false)
   const [err, setErr] = useState('')
+  const [folio, setFolio] = useState(newFolio)
+  const [issuedAt, setIssuedAt] = useState(() => new Date())
+  const [sampleTotal, setSampleTotal] = useState(null)
   const started = useRef(false)
   const top = useRef(null)
 
@@ -65,6 +74,20 @@ export default function Tasador({ cfg }) {
 
   useEffect(() => {
     if (step > 0 && top.current && top.current.getBoundingClientRect().top < 0) top.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [step])
+
+  useEffect(() => {
+    supabase
+      .from('ap_market_listings')
+      .select('id', { count: 'exact', head: true })
+      .then(({ count }) => count && setSampleTotal(count))
+  }, [])
+
+  useEffect(() => {
+    if (step === 5) {
+      setFolio(newFolio())
+      setIssuedAt(new Date())
+    }
   }, [step])
 
   useEffect(() => {
@@ -119,6 +142,7 @@ export default function Tasador({ cfg }) {
         condition: f.condition,
         mode: 'compramos',
         priceLockedUntil: new Date(until).toISOString(),
+        folio,
         valuation: v && { marketValue: Math.round(v.marketValue), offerLow: low, offerHigh: high, samples: v.samples, confidence: v.confidence },
       },
       { offer_usd: v ? round100(v.offer) : null, market_value_usd: v ? Math.round(v.marketValue) : null },
@@ -129,7 +153,7 @@ export default function Tasador({ cfg }) {
   }
 
   const waMsg = [
-    `Hola AutoPago, soy ${c.name.trim()}. Congelé mi pre-oferta en la web:`,
+    `Hola AutoPago, soy ${c.name.trim()}. Congelé mi pre-oferta N.° ${folio}:`,
     `• ${vehicle}, ${(f.km || 0).toLocaleString('es-PE')} km aprox.`,
     `• Estado: ${CONDITIONS.find((x) => x.id === f.condition)?.label || ''}`,
     `• Pre-oferta: US$ ${low.toLocaleString('en-US')} – ${high.toLocaleString('en-US')}`,
@@ -143,7 +167,18 @@ export default function Tasador({ cfg }) {
   )
 
   return (
-    <div className="quote" id="tasar" ref={top}>
+    <div className="quote official" id="tasar" ref={top}>
+      <div className="quote-head">
+        <span className="qh-seal" aria-hidden="true">
+          <Shield />
+        </span>
+        <div className="qh-text">
+          <b>Tasación AutoPago</b>
+          <span>{sampleTotal ? `${sampleTotal.toLocaleString('es-PE')} autos del mercado de Lima analizados` : 'Precios reales del mercado de Lima'}</span>
+        </div>
+        <span className="qh-live">En línea</span>
+      </div>
+      <div className="quote-body">
       {step < 5 && (
         <>
           <div className="row" style={{ justifyContent: 'space-between' }}>
@@ -273,21 +308,45 @@ export default function Tasador({ cfg }) {
 
       {step === 5 && v && (
         <div className="stack">
-          <div>
-            <span className="small muted">
-              {vehicle} · {(f.km || 0).toLocaleString('es-PE')} km
-            </span>
-            <button type="button" className="linkbtn" style={{ marginLeft: 8 }} onClick={() => { setStep(0); setLockedUntil(null) }}>
-              Cambiar
-            </button>
-          </div>
-          <div className="result on reveal">
-            <div className="result-label">{lockedUntil ? 'Tu precio congelado' : 'Te pagamos hoy entre'}</div>
-            <div className="result-num">
-              US$ {low.toLocaleString('en-US')} – {high.toLocaleString('en-US')}
+          <div className="doc reveal">
+            <div className="doc-top">
+              <div>
+                <span className="doc-k">{lockedUntil ? 'Pre-oferta congelada' : 'Pre-oferta'}</span>
+                <b className="doc-no">N.° {folio}</b>
+              </div>
+              <span className="doc-date">{fmtDate(issuedAt)}</span>
             </div>
-            <div className="result-cap">
-              {v.samples >= 3 ? `Calculado con ${v.samples} autos similares a la venta hoy en Lima.` : 'Referencia de mercado. La confirmamos al ver el auto.'}
+            <dl className="doc-spec">
+              <div>
+                <dt>Vehículo</dt>
+                <dd>
+                  {f.brand} {f.model}
+                </dd>
+              </div>
+              <div>
+                <dt>Año</dt>
+                <dd>{f.year}</dd>
+              </div>
+              <div>
+                <dt>Kilometraje</dt>
+                <dd>{(f.km || 0).toLocaleString('es-PE')} km</dd>
+              </div>
+              <div>
+                <dt>Estado</dt>
+                <dd>{CONDITIONS.find((x) => x.id === f.condition)?.label.split(',')[0]}</dd>
+              </div>
+            </dl>
+            <div className="doc-amount">
+              <span>Pago inmediato</span>
+              <b>
+                US$ {low.toLocaleString('en-US')} – {high.toLocaleString('en-US')}
+              </b>
+            </div>
+            <div className="doc-foot">
+              <span>{v.samples >= 3 ? `Comparado con ${v.samples} autos similares a la venta hoy en Lima.` : 'Referencia de mercado de Lima.'} Monto final sujeto a revisión física gratuita.</span>
+              <button type="button" className="linkbtn" onClick={() => { setStep(0); setLockedUntil(null) }}>
+                Cambiar datos
+              </button>
             </div>
           </div>
 
@@ -355,6 +414,7 @@ export default function Tasador({ cfg }) {
         </div>
       )}
       {step === 5 && !v && <p className="muted">Calculando…</p>}
+      </div>
     </div>
   )
 }

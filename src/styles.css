@@ -294,3 +294,54 @@ table.t td { padding: 12px 8px; border-bottom: 1px solid var(--line); vertical-a
 @media (max-width: 420px) { .opts.years { grid-template-columns: repeat(4, 1fr); } }
 
 .sticky-cta.hide { display: none !important; }
+
+/* ── Tasador oficial ── */
+.hero-grid { grid-template-columns: 1fr 520px; }
+.quote.official { padding: 0; overflow: hidden; border: 1px solid #d5dce5; box-shadow: 0 30px 60px -18px rgba(15, 42, 74, .32), 0 0 0 6px rgba(10, 122, 90, .06); }
+.quote-head { display: flex; align-items: center; gap: 12px; background: var(--navy); color: #fff; padding: 14px 20px; }
+.qh-seal { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,.12); display: grid; place-items: center; flex: none; }
+.qh-seal svg { width: 20px; height: 20px; color: #7fe0bd; }
+.qh-text { display: flex; flex-direction: column; line-height: 1.25; flex: 1; min-width: 0; }
+.qh-text b { font-size: 15px; letter-spacing: -0.01em; }
+.qh-text span { font-size: 12.5px; color: #b9c6d6; }
+.qh-live { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: #7fe0bd; white-space: nowrap; }
+.qh-live::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #34d399; box-shadow: 0 0 0 0 rgba(52,211,153,.6); animation: pulse 2s infinite; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(52,211,153,.55); } 70% { box-shadow: 0 0 0 8px rgba(52,211,153,0); } 100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); } }
+.quote-body { padding: 24px 26px 26px; }
+
+.doc { border: 1px solid #cfe7dd; border-radius: var(--r-m); background: linear-gradient(180deg, #f3fbf7 0%, #fff 60%); overflow: hidden; }
+.doc.reveal { animation: numIn .45s cubic-bezier(.2,.8,.2,1); }
+.doc-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; padding: 14px 16px; border-bottom: 1px dashed #cfe7dd; }
+.doc-k { display: block; font-size: 12px; font-weight: 700; color: var(--brand); }
+.doc-no { font-size: 15px; font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+.doc-date { font-size: 12px; color: var(--stone); text-align: right; }
+.doc-spec { display: grid; grid-template-columns: 1.4fr .6fr 1fr 1fr; gap: 0; margin: 0; }
+.doc-spec > div { padding: 10px 16px; border-bottom: 1px solid #e6efeb; }
+.doc-spec > div + div { border-left: 1px solid #e6efeb; }
+.doc-spec dt { font-size: 11.5px; color: var(--stone); font-weight: 600; }
+.doc-spec dd { margin: 0; font-size: 14px; font-weight: 700; }
+.doc-amount { padding: 16px; }
+.doc-amount span { font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.doc-amount b { display: block; font-size: clamp(28px, 3.4vw, 36px); font-weight: 800; letter-spacing: -0.03em; color: var(--brand); line-height: 1.15; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.doc-foot { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; padding: 0 16px 14px; font-size: 12.5px; color: var(--stone); }
+
+/* Metodología */
+.method { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.method-item { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-l); padding: 22px; }
+.method-item b.big { display: block; font-size: 28px; font-weight: 800; letter-spacing: -0.03em; color: var(--navy); }
+.method-item h3 { margin: 6px 0 6px; font-size: 16px; }
+.method-item p { font-size: 14px; color: var(--ink-2); }
+
+@media (max-width: 1020px) { .method { grid-template-columns: 1fr 1fr; } .hero-grid { grid-template-columns: 1fr; } }
+@media (max-width: 720px) {
+  .quote.official { border-radius: 18px; }
+  .quote-body { padding: 18px; }
+  .quote-head { padding: 12px 16px; }
+  .doc-spec { grid-template-columns: 1fr 1fr; }
+  .doc-spec > div:nth-child(3) { border-left: 0; }
+  .method { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 34px; }
+}
+.doc-no, .linkbtn { white-space: nowrap; }
+@media (min-width: 1021px) { .hero-grid { align-items: start; } .hero-grid > .quote { margin-top: 28px; } }
+@media (max-width: 720px) { .doc-top { flex-direction: column; gap: 2px; } .doc-date { text-align: left; } .doc-amount b { font-size: 26px; } }
