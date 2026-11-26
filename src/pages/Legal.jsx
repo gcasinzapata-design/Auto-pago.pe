@@ -212,7 +212,7 @@ export function Terminos({ cfg }) {
       </S>
 
       <S id="reclamos" n={16} t="Reclamos">
-        <p>Si tienes un reclamo o una queja, escríbenos a <a href={`mailto:${LEGAL.emailLegal}`}>{LEGAL.emailLegal}</a>. Tienes derecho a registrarlo en nuestro Libro de Reclamaciones, conforme al Código de Protección y Defensa del Consumidor, y te responderemos en el plazo legal.</p>
+        <p>Si tienes un reclamo o una queja, escríbenos a <a href={`mailto:${LEGAL.emailLegal}`}>{LEGAL.emailLegal}</a>. También puedes registrarlo en nuestro <Link to="/libro-de-reclamaciones">Libro de Reclamaciones virtual</Link>, conforme al Código de Protección y Defensa del Consumidor. Te responderemos en un plazo no mayor a 15 días hábiles.</p>
       </S>
 
       <S id="cambios" n={17} t="Cambios">

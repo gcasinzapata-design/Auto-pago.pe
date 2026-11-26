@@ -6,6 +6,7 @@ import { DEFAULT_CFG, loadConfig } from './lib/config'
 import { bootAnalytics } from './lib/track'
 import { Home, Seminuevos, Faq } from './pages/Public'
 import { Terminos, Privacidad } from './pages/Legal'
+const Reclamos = lazy(() => import('./pages/Reclamos'))
 const Revendedores = lazy(() => import('./pages/Revendedores'))
 const Admin = lazy(() => import('./pages/admin/Admin'))
 
@@ -24,6 +25,7 @@ function App() {
         <Route path="/faq" element={<Faq cfg={cfg} />} />
         <Route path="/terminos" element={<Terminos cfg={cfg} />} />
         <Route path="/privacidad" element={<Privacidad cfg={cfg} />} />
+        <Route path="/libro-de-reclamaciones" element={<Reclamos cfg={cfg} />} />
         <Route path="/revendedores" element={<Revendedores />} />
         <Route path="/admin" element={<Admin cfg={cfg} setCfg={setCfg} />} />
         <Route path="*" element={<Navigate to="/" replace />} />

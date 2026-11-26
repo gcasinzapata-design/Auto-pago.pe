@@ -9,6 +9,7 @@ import CRM from './CRM'
 import Inventory from './Inventory'
 import Resellers from './Resellers'
 import Market from './Market'
+import ReclamosAdmin from './Reclamos'
 
 function Funnel() {
   const [rows, setRows] = useState(null)
@@ -202,6 +203,7 @@ function Dashboard({ cfg, setCfg }) {
   const [leads, setLeads] = useState([])
   const [cars, setCars] = useState([])
   const [pending, setPending] = useState(0)
+  const [reclamosPend, setReclamosPend] = useState(0)
   const reloadCars = useCallback(() => loadAdminInventory().then(setCars), [])
   useEffect(() => {
     supabase
@@ -215,6 +217,11 @@ function Dashboard({ cfg, setCfg }) {
       .select('user_id', { count: 'exact', head: true })
       .eq('approved', false)
       .then(({ count }) => setPending(count || 0))
+    supabase
+      .from('ap_reclamos')
+      .select('id', { count: 'exact', head: true })
+      .neq('estado', 'respondido')
+      .then(({ count }) => setReclamosPend(count || 0))
     reloadCars()
     // Leads nuevos en vivo
     const ch = supabase
@@ -230,6 +237,7 @@ function Dashboard({ cfg, setCfg }) {
     ['inventario', 'Inventario', cars.filter((c) => c.status !== 'vendido').length],
     ['revendedores', 'Revendedores', pending || ''],
     ['tasacion', 'Tasación'],
+    ['reclamos', 'Reclamos', reclamosPend || ''],
     ['ajustes', 'Ajustes'],
   ]
   return (
@@ -251,6 +259,7 @@ function Dashboard({ cfg, setCfg }) {
         {tab === 'inventario' && <Inventory cars={cars} reload={reloadCars} />}
         {tab === 'revendedores' && <Resellers cars={cars} reloadCars={reloadCars} />}
         {tab === 'tasacion' && <Market cfg={cfg} />}
+        {tab === 'reclamos' && <ReclamosAdmin />}
         {tab === 'ajustes' && <Settings cfg={cfg} setCfg={setCfg} />}
       </div>
     </div>

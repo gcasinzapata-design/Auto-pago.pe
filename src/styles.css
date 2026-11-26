@@ -389,3 +389,31 @@ table.t td { padding: 12px 8px; border-bottom: 1px solid var(--line); vertical-a
   .legal-toc ol { display: grid; grid-template-columns: 1fr 1fr; }
   .lt-row { grid-template-columns: 1fr; gap: 4px; }
 }
+
+/* ── Libro de Reclamaciones ── */
+.lr-wrap { padding-top: 32px; padding-bottom: 96px; max-width: 880px; }
+.lr-sheet { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-l); padding: 28px; box-shadow: var(--shadow-1); display: flex; flex-direction: column; gap: 18px; }
+.lr-sheet-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; padding-bottom: 16px; border-bottom: 1px dashed var(--line); }
+.lr-sheet-head h2 { font-size: 24px; margin: 2px 0 4px; }
+.lr-badge { background: var(--navy); color: #fff; font-weight: 700; font-size: 13px; padding: 4px 12px; border-radius: 999px; }
+.lr-block { border: 0; display: flex; flex-direction: column; gap: 14px; padding: 0; }
+.lr-block legend { font-weight: 800; font-size: 16px; margin-bottom: 12px; color: var(--navy); }
+.lr-types { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cond.on { border-color: var(--brand); background: var(--brand-tint); box-shadow: 0 0 0 1px var(--brand) inset; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; align-self: flex-start; }
+.seg button { border: 0; background: none; padding: 7px 16px; border-radius: 999px; font-weight: 600; font-size: 14px; cursor: pointer; color: var(--ink-2); }
+.seg button.on { background: var(--ink); color: #fff; }
+.lr-legal { background: var(--surface); border-radius: var(--r-m); padding: 14px 16px; font-size: 13.5px; color: var(--ink-2); display: flex; flex-direction: column; gap: 6px; }
+.lr-legal a { color: var(--brand); font-weight: 600; }
+.lr-dl { margin: 0; border: 1px solid var(--line); border-radius: var(--r-m); overflow: hidden; }
+.lr-row { display: grid; grid-template-columns: 200px 1fr; gap: 16px; padding: 10px 14px; border-top: 1px solid var(--line); font-size: 14.5px; }
+.lr-row:first-child { border-top: 0; }
+.lr-row dt { color: var(--stone); font-weight: 600; }
+.lr-row dd { margin: 0; white-space: pre-wrap; }
+.footer .lr-link { display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,.25); padding: 6px 12px; border-radius: 8px; align-self: flex-start; }
+@media (max-width: 720px) { .lr-sheet { padding: 18px; } .lr-types { grid-template-columns: 1fr; } .lr-row { grid-template-columns: 1fr; gap: 2px; } }
+@media print {
+  .nav, .footer, .legal-hero, .sticky-cta, .no-print { display: none !important; }
+  .lr-wrap { padding: 0; max-width: none; }
+  .lr-sheet { box-shadow: none; border: 0; }
+}

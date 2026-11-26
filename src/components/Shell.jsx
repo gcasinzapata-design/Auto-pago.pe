@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { wa } from '../lib/config'
-import { Menu, WhatsApp } from './Icons'
+import { Menu, WhatsApp, Book } from './Icons'
 
 export function Brand({ to = '/' }) {
   return (
@@ -54,6 +54,9 @@ export function Footer({ cfg }) {
         <div className="stack" style={{ gap: 10 }}>
           <Link to="/terminos">Términos y condiciones</Link>
           <Link to="/privacidad">Política de privacidad</Link>
+          <Link to="/libro-de-reclamaciones" className="lr-link">
+            <Book width="18" height="18" /> Libro de Reclamaciones
+          </Link>
           <span>© {new Date().getFullYear()} AutoPago · Lima, Perú</span>
         </div>
       </div>

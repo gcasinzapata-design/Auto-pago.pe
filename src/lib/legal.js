@@ -4,8 +4,9 @@ export const LEGAL = {
   razonSocial: '', // p. ej. 'AutoPago S.A.C.'
   ruc: '', // 11 dígitos
   domicilio: 'Lima, Perú',
-  emailLegal: 'legal@autopago.pe',
-  emailPrivacidad: 'privacidad@autopago.pe',
+  reclamosHook: 'https://hook.us2.make.com/3vuq5doxcx4nf8lpgdv0qbvmb2x29s9t',
+  emailLegal: 'comercial@sazonpartner.com',
+  emailPrivacidad: 'comercial@sazonpartner.com',
   whatsapp: '+51 970 625 242',
   version: '2.0',
   vigencia: '26 de noviembre de 2026',
