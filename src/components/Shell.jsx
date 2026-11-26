@@ -6,11 +6,7 @@ import { Menu, WhatsApp } from './Icons'
 export function Brand({ to = '/' }) {
   return (
     <Link to={to} className="brand" aria-label="AutoPago, inicio">
-      <span className="brand-mark" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M5 13.5 9.5 18 19 7" />
-        </svg>
-      </span>
+      <span className="brand-mark" aria-hidden="true">AP</span>
       AutoPago
     </Link>
   )
@@ -56,8 +52,8 @@ export function Footer({ cfg }) {
           <Link to="/revendedores">Portal de revendedores</Link>
         </div>
         <div className="stack" style={{ gap: 10 }}>
-          <a href="/terminos">Términos y condiciones</a>
-          <a href="/privacidad">Política de privacidad</a>
+          <Link to="/terminos">Términos y condiciones</Link>
+          <Link to="/privacidad">Política de privacidad</Link>
           <span>© {new Date().getFullYear()} AutoPago · Lima, Perú</span>
         </div>
       </div>

@@ -3,6 +3,7 @@ import { BRANDS, MODEL_DB, CONDITIONS, CURRENT_YEAR, valuate, fetchMarket } from
 import { wa, submitLead, supabase } from '../lib/config'
 import { track } from '../lib/track'
 import { Lock, WhatsApp, Check, Clock, Shield } from './Icons'
+import Consent from './Consent'
 
 const POPULAR = ['Toyota', 'Hyundai', 'Kia', 'Nissan', 'Suzuki', 'Mazda', 'Mitsubishi', 'Honda', 'Chevrolet', 'Volkswagen', 'Subaru']
 const KM = [
@@ -52,6 +53,7 @@ export default function Tasador({ cfg }) {
   const [kmText, setKmText] = useState('')
   const [market, setMarket] = useState({})
   const [c, setC] = useState({ name: '', phone: '' })
+  const [ok, setOk] = useState(false)
   const [lockedUntil, setLockedUntil] = useState(null)
   const [sending, setSending] = useState(false)
   const [err, setErr] = useState('')
@@ -128,6 +130,7 @@ export default function Tasador({ cfg }) {
     const phone = c.phone.replace(/\D/g, '')
     if (c.name.trim().length < 2) return setErr('Escribe tu nombre.')
     if (phone.length !== 9 || phone[0] !== '9') return setErr('El celular debe tener 9 dígitos y empezar con 9.')
+    if (!ok) return setErr('Marca la casilla para aceptar la política de privacidad.')
     setSending(true)
     const until = Date.now() + LOCK_H * 36e5
     await submitLead(
@@ -143,6 +146,7 @@ export default function Tasador({ cfg }) {
         mode: 'compramos',
         priceLockedUntil: new Date(until).toISOString(),
         folio,
+        consent: { privacy: true, at: new Date().toISOString(), version: '2.0' },
         valuation: v && { marketValue: Math.round(v.marketValue), offerLow: low, offerHigh: high, samples: v.samples, confidence: v.confidence },
       },
       { offer_usd: v ? round100(v.offer) : null, market_value_usd: v ? Math.round(v.marketValue) : null },
@@ -356,10 +360,14 @@ export default function Tasador({ cfg }) {
                 <Clock width="18" height="18" style={{ color: 'var(--brand)' }} />
                 <b>Congela este precio por 48 horas</b>
               </div>
+              <p className="small muted" style={{ marginTop: -6 }}>
+                Te enviamos la oferta final en menos de 2 horas y mantenemos este rango 48 horas para que coordines la revisión con calma.
+              </p>
               <div className="grid2 keep">
                 <input className="input" aria-label="Tu nombre" placeholder="Tu nombre" autoComplete="given-name" value={c.name} onChange={(e) => setC({ ...c, name: e.target.value })} />
                 <input className="input" aria-label="Celular" placeholder="Celular" inputMode="tel" autoComplete="tel" value={c.phone} onChange={(e) => setC({ ...c, phone: e.target.value })} />
               </div>
+              <Consent id="consent-lock" checked={ok} onChange={setOk} />
               {err && <p className="err">{err}</p>}
               <button className="btn btn-signal btn-block" disabled={sending}>
                 {sending ? 'Congelando…' : 'Congelar mi precio'}
@@ -374,7 +382,7 @@ export default function Tasador({ cfg }) {
                 <b>Precio congelado</b>
                 <Countdown until={lockedUntil} />
               </div>
-              <p className="small muted">Un asesor te escribe en menos de 2 horas para coordinar la revisión gratis en tu casa.</p>
+              <p className="small muted">Un asesor te escribe en menos de 2 horas con la oferta final. Tu rango se mantiene hasta que termine el contador, sujeto a la revisión gratuita del auto.</p>
               <a className="btn btn-wa btn-block" href={wa(cfg.whatsapp, waMsg)} target="_blank" rel="noreferrer" onClick={() => track('wa_open', { step: 'locked' })}>
                 <WhatsApp /> Coordinar ahora por WhatsApp
               </a>

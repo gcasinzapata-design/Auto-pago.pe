@@ -5,6 +5,7 @@ import Tasador from '../components/Tasador'
 import { usd, wa, submitLead } from '../lib/config'
 import { loadPublicInventory } from '../lib/inventory'
 import { FAQ } from '../lib/faq'
+import Consent from '../components/Consent'
 import { Check, Shield, Clock, Bank, Doc, Home as HomeIco, Car, Tag, Coins, WhatsApp } from '../components/Icons'
 
 function Layout({ cfg, children }) {
@@ -42,6 +43,7 @@ const cuota = (monto, tea, meses) => {
 
 function ServiceModal({ cfg, mode, onClose }) {
   const [f, setF] = useState({ name: '', phone: '', vehicle: '', amount: 20000, term: 24, price: '' })
+  const [ok, setOk] = useState(false)
   const [err, setErr] = useState('')
   const [busy, setBusy] = useState(false)
   const loan = mode === 'prestamos'
@@ -50,8 +52,9 @@ function ServiceModal({ cfg, mode, onClose }) {
     const phone = f.phone.replace(/\D/g, '')
     if (f.name.trim().length < 2 || phone.length !== 9) return setErr('Escribe tu nombre y un celular de 9 dígitos.')
     if (!f.vehicle.trim()) return setErr('Cuéntanos qué auto tienes (marca, modelo y año).')
+    if (!ok) return setErr('Marca la casilla para aceptar la política de privacidad.')
     setBusy(true)
-    const payload = { name: f.name.trim(), phone: '+51' + phone, vehicle: f.vehicle.trim(), mode }
+    const payload = { name: f.name.trim(), phone: '+51' + phone, vehicle: f.vehicle.trim(), mode, consent: { privacy: true, at: new Date().toISOString(), version: '2.0' } }
     if (loan) Object.assign(payload, { loanAmt: +f.amount, loanTerm: +f.term })
     else Object.assign(payload, { consignaPrice: +f.price || null })
     await submitLead(mode, payload)
@@ -116,6 +119,7 @@ function ServiceModal({ cfg, mode, onClose }) {
             <input id="s-price" className="input" type="number" value={f.price} onChange={(e) => setF({ ...f, price: e.target.value })} />
           </div>
         )}
+        <Consent id="consent-svc" checked={ok} onChange={setOk} />
         {err && <p className="err">{err}</p>}
         <button className="btn btn-wa" disabled={busy}>
           {busy ? 'Enviando…' : 'Enviar por WhatsApp'}
@@ -148,13 +152,15 @@ function CarCard({ car, onOpen }) {
 function CarModal({ car, cfg, onClose }) {
   const [i, setI] = useState(0)
   const [f, setF] = useState({ name: '', phone: '' })
+  const [ok, setOk] = useState(false)
   const [err, setErr] = useState('')
   const title = `${car.brand} ${car.model} ${car.year}`
   const ask = async (e) => {
     e.preventDefault()
     const phone = f.phone.replace(/\D/g, '')
     if (f.name.trim().length < 2 || phone.length !== 9) return setErr('Escribe tu nombre y un celular de 9 dígitos.')
-    await submitLead('seminuevo', { name: f.name.trim(), phone: '+51' + phone, vehicleId: car.id, vehicle: title, price: car.price })
+    if (!ok) return setErr('Marca la casilla para aceptar la política de privacidad.')
+    await submitLead('seminuevo', { name: f.name.trim(), phone: '+51' + phone, vehicleId: car.id, vehicle: title, price: car.price, consent: { privacy: true, at: new Date().toISOString(), version: '2.0' } })
     window.open(wa(cfg.whatsapp, `Hola, soy ${f.name.trim()}. Me interesa el ${title} publicado en ${usd(car.price)}. ¿Sigue disponible?`), '_blank')
     onClose()
   }
@@ -187,6 +193,7 @@ function CarModal({ car, cfg, onClose }) {
             <input className="input" aria-label="Tu nombre" placeholder="Tu nombre" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} />
             <input className="input" aria-label="Celular" placeholder="Celular" inputMode="tel" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} />
           </div>
+          <Consent id="consent-car" checked={ok} onChange={setOk} />
           {err && <p className="err">{err}</p>}
           <button className="btn btn-wa">Preguntar por este auto</button>
         </form>

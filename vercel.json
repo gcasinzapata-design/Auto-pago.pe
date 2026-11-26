@@ -2,9 +2,11 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "redirects": [
+    { "source": "/terminos.html", "destination": "/terminos", "permanent": true },
+    { "source": "/privacidad.html", "destination": "/privacidad", "permanent": true }
+  ],
   "rewrites": [
-    { "source": "/terminos", "destination": "/terminos.html" },
-    { "source": "/privacidad", "destination": "/privacidad.html" },
     { "source": "/((?!assets/|img/|.*\\.).*)", "destination": "/index.html" }
   ]
 }

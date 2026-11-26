@@ -4,12 +4,14 @@ import { supabase, usd, wa } from '../lib/config'
 import { useProfile, signOut, authError } from '../lib/auth'
 import { mapCar } from '../lib/inventory'
 import { Brand } from '../components/Shell'
+import Consent from '../components/Consent'
 
 export function AuthBox({ title, sub, allowSignup, signupLabel = 'Soy revendedor y quiero una cuenta', signupTitle = 'Crear cuenta de revendedor' }) {
   const [mode, setMode] = useState('in')
   const [f, setF] = useState({ email: '', password: '', name: '', phone: '', company: '' })
   const [msg, setMsg] = useState({ err: '', ok: '' })
   const [busy, setBusy] = useState(false)
+  const [ok, setOk] = useState(false)
   const go = async (e) => {
     e.preventDefault()
     setMsg({ err: '', ok: '' })
@@ -22,6 +24,10 @@ export function AuthBox({ title, sub, allowSignup, signupLabel = 'Soy revendedor
       if (!f.name.trim() || phone.length !== 9) {
         setBusy(false)
         return setMsg({ err: 'Completa tu nombre y un celular de 9 dígitos.', ok: '' })
+      }
+      if (!ok) {
+        setBusy(false)
+        return setMsg({ err: 'Marca la casilla para aceptar los términos y la política de privacidad.', ok: '' })
       }
       const { data, error } = await supabase.auth.signUp({
         email: f.email.trim(),
@@ -70,6 +76,7 @@ export function AuthBox({ title, sub, allowSignup, signupLabel = 'Soy revendedor
           <label htmlFor="a-pass">Contraseña</label>
           <input id="a-pass" className="input" type="password" autoComplete={mode === 'in' ? 'current-password' : 'new-password'} minLength={8} value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} />
         </div>
+        {mode === 'up' && <Consent id="consent-up" checked={ok} onChange={setOk} />}
         {msg.err && <p className="err">{msg.err}</p>}
         {msg.ok && <p className="okmsg">{msg.ok}</p>}
         <button className="btn btn-signal" disabled={busy}>
